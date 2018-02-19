@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>登录</title>
+<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.css">
+<link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="/views/css/login-register.css">
+<script>BASE_URL = "<?=base_url()?>";SITE_URL = "<?=site_url()?>"</script>
+<script src="https://cdn.bootcss.com/require.js/2.3.5/require.js"></script>
+<script src="/views/js/main.js"></script>
+<script>require(['user-login']);</script>
+</head>
+<body>
+	<div class="wapper-bg">
+		<div class="login-wapper">
+			<div class="logo-section">
+				<h2>这里是登录界面</h2>
+				<p>和注册界面没有什么区别</p>
+			</div>
+			<div id="v-login" class="login-main">
+				<form v-on:submit.prevent="login" role="login-form" >
+				  <div class="form-group">
+				    <h3 for="user-name">用户名/电子邮箱<span v-show="msg.name" class="validation-info text-danger">{{msg.name}}</span></h3>
+				    <input v-model="user.name" v-on:input="change_name" name="user_name" type="text" class="form-control input-lg"	>
+				  </div>
+				  <div class="form-group">
+				    <h3 for="user-pwd">密码<span v-show="msg.pwd" class="validation-info text-danger" v-on:focus="">{{msg.pwd}}</span></h3>
+				    <input v-model="user.pwd" v-on:input="change_pwd" name="user_pwd" type="password" class="form-control input-lg">
+				  </div>
+				  <div class="form-group">
+					  <div class="k-checkbox">
+				  		<input type="checkbox" name="is_remember" v-model="is_checked">
+							<label v-on:click="change_is_remember">记住我</label>
+					  </div>
+				  </div>
+				  <div class="form-group">
+					  <input type="submit" value="登录" class="btn btn-lg btn-lightgreen">
+					  <a href="<?=site_url('user/register')?>" class="btn btn-lg btn-lightgray">我要注册</a>
+				  </div>
+				  <div class="form-group">
+					  <p><a class="link-lightblue" href="">我把密码忘了！</a></p>
+					  <p><a class="link-lightblue" href="">重新发送验证邮件</a></p>
+				  </div>  
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="bottom-container">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-6">
+					<div class="bottom-left"><h3>左边写点东西</h3></div>
+				</div>
+				<div class="col-md-6">
+					<div class="bottom-right"><h3>右边也写点东西</h3></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
