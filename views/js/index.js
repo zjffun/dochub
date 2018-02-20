@@ -1,10 +1,10 @@
 require(['vue', 'jquery'], function(Vue, $){
   $.get('/libraries.min.json', function(docs){
-    var docs_top_6 = docs.slice(0, 8);
+    var docs_top_9 = docs.slice(0, 8);
     new Vue({
       el: '#dh-search-docs',
       data: {
-        docs: docs_top_6,
+        docs: docs_top_9,
         isAllDocs: false,
         search: '',
       },
@@ -17,7 +17,7 @@ require(['vue', 'jquery'], function(Vue, $){
         findDocs: function(){
           var search = this.search;
           if (search == '') {
-            this.docs = docs_top_6;
+            this.docs = docs_top_9;
           }
           var search_patt  = new RegExp(search, 'i');
           var searched_docs = [];

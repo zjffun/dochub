@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class User extends CI_Controller {
+class User extends MY_Controller {
 
   public function __construct(){
     parent::__construct();
@@ -13,8 +13,7 @@ class User extends CI_Controller {
     $this->load->model('user_model');
   }
 
-  public function login()
-  {
+  public function login(){
     $this->load->view('user/login.html');
   }
 
@@ -27,8 +26,7 @@ class User extends CI_Controller {
     $this->load->view('user/profile.html');
   }
 
-  public function do_login()
-  {
+  public function do_login(){
     $user_name = $this->input->post('user_name',true);
     $user_pwd = $this->input->post('user_pwd',true);
     $is_remember = $this->input->post('is_remember',true);
@@ -46,15 +44,11 @@ class User extends CI_Controller {
     $this->output->set_header('Content-Type: application/json; charset=utf-8');
     // 表单验证
     if ($this->form_validation->run() == false) {
-      
-      $result['status'] = false;
-      $result['msg'] = 'validation_faild';
       $info = array();
       foreach ($this->form_validation->error_array() as $key => $value) {
         $info[] = array($key,$value);
       }
-      $result['info'] = $info;
-      goto login_failed;
+      $this->returnResult('validation_faild', $info);
     }
     //账号密码验证
     if ($is_email) {
@@ -62,62 +56,51 @@ class User extends CI_Controller {
       $this->form_validation->set_rules('user_name', '电子邮箱', 'callback_useremail_login_check');
       if ($this->form_validation->run() == false) {
         // 电子邮箱不存在
-        $result['status'] = false;
-        $result['msg'] = 'validation_faild';
         $info = array();
         foreach ($this->form_validation->error_array() as $key => $value) {
           $info[] = array($key,$value);
         }
-        $result['info'] = $info;
-        goto login_failed;
+        $this->returnResult('validation_faild', $info);
       }elseif ($is_email && !($user = $this->user_model->do_login($user_name, $user_pwd, 'email'))){
         //密码错误
-        $result['status'] = false;
-        $result['msg'] = "password_faild";
-        goto login_failed;
+        $this->returnResult('password_faild');
       }
     }else{
       if (!$this->user_model->username_check($user_name)){
         // 用户名不存在
-        $result['status'] = false;
-        $result['msg'] = 'username_faild';
-        goto login_failed;
+        $this->returnResult('username_faild');
       }
       $user = $this->user_model->do_login($user_name, $user_pwd);
       if ($user){
         $status = $this->user_model->useremail_check($user['user_email']);
         if ($status == 2) {
           // 注册未激活
-          $result['msg'] = 'validation_faild';
           $activation_code = $user['activation_code'];
-              $useremail = urlencode($user['user_email']);
-              $resend_email_url = site_url("user/send_active_email/$activation_code/$useremail");
-          $info = array();
-          $info[] = array('user_name',"{field}已经注册，但还未激活，<a target='_blank' href='$resend_email_url'>点击这里</a>重新发送激活邮件");
-          $result['info'] = $info;
-          goto login_failed;
+          $useremail = urlencode($user['user_email']);
+          $resend_email_url = site_url("user/send_active_email/$activation_code/$useremail");
+          $this->returnResult('validation_faild', array(array('user_name',"{field}已经注册，但还未激活，<a target='_blank' href='$resend_email_url'>点击这里</a>重新发送激活邮件")));
         }
       }else{
         // 密码错误
-        $result['status'] = false;
-        $result['msg'] = "password_faild";
-        goto login_failed;
+        $this->returnResult('password_faild');
       }
     }
-
-    
+  
     // 通过所有验证
     $_SESSION['user'] = $user;
-
-    $result['status'] = true;
     unset($user['user_pwd']);
-    $result['user_info'] = $user;
-
-    //登录失败返回失败原因
-    login_failed:
-    echo json_encode($result);
+    $this->returnResult($user);
   }
 
+  public function get_my_common_docs(){
+    $this->returnResult($this->user_model->get_my_common_docs($_SESSION['user']['user_id']));
+  }
+  public function get_my_collection(){
+    $this->returnResult($this->user_model->get_my_collection($_SESSION['user']['user_id']));
+  }
+  public function get_my_participation(){
+    $this->returnResult($this->user_model->get_my_participation($_SESSION['user']['user_id']));
+  }
 
   /*激活用户*/
   public function do_actice($activation_code){

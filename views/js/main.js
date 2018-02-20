@@ -11,6 +11,7 @@ require.config({
     'tool': 'js/tool',
     'index': 'js/index',
     'user-login': 'js/user/login',
+    'user-profile': 'js/user/profile',
   },
   shim: {
     'store': {exports: 'store'},

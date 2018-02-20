@@ -55,11 +55,18 @@ CREATE TABLE browse_record (
  last_browse_time timestamp NOT NULL COMMENT '上次浏览时间'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+#收藏表
+CREATE TABLE collection (
+ user_id mediumint UNSIGNED NOT NULL COMMENT '用户ID',
+ doc_id mediumint UNSIGNED NOT NULL COMMENT '文档ID',
+ collect_time timestamp NOT NULL COMMENT '收藏时间'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
 /*-----------------插入数据-----------------*/
 INSERT INTO user 
 (user_id, user_email, user_name, user_pwd, user_regist_time, activation_code) 
 VALUES 
-(0, 'admin@163.com', 'admin',MD5('123456'), now(), '0');
+(1, 'admin@163.com', 'admin',MD5('123456'), now(), '0');
 
 INSERT INTO docs 
 (doc_id, doc_name, description) 
@@ -77,18 +84,29 @@ VALUES
 INSERT INTO browse_record 
 (user_id, doc_id, browse_times, last_browse_time) 
 VALUES 
-(0, 1, 3, now()),
-(0, 2, 3, now()),
-(0, 3, 3, now()),
-(0, 4, 3, now());
+(1, 1, 3, now()),
+(1, 2, 3, now()),
+(1, 3, 3, now()),
+(1, 4, 3, now());
 
 INSERT INTO participation 
 (user_id, doc_id, page_path, role) 
 VALUES 
-(0, 1, '/index.html', 1),
-(0, 2, '/', 0),
-(0, 3, '/', 0),
-(0, 4, '/', 0);
+(1, 5, '/index.html', 1),
+(1, 6, '/', 0),
+(1, 6, '/haha.html', 1),
+(1, 6, '/haha.html', 2),
+(1, 6, '/haha.html', 3),
+(1, 7, '/', 0),
+(1, 8, '/', 0);
+
+INSERT INTO collection 
+(user_id, doc_id, collect_time) 
+VALUES 
+(1, 1, now()),
+(1, 2, now()),
+(1, 3, now()),
+(1, 9, now());
 
 
 

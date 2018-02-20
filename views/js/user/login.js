@@ -61,7 +61,7 @@ require(['vue', 'store', 'jquery'], function(Vue, store, $){
   })
   function login_ajax_sucess(vue, data){
     if (data['status'] === true) {
-      store.set('user', data.user_info);
+      store.set('user', data.data);
       location.href = document.referrer;
     }else {
       switch(data['msg']){
