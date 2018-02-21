@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.css">
+  <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <?php if(isset($css)): ?>
+  <?php   foreach($css as $v): ?>
+  <link href="<?=base_url('views/css/'.$v.'.css')?>" rel="stylesheet">
+  <?php   endforeach;?>
+  <?php endif; ?>
+  <title>dochub</title>
+  <script>BASE_URL = "<?=base_url()?>";SITE_URL = "<?=site_url()?>"</script>
+  <script src="https://cdn.bootcss.com/require.js/2.3.5/require.js"></script>
+  <script src="/views/js/main.js"></script>
+  <script>require(['bootstrap', '<?=isset($js) ? implode(',', $js) : ''?>'])</script>
+  <style>
+    footer{
+      background-color: #27ae60;
+      border-top: 1px solid #26aa5e;
+      color: #fff;
+      padding-top: 40px;
+      margin-top: 80px;
+      font-size: 14px;
+    }
+    footer h4{
+      font-size: 18px;
+    }
+    footer a {
+      color: #fff;
+      border-bottom: dotted 1px #a9dfbf;
+    }
+    footer a:hover {
+      color: #fff;
+      border-bottom: solid 1px #a9dfbf;
+    }
+    footer .copy-right {
+      height: 50px;
+      line-height: 50px;
+      margin-top: 10px;
+      text-align: center;
+      background-color: rgba(51,51,51,.08);
+    }
+  </style>
+</head>
+<body>
+  <header id="v-dh-nav">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a style="position: relative;" class="navbar-brand mr-0 mr-md-2" href="/" aria-label="dochub">
+        <svg class="d-block" width="36" height="36" viewBox="0 0 612 612" xmlns="http://www.w3.org/2000/svg" focusable="false">
+          <title>dochub</title>
+          <path fill="currentColor" d="M510 8a94.3 94.3 0 0 1 94 94v408a94.3 94.3 0 0 1-94 94H102a94.3 94.3 0 0 1-94-94V102a94.3 94.3 0 0 1 94-94h408m0-8H102C45.9 0 0 45.9 0 102v408c0 56.1 45.9 102 102 102h408c56.1 0 102-45.9 102-102V102C612 45.9 566.1 0 510 0z"></path>
+        </svg>
+        <div style="line-height: 36px; font-size: 26px; position: absolute; top: 3px; left: 8px;" >D</div>
+      </a>
+      <a class="navbar-brand" href="#">dochub</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#">正在翻译</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">分类查找</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav">
+          <?php if(!isset($_SESSION['user'])):?>
+            <li class="nav-item">
+              <a class="nav-link" href="<?=site_url('/user/login')?>">登录</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">注册</a>
+            </li>
+          <?php else:?>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <img style="width: 20px" class="img rounded-circle" src="/views/img/bootstrap.svg" alt=""><?=$_SESSION['user']['user_name']?>
+              </a>
+              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown" >
+                <a class="dropdown-item" href="<?=site_url('user/profile')?>">个人信息</a>
+                <a class="dropdown-item" href="#">收藏</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="<?=site_url('user/logout')?>">注销</a>
+              </div>
+            </li>
+          <?php endif;?>
+        </ul>
+      </div>
+    </nav>
+  </header>

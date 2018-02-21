@@ -1,11 +1,19 @@
 /*global BASE_URL SITE_URL*/
-require(['vue', 'store', 'jquery'], function(Vue, store, $){
+require(['vue', 'jquery'], function(Vue, $){
   new Vue({
     // element to mount to
     el: '#v-dh-profile-card',
     // initial data
     data: {
-      user: store.get('user')
+      user: {}
+    },
+    created: function(){
+      var vue = this;
+      $.get(SITE_URL + '/user/get_user', function(data){
+        if (data.status == true) {
+          vue.user = data.data;
+        }
+      }, 'json')
     },
     // methods
     methods: {
@@ -20,6 +28,7 @@ require(['vue', 'store', 'jquery'], function(Vue, store, $){
       all_docs: null
     },
     created: function(){
+      this.currentRoute = this.currentRoute ? this.currentRoute : '#home';
       this.getDocs();
     },
     methods: {
@@ -43,6 +52,11 @@ require(['vue', 'store', 'jquery'], function(Vue, store, $){
       getDocs: function(){
         var vue = this;
         switch(this.currentRoute){
+          case '#home':
+            $.get(SITE_URL + '/user/get_my_common_docs', function(data){
+              vue.docs = vue.all_docs = data.data
+            })
+            break;
           case '#participation':
             $.get(SITE_URL + '/user/get_my_participation', function(data){
               vue.docs = vue.all_docs = data.data
@@ -54,9 +68,6 @@ require(['vue', 'store', 'jquery'], function(Vue, store, $){
             })
             break;
           default:
-            $.get(SITE_URL + '/user/get_my_common_docs', function(data){
-              vue.docs = vue.all_docs = data.data
-            })
         }
       }
     },

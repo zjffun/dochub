@@ -18,22 +18,24 @@ USE dochub;
 /*-----------------创建表-----------------*/
 #用户表
 CREATE TABLE user (
- user_id mediumint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '用户ID',
+ user_id int UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '用户ID',
  user_email varchar(64) NOT NULL COMMENT '用户EMAIL地址',
- user_pwd varchar(32) NOT NULL COMMENT '用户密码',
+ user_pwd varchar(34) NOT NULL COMMENT '用户密码',
  user_name varchar(32) COMMENT '用户名',
  user_phone char(16)  COMMENT '用户手机号码0086-188xxxxxxxx',
  user_bio varchar(255) COMMENT '用户个人简介',
  user_address varchar(255) COMMENT '用户地址',
  user_regist_time timestamp NOT NULL COMMENT '注册时间，邮箱激活后为激活时间',
  activation_code char(27) NOT NULL COMMENT '激活码',
+ token varchar(255) COMMENT '自动登录令牌',
+ token_end_time int COMMENT '自动登录失效时间',
  PRIMARY KEY (user_id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 
 #文档表
 CREATE TABLE docs (
- doc_id mediumint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '文档ID',
+ doc_id int UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '文档ID',
  doc_name varchar(64) NOT NULL COMMENT '文档名',
  description varchar(1024) COMMENT '文档简介',
  PRIMARY KEY (doc_id)
@@ -41,24 +43,24 @@ CREATE TABLE docs (
 
 #用户参与翻译文档表
 CREATE TABLE participation (
- user_id mediumint UNSIGNED NOT NULL COMMENT '用户ID',
- doc_id mediumint UNSIGNED NOT NULL COMMENT '文档ID',
+ user_id int UNSIGNED NOT NULL COMMENT '用户ID',
+ doc_id int UNSIGNED NOT NULL COMMENT '文档ID',
  page_path varchar(255) NOT NULL COMMENT '页面路径',
  role tinyint NOT NULL COMMENT '角色:0为参与mark，1为翻译者，2为校对者，3为整理者'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 #浏览记录表
 CREATE TABLE browse_record (
- user_id mediumint UNSIGNED NOT NULL COMMENT '用户ID',
- doc_id mediumint UNSIGNED NOT NULL COMMENT '文档ID',
+ user_id int UNSIGNED NOT NULL COMMENT '用户ID',
+ doc_id int UNSIGNED NOT NULL COMMENT '文档ID',
  browse_times int NOT NULL COMMENT '浏览次数',
  last_browse_time timestamp NOT NULL COMMENT '上次浏览时间'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 #收藏表
 CREATE TABLE collection (
- user_id mediumint UNSIGNED NOT NULL COMMENT '用户ID',
- doc_id mediumint UNSIGNED NOT NULL COMMENT '文档ID',
+ user_id int UNSIGNED NOT NULL COMMENT '用户ID',
+ doc_id int UNSIGNED NOT NULL COMMENT '文档ID',
  collect_time timestamp NOT NULL COMMENT '收藏时间'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -66,7 +68,7 @@ CREATE TABLE collection (
 INSERT INTO user 
 (user_id, user_email, user_name, user_pwd, user_regist_time, activation_code) 
 VALUES 
-(1, 'admin@163.com', 'admin',MD5('123456'), now(), '0');
+(1, 'admin@163.com', 'admin', '$1$12345678$a4ge4d5iJ5vwvbFS88TEN0', now(), '0');
 
 INSERT INTO docs 
 (doc_id, doc_name, description) 

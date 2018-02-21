@@ -1,5 +1,5 @@
 /*global SITE_URL*/
-require(['vue', 'store', 'jquery'], function(Vue, store, $){
+require(['vue', 'jquery'], function(Vue, $){
   var email_reg = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   var v_login = new Vue({
     // element to mount to
@@ -14,7 +14,7 @@ require(['vue', 'store', 'jquery'], function(Vue, store, $){
         name: null,
         pwd: null
       },
-      is_checked: 'checked'
+      is_checked: false
     },
     // computed property for form validation state
     computed: {
@@ -61,8 +61,11 @@ require(['vue', 'store', 'jquery'], function(Vue, store, $){
   })
   function login_ajax_sucess(vue, data){
     if (data['status'] === true) {
-      store.set('user', data.data);
-      location.href = document.referrer;
+      if (document.referrer != '') {
+        location.href = document.referrer;
+      }else{
+        location.href = '/';
+      }
     }else {
       switch(data['msg']){
         case 'validation_faild':
