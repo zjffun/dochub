@@ -1,0 +1,9 @@
+<iframe id="doc-iframe" src="/docs/d3" frameborder="0" scrolling="no"></iframe>
+<script>
+  var doc = document.querySelector('#doc-iframe');
+  doc.onload = function(){
+    doc_body = doc.contentDocument.body;
+    doc.width = document.body.scrollWidth;
+    doc.height = doc_body.scrollHeight + 50;
+  }
+</script>

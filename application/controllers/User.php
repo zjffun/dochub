@@ -2,13 +2,15 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class User extends MY_Controller {
-
   public function __construct(){
+    $this->not_check = array(
+      'login', 
+      'do_login', 
+      'do_actice'
+    );
     parent::__construct();
 
     $this->load->library('form_validation');
-
-    $this->load->helper('cookie');
 
     $this->load->model('user_model');
   }

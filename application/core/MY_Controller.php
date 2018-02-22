@@ -1,14 +1,6 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 class MY_Controller extends CI_Controller {
-
-  private $not_check = array(
-    'welcome-index', 
-    'user-login', 
-    'user-do_login', 
-    'user-do_actice'
-  );
-
   public function __construct() {
       parent::__construct();
 
@@ -21,9 +13,13 @@ class MY_Controller extends CI_Controller {
       (time() < $user['token_end_time']) &&
       ($_SESSION['user'] = $user);
       
-      // 1.在not_check里
-      $class_method = $this->router->class . '-' . $this->router->method;
-      if (in_array($class_method, $this->not_check)){
+      // 1.判断not_check
+      // 设置了not_check 且 （当not_check[0]为* ? !method不在not_check中 : method在not_check中）
+      if (isset($this->not_check) && 
+        ($this->not_check[0] === '*' ? 
+          !in_array('!'.$this->router->method, $this->not_check) : 
+          in_array($this->router->method, $this->not_check)
+        )){
         return;
       }
       // 2.已经登录
@@ -57,5 +53,11 @@ class MY_Controller extends CI_Controller {
       $this->load->view('common/header.html', $data);
       $this->load->view($view);
       $this->load->view('common/footer.html');
+  }
+
+  protected function view_dochf($view, $data = array()) {
+      $this->load->view('common/doc_header.html', $data);
+      $this->load->view($view);
+      $this->load->view('common/doc_footer.html');
   }
 }
