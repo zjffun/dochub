@@ -1,0 +1,53 @@
+<div class="jumbotron">
+  <h1 class="display-4">D3/documentation</h1>
+  <p class="lead">将D3/documentation翻译为 中文（简体）</p>
+</div>
+
+<div>
+  <div style="position: sticky;top: 0;left: 0;z-index: 9999;">
+    <div class="card text-white bg-secondary">
+      <div class="card-body">
+        <div class="btn-toolbar" role="toolbar">
+          <div class="mr-5 btn-group">
+            <button onclick="test_gpte.correct_not_trans('select')" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 发布</button>
+            <button onclick="test_gpte.correct_not_trans('select')" class="btn btn-success btn-sm"><i class="fa fa-save"></i> 保存</button>
+            <button onclick="test_gpte.correct_not_trans('select')" class="btn btn-dark btn-sm"><i class="fa fa-eye"></i> 预览</button>
+            <button onclick="test_gpte.correct_not_trans('select')" class="btn btn-danger btn-sm"><i class="fa fa-undo"></i> 放弃</button>
+          </div>
+          <div class="mr-5 btn-group">
+            <button onclick="test_gpte.correct_not_trans('select')" class="btn btn-primary btn-sm">下载html到本地整理</button>
+            <button onclick="test_gpte.correct_not_trans('select')" class="btn btn-primary btn-sm">上传本地整理后html</button>
+          </div>
+          
+          <button type="button" class="mr-2 btn btn-warning btn-sm">开始编辑</button>
+
+          <button type="button" class="mr-2 btn btn-light btn-sm">修正pre标签排版bug</button>
+          <div class="mr-2 input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="">修正不翻译的元素：</span>
+            </div>
+            <div class="input-group-append">
+              <button onclick="test_gpte.correct_not_trans('select')" class="btn btn-success btn-sm">选择元素</button>
+              <button onclick="test_gpte.correct_not_trans('correct')" class="btn btn-danger btn-sm">进行修正</button>
+              <button onclick="test_gpte.correct_not_trans('clear')"  class="btn btn-info btn-sm">清除选择</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-6 border border-danger">
+        <div class="row">
+          <iframe id="gpte-ori" class="w-100" frameborder="0" src="/docs/d3"></iframe>
+        </div>
+      </div>
+      <div class="col-md-6 border border-primary">
+        <div class="row">
+          <iframe id="gpte-trans" class="w-100" frameborder="0" src="/docs/d3"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

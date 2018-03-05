@@ -1,0 +1,21 @@
+{
+  "name": "views",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "google-page-translation-editor": "^1.0.2"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "rollup": "^0.56.4"
+  }
+}

@@ -1,0 +1,40 @@
+<div class="jumbotron">
+  <h1 class="display-4">D3/documentation</h1>
+  <p class="lead">将D3/documentation翻译为 中文（简体）</p>
+</div>
+
+<div>
+  <div style="position: sticky;top: 0;left: 0;z-index: 9999;">
+    <div class="card text-white bg-secondary">
+      <div class="card-body">
+        <div class="btn-toolbar" role="toolbar">
+          <div class="mr-5 btn-group">
+            <button onclick="test_gpte.correct_not_trans('select')" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 发布</button>
+            <button onclick="test_gpte.correct_not_trans('select')" class="btn btn-success btn-sm"><i class="fa fa-save"></i> 保存</button>
+            <button onclick="test_gpte.correct_not_trans('select')" class="btn btn-dark btn-sm"><i class="fa fa-eye"></i> 预览</button>
+            <button onclick="test_gpte.correct_not_trans('select')" class="btn btn-danger btn-sm"><i class="fa fa-undo"></i> 放弃</button>
+          </div>
+          <div class="mr-5 btn-group">
+            <button onclick="test_gpte.correct_not_trans('select')" class="btn btn-primary btn-sm">下载html到本地修订</button>
+            <button onclick="test_gpte.correct_not_trans('select')" class="btn btn-primary btn-sm">上传本地修订后html</button>
+          </div>
+          <button type="button" class="mr-2 btn btn-warning btn-sm">开始编辑</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-6 border border-danger">
+        <div class="row">
+          <iframe id="gpte-ori" class="w-100" frameborder="0" src="/docs/d3"></iframe>
+        </div>
+      </div>
+      <div class="col-md-6 border border-primary">
+        <div class="row">
+          <iframe id="gpte-trans" class="w-100" frameborder="0" src="/docs/d3"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

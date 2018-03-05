@@ -13,7 +13,23 @@ class Doc extends MY_Controller {
     if (!$doc_name) {
       echo "无文档名";die();
     }
-    // var_dump($doc_name);
     $this->view_dochf('doc/show.html');
   }
+
+  public function translate($doc_name = null){
+    if (!$doc_name) {
+      echo "无文档名";die();
+    }
+    $data['js'] = array('doc-translate');
+    $this->view_dochf('doc/translate.html', $data);
+  }
+
+  public function revise($doc_name = null){
+    if (!$doc_name) {
+      echo "无文档名";die();
+    }
+    $data['js'] = array('doc-revise');
+    $this->view_dochf('doc/revise.html', $data);
+  }
+
 }
