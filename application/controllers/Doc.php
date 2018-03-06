@@ -16,6 +16,11 @@ class Doc extends MY_Controller {
     $this->view_dochf('doc/show.html');
   }
 
+  public function new_project(){
+    $data['js'] = array('doc-new_project');
+    $this->viewhf('doc/new_project.html', $data);
+  }
+
   public function translate($doc_name = null){
     if (!$doc_name) {
       echo "无文档名";die();
