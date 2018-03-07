@@ -11,31 +11,33 @@
       <p class="description">
         创建新的文档翻译项目，项目名不能与已有的文档翻译项目重名
       </p>
-    </div>  
-    <div class="pt-3 clearfix">
-      <dl class="form-group">
-        <dt class="input-label">
-          <label>项目名</label>
-        </dt>
-        <dd><input autocapitalize="off" autofocus="autofocus" class="form-control" id="doc-name" maxlength="100" name="doc[name]" size="100" type="text"></dd>
-      </dl>
-      <dl class="form-group">
-        <dt class="input-label">
-          <label>描述<small>（可选）</small></label>
-        </dt>
-        <dd><input autocapitalize="off" autofocus="autofocus" class="form-control" id="doc-desc" maxlength="100" name="doc[name]" size="100" type="text"></dd>
-      </dl>
-      <dl class="form-group w-100 pb-3 border-bottom">
-        <dt class="input-label">
-          <label>标签<small>（可选）</small></label>
-        </dt>
-        <dd>
-          <textarea id="doc-tags" class="form-control"></textarea>
-        </dd>
-      </dl>
-      <button id="submit" type="button" class="btn btn-outline-primary" disabled="disabled">
-        Create repository
-      </button>
     </div>
+    <form id="project" action="">
+      <div class="pt-3 clearfix">
+        <dl class="form-group">
+          <dt class="input-label">
+            <label>项目名</label>
+          </dt>
+          <dd><input autocapitalize="off" autofocus="autofocus" class="form-control" id="doc-name" maxlength="100" name="doc_name" size="100" type="text"></dd>
+        </dl>
+        <dl class="form-group">
+          <dt class="input-label">
+            <label>描述<small>（可选）</small></label>
+          </dt>
+          <dd><input autocapitalize="off" autofocus="autofocus" class="form-control" id="doc-desc" maxlength="100" name="description" size="100" type="text"></dd>
+        </dl>
+        <dl class="form-group w-100 pb-3 border-bottom">
+          <dt class="input-label">
+            <label>标签<small>（可选）</small></label>
+          </dt>
+          <dd>
+            <textarea id="doc-tag" name="tag" class="form-control"></textarea>
+          </dd>
+        </dl>
+        <button id="submit" type="button" class="btn btn-outline-primary" disabled="disabled">
+          Create repository
+        </button>
+      </div>
+    </form>
   </div>
 </div>

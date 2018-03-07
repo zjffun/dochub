@@ -1,4 +1,4 @@
-<iframe id="doc-iframe" src="/docs/d3" frameborder="0" scrolling="no"></iframe>
+<iframe id="doc-iframe" src="<?=base_url('docs/'. $doc['doc_name'])?>" frameborder="0" scrolling="no"></iframe>
 <script>
   var doc = document.querySelector('#doc-iframe');
   doc.onload = function(){

@@ -34,10 +34,12 @@ CREATE TABLE user (
 
 
 #文档表
-CREATE TABLE docs (
+CREATE TABLE doc (
  doc_id int UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '文档ID',
  doc_name varchar(64) NOT NULL COMMENT '文档名',
  description varchar(1024) COMMENT '文档简介',
+ tag varchar(255) COMMENT '标签（用，分割）',
+ user_id int UNSIGNED COMMENT '创建文档的用户的ID',
  PRIMARY KEY (doc_id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -70,7 +72,7 @@ INSERT INTO user
 VALUES 
 (1, 'admin@163.com', 'admin', '$1$12345678$a4ge4d5iJ5vwvbFS88TEN0', now(), '0');
 
-INSERT INTO docs 
+INSERT INTO doc 
 (doc_id, doc_name, description) 
 VALUES 
 (1,"bootstrap","The most popular front-end framework for developing responsive, mobile first projects on the web."),

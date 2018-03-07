@@ -6,8 +6,27 @@ require(['jquery'], function($){
       $('#submit').prop('disabled', true);
     }
   })
+  $('#submit').click(function(){
+    var form_data = $('form#project').serialize();
+    $.ajax({
+      url : SITE_URL+'/doc/do_new_project',
+      type : "post",
+      data : form_data,
+      dataType : "json",
+      success : function(data){
+        if(data.status == true){
+          location.href = SITE_URL + '/doc/show/' + $('#doc-name').val();
+        }else{
+          alert(data.msg);
+        }
+      },
+      error : function(data){
+        alert("服务器发生错误，登录失败");
+      }
+    });
+  })
   require(['tag-editor'], function(){
-    $('#doc-tags').tagEditor({
+    $('#doc-tag').tagEditor({
       initialTags: [],
       delimiter: ', ',
       placeholder: '输入标签 ...'
