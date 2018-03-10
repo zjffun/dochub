@@ -18,7 +18,10 @@ class MY_Model extends CI_Model {
     // insert：TRUE on success, FALSE on failure
     return $this->db->insert($this->model_table, $form_data);
   }
-
+  public function replace($form_data){
+    // insert：TRUE on success, FALSE on failure
+    return $this->db->replace($this->model_table, $form_data);
+  }
   public function select($where, $type = null)
   {
     switch ($type) {

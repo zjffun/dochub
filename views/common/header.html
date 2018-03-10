@@ -4,8 +4,8 @@
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.css">
-  <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/views/node_modules/bootstrap/dist/css/bootstrap.css">
+  <link rel="stylesheet" href="/views/node_modules/font-awesome/css/font-awesome.min.css">
   <?php if(isset($css)): ?>
   <?php   foreach($css as $v): ?>
   <link href="<?=base_url('views/css/'.$v.'.css')?>" rel="stylesheet">
@@ -13,7 +13,7 @@
   <?php endif; ?>
   <title>dochub</title>
   <script>BASE_URL = "<?=base_url()?>";SITE_URL = "<?=site_url()?>"</script>
-  <script src="https://cdn.bootcss.com/require.js/2.3.5/require.js"></script>
+  <script src="/views/node_modules/requirejs/require"></script>
   <script src="/views/js/main.js"></script>
   <script>require(['bootstrap', '<?=isset($js) ? implode(',', $js) : ''?>'])</script>
   <style>

@@ -48,7 +48,8 @@ CREATE TABLE participation (
  user_id int UNSIGNED NOT NULL COMMENT '用户ID',
  doc_id int UNSIGNED NOT NULL COMMENT '文档ID',
  page_path varchar(255) NOT NULL COMMENT '页面路径',
- role tinyint NOT NULL COMMENT '角色:0为参与mark，1为翻译者，2为编辑者，3为整理者'
+ role tinyint NOT NULL COMMENT '角色:0为参与mark，1为整理+翻译者，2为编辑者',
+ PRIMARY KEY (user_id, doc_id, page_path, role)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 #浏览记录表

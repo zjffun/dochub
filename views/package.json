@@ -12,7 +12,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "google-page-translation-editor": "^1.0.2"
+    "bootstrap": "^4.0.0",
+    "font-awesome": "^4.7.0",
+    "google-page-translation-editor": "^1.0.2",
+    "jquery-tageditor": "^1.0.1",
+    "requirejs": "^2.3.5",
+    "vue": "^2.5.13"
   },
   "devDependencies": {
     "gulp": "^3.9.1",

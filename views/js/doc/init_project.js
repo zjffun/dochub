@@ -1,5 +1,6 @@
 require(['jquery'], function($){
-  $('#doc-name').keyup(function(){
+  $('#trans-html').keyup(function(){
+    console.log($(this).val())
     if ($(this).val() != '') {
       $('#submit').prop('disabled', false);
     }else{
@@ -9,7 +10,7 @@ require(['jquery'], function($){
   $('#submit').click(function(){
     var form_data = $('form#project').serialize();
     $.ajax({
-      url : SITE_URL+'/doc/do_new_project',
+      url : SITE_URL+'/doc/do_init_project',
       type : "post",
       data : form_data,
       dataType : "json",
@@ -23,13 +24,6 @@ require(['jquery'], function($){
       error : function(data){
         alert("服务器发生错误，登录失败");
       }
-    });
-  })
-  require(['jquery-tageditor'], function(){
-    $('#doc-tag').tagEditor({
-      initialTags: [],
-      delimiter: ', ',
-      placeholder: '输入标签 ...'
     });
   })
 })

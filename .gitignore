@@ -1,1 +1,3 @@
 /views/node_modules
+/docs/*
+!/docs/d3
