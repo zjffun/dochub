@@ -91,7 +91,7 @@ class Doc extends MY_Controller {
 
   public function do_new_project(){
     // 表单验证
-    $this->form_validation->set_rules('doc_name', '项目名', 'required');
+    $this->form_validation->set_rules('doc_name', '项目名',  'callback_check_doc_name');
     $this->form_validation->set_rules('description', '描述', 'max_length[1024]');
     $this->form_validation->set_rules('tags', '标签', 'max_length[255]');
     $this->output->set_header('Content-Type: application/json; charset=utf-8');
@@ -111,6 +111,8 @@ class Doc extends MY_Controller {
       if (!mkdir($dir_path)) {
         $this->returnResult('创建项目文件夹失败');
       }
+      // 更新docs.json
+      $this->update_docs_json();
       // 参加该翻译项目
       $this->join_project($this->db->insert_id());
       $this->returnResult(array('添加成功'));
@@ -128,5 +130,23 @@ class Doc extends MY_Controller {
       'role' => 0
     );
     $this->participation_model->replace($participation);
+  }
+
+  public function check_doc_name($doc_name){
+    if($this->doc_model->select(array('doc_name' => $doc_name), 'row_array')){
+      $this->form_validation->set_message('check_doc_name', "{field}已经存在");
+      return FALSE;
+    }else{
+      return TRUE;
+    }
+  }
+
+  private function update_docs_json(){
+    $docs = $this->doc_model->all_docs();
+    $json = array();
+    foreach ($docs as $key => $doc) {
+      $json[] = array($doc['doc_name'], $doc['description']);
+    }
+    return file_put_contents(FCPATH . 'docs.min.json', json_encode($json));
   }
 }

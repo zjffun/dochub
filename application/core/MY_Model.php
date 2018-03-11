@@ -32,7 +32,10 @@ class MY_Model extends CI_Model {
         return $this->db->where($where)->get($this->model_table)->result_array();
         break;
     }
-    
+  }
+
+  public function all_docs(){
+    return $this->db->get($this->model_table)->result_array();
   }
 
 }

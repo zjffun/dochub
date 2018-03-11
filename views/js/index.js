@@ -1,9 +1,10 @@
 require(['vue', 'jquery'], function(Vue, $){
-  $.get('/libraries.min.json', function(docs){
+  $.get('/docs.min.json', function(docs){
     var docs_top_9 = docs.slice(0, 8);
     new Vue({
       el: '#dh-search-docs',
       data: {
+        show_url_pref: SITE_URL + '/doc/show/',
         docs: docs_top_9,
         isAllDocs: false,
         search: '',
