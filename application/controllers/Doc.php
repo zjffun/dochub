@@ -12,7 +12,7 @@ class Doc extends MY_Controller {
     $this->load->model('participation_model');
   }
 
-  public function show($doc_name = null){
+  public function show($doc_name = null, $doc_version = null){
     if (!$doc_name) {
       echo "无文档名";die();
     };
@@ -24,10 +24,14 @@ class Doc extends MY_Controller {
       return;
     }
     // 判断文档是否初始化
-    if (!is_file(FCPATH . 'docs/' . $doc_name . '/index.html')){
+    $doc_info_path = FCPATH . 'docs/' . $doc_name . '/info.json';
+    if (!is_file($doc_info_path)){
       $this->viewhf('doc/init_project.html', array('js' => ['doc-init_project'], 'doc_name' => $doc_name));
       return;
     }
+    // 设置版本
+    $doc_info = json_decode(file_get_contents($doc_info_path), true);
+    $doc['version'] = $doc_version ? $doc_version : $doc_info['default_version'];
     // 全部通过展示文档显示文档
     $this->view_dochf('doc/show.html', array('doc' => $doc));
   }
@@ -57,6 +61,7 @@ class Doc extends MY_Controller {
     $doc_name = $this->input->post('doc_name');
     // 表单验证
     $this->form_validation->set_rules('doc_name', '文档名', 'required');
+    $this->form_validation->set_rules('doc_version', '文档版本号', 'required');
     $this->form_validation->set_rules('trans_html', '谷歌网页翻译的HTML源码', 'required');
     if ($this->form_validation->run() == false) {
       $info = array();
@@ -67,19 +72,29 @@ class Doc extends MY_Controller {
     }
 
     $doc = $this->doc_model->select(array('doc_name' => $this->input->post('doc_name'), 'row_array'));
+
     // 判断文档是否存在
     if (!$doc) {
       $msg = array('文档不存在', '<button>创建该文档翻译项目</button>（登陆后才能创建）');
       $this->returnResult('文档不存在');
     }
-    $file_path = FCPATH . 'docs/' . $doc_name . '/index.html';
+    
     // 判断文档是否初始化
-    if (is_file($file_path)){
+    $doc_info_path = FCPATH . 'docs/' . $doc_name . '/info.json';
+    if (is_file($doc_info_path)){
       $this->returnResult('已经初始化了，请刷新查看');
     }
 
-    // 进行初始化
-    if (!file_put_contents($file_path, $this->input->post('trans_html'))) {
+    // 初始化info.json
+    $version = $this->input->post('doc_version');
+    if (!file_put_contents($doc_info_path, json_encode(array('default_version' => $version)))) {
+      $this->returnResult('写入info.json失败');
+    }
+
+    // 初始化首页
+    $dir_path = FCPATH . 'docs/' . $doc_name . '/' . $version;
+    !is_dir($dir_path) && mkdir($dir_path);
+    if (!file_put_contents($dir_path . '/index.html', $this->input->post('trans_html'))) {
       $this->returnResult('写入首页失败');
     }
     
