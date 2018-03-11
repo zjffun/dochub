@@ -6,6 +6,7 @@ require(['vue', 'jquery'], function(Vue, $){
       data: {
         show_url_pref: SITE_URL + '/doc/show/',
         docs: docs_top_9,
+        all_docs: docs,
         isAllDocs: false,
         search: '',
       },

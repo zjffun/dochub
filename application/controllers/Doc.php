@@ -26,7 +26,7 @@ class Doc extends MY_Controller {
     // 判断文档是否初始化
     $doc_info_path = FCPATH . 'docs/' . $doc_name . '/info.json';
     if (!is_file($doc_info_path)){
-      $this->viewhf('doc/init_project.html', array('js' => ['doc-init_project'], 'doc_name' => $doc_name));
+      Header('Location: ' . site_url("doc/init_project/$doc_name"));
       return;
     }
     // 设置版本
@@ -39,6 +39,10 @@ class Doc extends MY_Controller {
   public function new_project(){
     $data['js'] = array('doc-new_project');
     $this->viewhf('doc/new_project.html', $data);
+  }
+
+  public function init_project($doc_name = null){
+    $this->viewhf('doc/init_project.html', array('js' => ['doc-init_project'], 'doc_name' => $doc_name));
   }
 
   public function translate($doc_name = null){
