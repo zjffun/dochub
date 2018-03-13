@@ -1,6 +1,6 @@
 <div class="jumbotron">
-  <h1 class="display-4">初始化《<?=$doc_name?>》</h1>
-  <p class="lead">为《<?=$doc_name?>》建立主页（推荐使用谷歌网页翻译翻译《<?=$doc_name?>》主页得到的HTML代码。）</p>
+  <h1 class="display-4">初始化《<?=$doc['doc_name']?>》</h1>
+  <p class="lead">为《<?=$doc['doc_name']?>》建立主页（推荐使用谷歌网页翻译翻译《<?=$doc['doc_name']?>》主页得到的HTML代码。）</p>
 </div>
 <div class="container">
   <div style="max-width: 800px; margin: 0 auto;">
@@ -8,28 +8,15 @@
       <div class="pt-3 clearfix">
         <dl class="form-group w-100 pb-3 border-bottom">
           <dt class="input-label">
-            <label>版本</label>
-          </dt>
-          <dd>
-            <div class="input-group mb-3">
-              <div class="input-group-prepend">
-                <span class="input-group-text">v</span>
-              </div>
-              <input type="text" name="doc_version" class="form-control" placeholder="eg：4.0.0">
-            </div>
-          </dd>
-        </dl>
-        <dl class="form-group w-100 pb-3 border-bottom">
-          <dt class="input-label">
-            <label>《<?=$doc_name?>》主页HTML源码</label>
+            <label>《<?=$doc['doc_name']?>》主页HTML源码</label>
           </dt>
           <dd>
             <textarea id="trans-html" name="trans_html" class="form-control" rows="20"></textarea>
           </dd>
         </dl>
-        <input id="doc-name" type="hidden" name="doc_name" value="<?=$doc_name?>">
-        <button id="submit" type="button" class="btn btn-outline-primary" disabled="disabled">
-          初始化《<?=$doc_name?>》
+        <input id="doc-name" type="hidden" name="doc_name" value="<?=$doc['doc_name']?>">
+        <button id="submit" type="button" class="btn btn-outline-primary" disabled="disabled" post_url="<?=site_url('doc/do_init_project' . $doc['page_para'])?>">
+          初始化《<?=$doc['doc_name']?>》
         </button>
       </div>
     </form>

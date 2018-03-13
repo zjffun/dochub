@@ -3,6 +3,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Doc extends MY_Controller {
 
   public function __construct(){
+
     $this->not_check = array(
       'show'
     );
@@ -10,30 +11,60 @@ class Doc extends MY_Controller {
     $this->load->library('form_validation');
     $this->load->model('doc_model');
     $this->load->model('participation_model');
+    if (in_array($this->uri->segments[2], array('new_project', 'do_new_project'))) {
+      return;
+    }
+    $this->doc_name = $this->uri->segments[3];
+    $this->doc_info = $this->doc_model->select(array('doc_name' => $this->doc_name), 'row_array');
+    $this->doc_version = isset($this->uri->segments[4]) ? $this->uri->segments[4] : $this->doc_info['default_version'];
+
+    $arr = array_slice($this->uri->segments, 2);
+    if (count($this->uri->segments) < 4) {
+      $arr[] = $this->doc_version;
+    }
+    $this->page_para = '/' . implode('/', $arr);
+    $this->doc_index_path = FCPATH . 'docs' . $this->page_para . '/index.html';
+    // $this->update_docs_json();die();
   }
 
-  public function show($doc_name = null, $doc_version = null){
-    if (!$doc_name) {
-      echo "无文档名";die();
-    };
-    $doc = $this->doc_model->select(array('doc_name' => $doc_name), 'row_array');
+  public function show(){
+    $doc = $this->doc_info;
+    $doc['page_para'] = $this->page_para;
+    // 有缓存直接输出
+    if (is_file($this->doc_index_path)) {
+      $this->view_dochf('doc/show.html', array('doc' => $doc));
+      return;
+    }
+
     // 判断文档是否存在
-    if (!$doc) {
+    if (!$this->doc_info) {
       $msg = array('文档不存在', '<button>创建该文档翻译项目</button>（登陆后才能创建）');
-      $this->viewhf('errors/msg.html', $msg);
+      $this->viewhf('errors/msg.html', array('msg' => $msg));
       return;
     }
+
+    // 判断版本是否存在
+    if (!in_array($this->doc_version, explode(',', $doc['versions']))) {
+      $msg = array('该版本不存在', '<button>创建新版本</button>（登陆后才能创建）');
+      $this->viewhf('errors/msg.html', array('msg' => $msg));
+      return;
+    }
+
     // 判断文档是否初始化
-    $doc_info_path = FCPATH . 'docs/' . $doc_name . '/info.json';
-    if (!is_file($doc_info_path)){
-      Header('Location: ' . site_url("doc/init_project/$doc_name"));
+    $show_traslation = $this->get_show_traslation($doc['doc_id'], $this->page_para);
+    if (!$show_traslation){
+      Header('Location: ' . site_url("doc/init_project{$this->page_para}"));
+      die();
+    }
+
+    // 写入页面
+    !file_put_contents($this->doc_index_path, $show_traslation['page_html']) && $this->returnResult('写入页面失败');
+
+    // 展示页面
+    if (if_file($this->doc_index_path)) {
+      $this->view_dochf('doc/show.html', array('doc' => $doc));
       return;
     }
-    // 设置版本
-    $doc_info = json_decode(file_get_contents($doc_info_path), true);
-    $doc['version'] = $doc_version ? $doc_version : $doc_info['default_version'];
-    // 全部通过展示文档显示文档
-    $this->view_dochf('doc/show.html', array('doc' => $doc));
   }
 
   public function new_project(){
@@ -41,11 +72,13 @@ class Doc extends MY_Controller {
     $this->viewhf('doc/new_project.html', $data);
   }
 
-  public function init_project($doc_name = null){
-    $this->viewhf('doc/init_project.html', array('js' => ['doc-init_project'], 'doc_name' => $doc_name));
+  public function init_project(){
+    $doc = $this->doc_info;
+    $doc['page_para'] = $this->page_para;
+    $this->viewhf('doc/init_project.html', array('js' => ['doc-init_project'], 'doc' => $doc));
   }
 
-  public function translate($doc_name = null){
+  public function translate(){
     if (!$doc_name) {
       echo "无文档名";die();
     }
@@ -53,7 +86,7 @@ class Doc extends MY_Controller {
     $this->view_dochf('doc/translate.html', $data);
   }
 
-  public function revise($doc_name = null){
+  public function revise(){
     if (!$doc_name) {
       echo "无文档名";die();
     }
@@ -62,10 +95,7 @@ class Doc extends MY_Controller {
   }
 
   public function do_init_project(){
-    $doc_name = $this->input->post('doc_name');
     // 表单验证
-    $this->form_validation->set_rules('doc_name', '文档名', 'required');
-    $this->form_validation->set_rules('doc_version', '文档版本号', 'required');
     $this->form_validation->set_rules('trans_html', '谷歌网页翻译的HTML源码', 'required');
     if ($this->form_validation->run() == false) {
       $info = array();
@@ -75,32 +105,24 @@ class Doc extends MY_Controller {
       $this->returnResult('validation_faild', $info);
     }
 
-    $doc = $this->doc_model->select(array('doc_name' => $this->input->post('doc_name'), 'row_array'));
-
     // 判断文档是否存在
-    if (!$doc) {
+    if (!$this->doc_info) {
       $msg = array('文档不存在', '<button>创建该文档翻译项目</button>（登陆后才能创建）');
       $this->returnResult('文档不存在');
     }
-    
-    // 判断文档是否初始化
-    $doc_info_path = FCPATH . 'docs/' . $doc_name . '/info.json';
-    if (is_file($doc_info_path)){
-      $this->returnResult('已经初始化了，请刷新查看');
+    // 判断版本是否存在
+    if (!in_array($this->doc_version, explode(',', $this->doc_info['versions']))) {
+      $msg = array('该版本不存在', '<button>创建新版本</button>（登陆后才能创建）');
+      $this->returnResult('该版本不存在');
     }
 
-    // 初始化info.json
-    $version = $this->input->post('doc_version');
-    if (!file_put_contents($doc_info_path, json_encode(array('default_version' => $version)))) {
-      $this->returnResult('写入info.json失败');
-    }
+    // 判断文档是否初始化
+    $this->get_show_traslation($this->doc_info['doc_id'], $this->page_para) && $this->returnResult('已经初始化了，请刷新查看');
 
     // 初始化首页
-    $dir_path = FCPATH . 'docs/' . $doc_name . '/' . $version;
-    !is_dir($dir_path) && mkdir($dir_path);
-    if (!file_put_contents($dir_path . '/index.html', $this->input->post('trans_html'))) {
-      $this->returnResult('写入首页失败');
-    }
+    $dir_path = FCPATH . 'docs/' . $this->page_para;
+    !is_dir($dir_path) && mkdir($dir_path, 0777, true);
+    !file_put_contents($dir_path . '/index.html', $this->input->post('trans_html')) && $this->returnResult('写入首页失败');
     
     // 参加该翻译项目
     $this->join_project($this->db->insert_id());
@@ -112,8 +134,9 @@ class Doc extends MY_Controller {
     // 表单验证
     $this->form_validation->set_rules('doc_name', '项目名',  'callback_check_doc_name');
     $this->form_validation->set_rules('description', '描述', 'max_length[1024]');
+    $this->form_validation->set_rules('default_version', '默认版本', 'required');
     $this->form_validation->set_rules('tags', '标签', 'max_length[255]');
-    $this->output->set_header('Content-Type: application/json; charset=utf-8');
+    $this->form_validation->set_rules('versions', '版本', 'max_length[255]');
     if ($this->form_validation->run() == false) {
       $info = array();
       foreach ($this->form_validation->error_array() as $key => $value) {
@@ -122,31 +145,28 @@ class Doc extends MY_Controller {
       $this->returnResult('validation_faild', $info);
     }
 
-    // 新建翻译项目
+    // 写入数据库
     $project = $this->input->post();
-    if ($this->doc_model->insert($project)) {
-      $dir_path = FCPATH . 'docs/' . $this->input->post('doc_name');
-      // 创建目录
-      if (!mkdir($dir_path)) {
-        $this->returnResult('创建项目文件夹失败');
-      }
-      // 更新docs.json
-      $this->update_docs_json();
-      // 参加该翻译项目
-      $this->join_project($this->db->insert_id());
-      $this->returnResult(array('添加成功'));
-    }else{
-      $this->returnResult('写入数据库失败');
-    }
-    
+    $project['versions'] = $project['default_version'];
+    !$this->doc_model->insert($project) && $this->returnResult('写入数据库失败');
+
+    // 创建目录
+    $dir_path = FCPATH . 'docs/' . $this->input->post('doc_name') . '/' . $this->input->post('default_version');
+    !mkdir($dir_path, 0777, true) && $this->returnResult('创建项目文件夹失败');
+    // 更新docs.json
+    $this->update_docs_json();
+    // 参加该翻译项目
+    $this->join_project($this->db->insert_id());
+    $this->returnResult(array('添加成功'));
   }
 
   public function join_project($doc_id){
     $participation = array(
       'user_id' => $_SESSION['user']['user_id'],
       'doc_id' => $doc_id,
-      'page_path' => '/',
-      'role' => 0
+      'page_para' => '/',
+      'part_type' => 'mark',
+      'part_time' => time()
     );
     $this->participation_model->replace($participation);
   }
@@ -158,6 +178,13 @@ class Doc extends MY_Controller {
     }else{
       return TRUE;
     }
+  }
+
+  private function get_show_traslation($doc_id, $page_para){
+    return $this->participation_model->get_best(array(
+        'doc_id' => $doc_id,
+        'page_para' => $page_para
+      ));
   }
 
   private function update_docs_json(){

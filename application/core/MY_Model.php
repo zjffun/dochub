@@ -22,8 +22,7 @@ class MY_Model extends CI_Model {
     // insert：TRUE on success, FALSE on failure
     return $this->db->replace($this->model_table, $form_data);
   }
-  public function select($where, $type = null)
-  {
+  public function select($where, $type = null){
     switch ($type) {
       case 'row_array':
         return $this->db->where($where)->get($this->model_table)->row_array();

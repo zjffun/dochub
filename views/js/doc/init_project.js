@@ -8,9 +8,10 @@ require(['jquery'], function($){
     }
   })
   $('#submit').click(function(){
+    var url = $(this).attr('post_url');
     var form_data = $('form#project').serialize();
     $.ajax({
-      url : SITE_URL+'/doc/do_init_project',
+      url : url,
       type : "post",
       data : form_data,
       dataType : "json",
@@ -22,7 +23,7 @@ require(['jquery'], function($){
         }
       },
       error : function(data){
-        alert("服务器发生错误，登录失败");
+        alert("服务器发生错误");
       }
     });
   })

@@ -32,13 +32,14 @@ CREATE TABLE user (
  PRIMARY KEY (user_id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-
 #文档表
 CREATE TABLE doc (
  doc_id int UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '文档ID',
  doc_name varchar(64) NOT NULL COMMENT '文档名',
  description varchar(1024) COMMENT '文档简介',
- tag varchar(255) COMMENT '标签（用，分割）',
+ tag varchar(255) COMMENT '标签(用","隔开)',
+ default_version varchar(64) NOT NULL COMMENT '默认版本',
+ versions varchar(1024) NOT NULL COMMENT '全部版本(用","隔开)',
  user_id int UNSIGNED COMMENT '创建文档的用户的ID',
  PRIMARY KEY (doc_id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -47,9 +48,14 @@ CREATE TABLE doc (
 CREATE TABLE participation (
  user_id int UNSIGNED NOT NULL COMMENT '用户ID',
  doc_id int UNSIGNED NOT NULL COMMENT '文档ID',
- page_path varchar(255) NOT NULL COMMENT '页面路径',
- role tinyint NOT NULL COMMENT '角色:0为参与mark，1为整理+翻译者，2为编辑者',
- PRIMARY KEY (user_id, doc_id, page_path, role)
+ page_para varchar(255) NOT NULL COMMENT '页面参数：/版本/...("/"为mark)',
+ page_html text COMMENT '页面html',
+ part_type enum('mark', 'c&t', 'proofread') NOT NULL COMMENT '角色(c&t: clear up and translate)',
+ part_time int NOT NULL COMMENT '参与时间',
+ vote_up smallint UNSIGNED NOT NULL DEFAULT 0 COMMENT '赞同',
+ vote_down smallint UNSIGNED NOT NULL DEFAULT 0 COMMENT '否决',
+ is_default enum('true','false') NOT NULL DEFAULT 'false'  COMMENT '是否为默认显示',
+ PRIMARY KEY (doc_id, page_para, part_time)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 #浏览记录表
@@ -74,17 +80,17 @@ VALUES
 (1, 'admin@163.com', 'admin', '$1$12345678$a4ge4d5iJ5vwvbFS88TEN0', now(), '0');
 
 INSERT INTO doc 
-(doc_id, doc_name, description) 
+(doc_id, doc_name, default_version, versions, description) 
 VALUES 
-(1,"bootstrap","The most popular front-end framework for developing responsive, mobile first projects on the web."),
-(2,"react","React is a JavaScript library for building user interfaces."),
-(3,"react-dom","The entry point of the DOM-related rendering paths. It is intended to be paired with the isomorphic React, which is shipped as react to npm."),
-(4,"vue","Simple, Fast & Composable MVVM for building interactive interfaces"),
-(5,"d3","A JavaScript visualization library for HTML and SVG."),
-(6,"angular.js","AngularJS is an MVC framework for building web applications. The core features include HTML enhanced with custom component and data-binding capabilities, dependency injection and strong focus on simplicity, testability, maintainability and boiler-plate reduction."),
-(7,"angular-touch","AngularJS module for touch events and helpers for touch-enabled devices"),
-(8,"angular-sanitize","AngularJS module for sanitizing HTML"),
-(9,"angular-resource","AngularJS module for interacting with RESTful server-side data sources");
+(1,"bootstrap", "v4.0", "v4.0", "Bootstrap是一个用HTML，CSS和JS开发的开源工具包。使用我们的Sass变量和mixins，响应式网格系统，大量预构建组件以及基于jQuery构建的强大插件，快速构建原型或构建整个应用程序。");
+-- (2,"react","React is a JavaScript library for building user interfaces."),
+-- (3,"react-dom","The entry point of the DOM-related rendering paths. It is intended to be paired with the isomorphic React, which is shipped as react to npm."),
+-- (4,"vue","Simple, Fast & Composable MVVM for building interactive interfaces"),
+-- (5,"d3","A JavaScript visualization library for HTML and SVG."),
+-- (6,"angular.js","AngularJS is an MVC framework for building web applications. The core features include HTML enhanced with custom component and data-binding capabilities, dependency injection and strong focus on simplicity, testability, maintainability and boiler-plate reduction."),
+-- (7,"angular-touch","AngularJS module for touch events and helpers for touch-enabled devices"),
+-- (8,"angular-sanitize","AngularJS module for sanitizing HTML"),
+-- (9,"angular-resource","AngularJS module for interacting with RESTful server-side data sources")
 
 INSERT INTO browse_record 
 (user_id, doc_id, browse_times, last_browse_time) 
@@ -95,18 +101,17 @@ VALUES
 (1, 4, 3, now());
 
 INSERT INTO participation 
-(user_id, doc_id, page_path, role) 
+(user_id, doc_id, page_para, part_type, part_time) 
 VALUES 
-(1, 5, '/index.html', 1),
-(1, 6, '/', 0),
-(1, 6, '/haha.html', 1),
-(1, 6, '/haha.html', 2),
-(1, 6, '/haha.html', 3),
-(1, 7, '/', 0),
-(1, 8, '/', 0);
+(1, 5, '/index.html', 'c&t', UNIX_TIMESTAMP()),
+(1, 6, '/', 'mark', UNIX_TIMESTAMP()),
+(1, 6, '/haha.html', 'c&t', UNIX_TIMESTAMP()),
+(1, 6, '/haha.html', 'proofread', UNIX_TIMESTAMP()+1),
+(1, 7, '/', 'mark', UNIX_TIMESTAMP()),
+(1, 8, '/', 'mark', UNIX_TIMESTAMP());
 
 INSERT INTO collection 
-(user_id, doc_id, collect_time) 
+(user_id, doc_id, collect_time)
 VALUES 
 (1, 1, now()),
 (1, 2, now()),

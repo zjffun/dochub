@@ -23,7 +23,7 @@
   </footer>
   <script>
     function clearup_and_trans_doc(){
-      location.href = '<?=site_url('doc/translate/d3/documentation')?>'
+      location.href = '<?=site_url("doc/translate/{$doc['doc_name']}/documentation")?>'
     }
     function revise_doc(){
       location.href = '<?=site_url('doc/revise/d3/documentation')?>'

@@ -15,13 +15,15 @@ require(['jquery'], function($){
       dataType : "json",
       success : function(data){
         if(data.status == true){
-          location.href = SITE_URL + '/doc/show/' + $('#doc-name').val();
+          location.href = SITE_URL + '/doc/show/' +
+            $('#doc-name').val() + '/' +
+            $('#default-version').val();
         }else{
           alert(data.msg);
         }
       },
       error : function(data){
-        alert("服务器发生错误，登录失败");
+        alert("服务器发生错误");
       }
     });
   })

@@ -1,3 +1,5 @@
 /views/node_modules
+/docs.min.json
+
+
 /docs/*
-!/docs/d3
