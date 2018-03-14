@@ -7,127 +7,69 @@ class Doc extends MY_Controller {
     $this->not_check = array(
       'show'
     );
+    $this->not_init_doc_info = array(
+      'new_project', 
+      'do_new_project'
+    );
     parent::__construct();
     $this->load->library('form_validation');
     $this->load->model('doc_model');
     $this->load->model('participation_model');
-    if (in_array($this->uri->segments[2], array('new_project', 'do_new_project'))) {
-      return;
-    }
-    $this->doc_name = $this->uri->segments[3];
-    $this->doc_info = $this->doc_model->select(array('doc_name' => $this->doc_name), 'row_array');
-    $this->doc_version = isset($this->uri->segments[4]) ? $this->uri->segments[4] : $this->doc_info['default_version'];
-
-    $arr = array_slice($this->uri->segments, 2);
-    if (count($this->uri->segments) < 4) {
-      $arr[] = $this->doc_version;
-    }
-    $this->page_para = '/' . implode('/', $arr);
-    $this->doc_index_path = FCPATH . 'docs' . $this->page_para . '/index.html';
+    
+    $this->init_info();
     // $this->update_docs_json();die();
   }
 
   public function show(){
-    $doc = $this->doc_info;
-    $doc['page_para'] = $this->page_para;
     // 有缓存直接输出
-    if (is_file($this->doc_index_path)) {
-      $this->view_dochf('doc/show.html', array('doc' => $doc));
+    if (is_file($this->info['page_path'])) {
+      $this->view_dochf('doc/show.html', array('info' => $this->info));
       return;
     }
 
     // 判断文档是否存在
-    if (!$this->doc_info) {
+    if (!$this->info['doc']) {
       $msg = array('文档不存在', '<button>创建该文档翻译项目</button>（登陆后才能创建）');
       $this->viewhf('errors/msg.html', array('msg' => $msg));
       return;
     }
 
     // 判断版本是否存在
-    if (!in_array($this->doc_version, explode(',', $doc['versions']))) {
+    if (!in_array($this->info['page_version'], explode(',', $this->info['doc']['versions']))) {
       $msg = array('该版本不存在', '<button>创建新版本</button>（登陆后才能创建）');
       $this->viewhf('errors/msg.html', array('msg' => $msg));
       return;
     }
 
     // 判断文档是否初始化
-    $show_traslation = $this->get_show_traslation($doc['doc_id'], $this->page_para);
+    $show_traslation = $this->get_show_traslation($this->info['doc']['doc_id'], $this->info['page_para']);
     if (!$show_traslation){
-      Header('Location: ' . site_url("doc/init_project{$this->page_para}"));
+      Header('Location: ' . site_url("doc/init_project{$this->info['page_para']}"));
       die();
     }
 
     // 写入页面
-    !file_put_contents($this->doc_index_path, $show_traslation['page_html']) && $this->returnResult('写入页面失败');
+    !mkdir($this->info['page_dir_path'], 0777, true) && $this->returnResult('创建项目文件夹失败');
+    !file_put_contents($this->info['page_path'], $show_traslation['page_html']) && $this->returnResult('写入页面失败');
 
     // 展示页面
-    if (if_file($this->doc_index_path)) {
-      $this->view_dochf('doc/show.html', array('doc' => $doc));
-      return;
-    }
+    $this->view_dochf('doc/show.html', array('info' => $this->info));
   }
 
   public function new_project(){
-    $data['js'] = array('doc-new_project');
-    $this->viewhf('doc/new_project.html', $data);
+    $this->viewhf('doc/new_project.html', array('js' => ['doc-new_project']));
   }
 
   public function init_project(){
-    $doc = $this->doc_info;
-    $doc['page_para'] = $this->page_para;
-    $this->viewhf('doc/init_project.html', array('js' => ['doc-init_project'], 'doc' => $doc));
+    $this->viewhf('doc/init_project.html', array('js' => ['doc-init_project'], 'info' => $this->info));
   }
 
   public function translate(){
-    if (!$doc_name) {
-      echo "无文档名";die();
-    }
-    $data['js'] = array('doc-translate');
-    $this->view_dochf('doc/translate.html', $data);
+    $this->view_dochf('doc/translate.html', array('js' => ['doc-translate'], 'info' => $this->info));
   }
 
   public function revise(){
-    if (!$doc_name) {
-      echo "无文档名";die();
-    }
-    $data['js'] = array('doc-revise');
-    $this->view_dochf('doc/revise.html', $data);
-  }
-
-  public function do_init_project(){
-    // 表单验证
-    $this->form_validation->set_rules('trans_html', '谷歌网页翻译的HTML源码', 'required');
-    if ($this->form_validation->run() == false) {
-      $info = array();
-      foreach ($this->form_validation->error_array() as $key => $value) {
-        $info[] = array($key,$value);
-      }
-      $this->returnResult('validation_faild', $info);
-    }
-
-    // 判断文档是否存在
-    if (!$this->doc_info) {
-      $msg = array('文档不存在', '<button>创建该文档翻译项目</button>（登陆后才能创建）');
-      $this->returnResult('文档不存在');
-    }
-    // 判断版本是否存在
-    if (!in_array($this->doc_version, explode(',', $this->doc_info['versions']))) {
-      $msg = array('该版本不存在', '<button>创建新版本</button>（登陆后才能创建）');
-      $this->returnResult('该版本不存在');
-    }
-
-    // 判断文档是否初始化
-    $this->get_show_traslation($this->doc_info['doc_id'], $this->page_para) && $this->returnResult('已经初始化了，请刷新查看');
-
-    // 初始化首页
-    $dir_path = FCPATH . 'docs/' . $this->page_para;
-    !is_dir($dir_path) && mkdir($dir_path, 0777, true);
-    !file_put_contents($dir_path . '/index.html', $this->input->post('trans_html')) && $this->returnResult('写入首页失败');
-    
-    // 参加该翻译项目
-    $this->join_project($this->db->insert_id());
-
-    $this->returnResult(array('初始化成功'));
+    $this->view_dochf('doc/revise.html', ['js' => 'doc-revise']);
   }
 
   public function do_new_project(){
@@ -151,13 +93,57 @@ class Doc extends MY_Controller {
     !$this->doc_model->insert($project) && $this->returnResult('写入数据库失败');
 
     // 创建目录
-    $dir_path = FCPATH . 'docs/' . $this->input->post('doc_name') . '/' . $this->input->post('default_version');
+    $dir_path = FCPATH . "docs/{$this->input->post('doc_name')}/{$this->input->post('default_version')}";
     !mkdir($dir_path, 0777, true) && $this->returnResult('创建项目文件夹失败');
     // 更新docs.json
     $this->update_docs_json();
     // 参加该翻译项目
     $this->join_project($this->db->insert_id());
     $this->returnResult(array('添加成功'));
+  }
+
+  public function do_init_project(){
+    // 表单验证
+    $this->form_validation->set_rules('trans_html', '谷歌网页翻译的HTML源码', 'required');
+    if ($this->form_validation->run() == false) {
+      $info = array();
+      foreach ($this->form_validation->error_array() as $key => $value) {
+        $info[] = array($key,$value);
+      }
+      $this->returnResult('validation_faild', $info);
+    }
+
+    // 判断文档是否存在
+    if (!$this->info['doc']) {
+      $msg = array('文档不存在', '<button>创建该文档翻译项目</button>（登陆后才能创建）');
+      $this->returnResult('文档不存在');
+    }
+
+    // 判断版本是否存在
+    if (!in_array($this->info['page_version'], explode(',', $this->info['doc']['versions']))) {
+      $msg = array('该版本不存在', '<button>创建新版本</button>（登陆后才能创建）');
+      $this->returnResult('该版本不存在');
+    }
+
+    // 判断文档是否初始化
+    $this->get_show_traslation($this->info['doc']['doc_id'], $this->info['page_para']) && $this->returnResult('已经初始化了，请刷新查看');
+
+    // 写入数据库
+    !$this->participation_model->insert(array(
+      'user_id' => $_SESSION['user']['user_id'],
+      'doc_id' => $this->info['doc']['doc_id'],
+      'page_html' => $this->input->post('trans_html'),
+      'page_para' => $this->info['page_para'],
+      'part_type' => 'c&t',
+      'part_time' => time()
+    )) && $this->returnResult('写入数据库失败');
+
+    // 初始化首页
+    $dir_path = FCPATH . 'docs/' . $this->info['page_para'];
+    !is_dir($dir_path) && mkdir($dir_path, 0777, true);
+    !file_put_contents($dir_path . '/index.html', $this->input->post('trans_html')) && $this->returnResult('写入页面失败');
+    
+    $this->returnResult(array('初始化成功'));
   }
 
   public function join_project($doc_id){

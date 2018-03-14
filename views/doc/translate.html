@@ -1,6 +1,9 @@
+<script>
+  PAGE_PARA = '<?=$info['page_para']?>';
+</script>
 <div class="jumbotron">
-  <h1 class="display-4">D3/documentation</h1>
-  <p class="lead">将D3/documentation翻译为 中文（简体）</p>
+  <h1 class="display-4"><?=$info['doc']['doc_name']?></h1>
+  <p class="lead">将<?=$info['page_para']?>翻译为 中文（简体）</p>
 </div>
 
 <div>
@@ -11,7 +14,7 @@
           <div class="mr-5 btn-group">
             <button onclick="test_gpte.correct_not_trans('select')" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 发布</button>
             <button onclick="test_gpte.correct_not_trans('select')" class="btn btn-success btn-sm"><i class="fa fa-save"></i> 保存</button>
-            <button onclick="test_gpte.correct_not_trans('select')" class="btn btn-dark btn-sm"><i class="fa fa-eye"></i> 预览</button>
+            <button id="dh-preview" class="btn btn-dark btn-sm"><i class="fa fa-eye"></i> 预览</button>
             <button onclick="test_gpte.correct_not_trans('select')" class="btn btn-danger btn-sm"><i class="fa fa-undo"></i> 放弃</button>
           </div>
           <div class="mr-5 btn-group">
@@ -40,12 +43,12 @@
     <div class="row">
       <div class="col-md-6 border border-danger">
         <div class="row">
-          <iframe id="gpte-ori" class="w-100" frameborder="0" src="/docs/d3"></iframe>
+          <iframe id="gpte-ori" class="w-100" frameborder="0" src="<?=base_url("docs{$info['page_para']}")?>"></iframe>
         </div>
       </div>
       <div class="col-md-6 border border-primary">
         <div class="row">
-          <iframe id="gpte-trans" class="w-100" frameborder="0" src="/docs/d3"></iframe>
+          <iframe id="gpte-trans" class="w-100" frameborder="0" src="<?=base_url("docs{$info['page_para']}")?>"></iframe>
         </div>
       </div>
     </div>

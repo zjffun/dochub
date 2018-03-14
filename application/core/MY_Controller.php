@@ -60,4 +60,28 @@ class MY_Controller extends CI_Controller {
       $this->load->view($view);
       $this->load->view('common/doc_footer.html');
   }
+
+  protected function init_info(){
+    $segments = $this->uri->segments;
+    if (isset($this->not_init_doc_info) && in_array($segments[2], $this->not_init_doc_info)) {
+      return;
+    }
+    $doc = $this->doc_model->select(array('doc_name' => $segments[3]), 'row_array');
+    $page_version = isset($segments[4]) ? $segments[4] : $doc['default_version'];
+    $page_para_arr = array_slice($segments, 2);
+    if (count($segments) < 4) {
+      $page_para_arr[] = $page_version;
+    }
+    $page_para = '/' . implode('/', $page_para_arr);
+    $page_path = FCPATH . "docs{$page_para}/index.html";
+    $page_dir_path = FCPATH . "docs{$page_para}";
+    $this->info = array(
+      'doc' => $doc,
+      'page_version' => $page_version,
+      'page_para' => $page_para,
+      'page_path' => $page_path,
+      'page_dir_path' => $page_dir_path
+    );
+  }
+
 }

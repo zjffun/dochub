@@ -1,28 +1,26 @@
 'use strict';
 
-function gpte_init(){
-  var $ori = $('#gpte-ori');
-  var $trans = $('#gpte-trans');
-  var ori_height = 0;
-  var trans_height = 0;
-  setInterval(function(){
-    if (Math.abs(ori_height - $ori.contents().height()) > 20) {
-      ori_height = $ori.contents().height() + 20;
-      $ori.height(ori_height);
-    }
-    if (Math.abs(trans_height - $trans.contents().height()) > 20) {
-      trans_height = $trans.contents().height()+20;
-      $trans.height(trans_height);
-    }
-  }, 500);
-  test_gpte = gpte.init({
-    $ori: $('#gpte-ori'), 
-    $trans: $('#gpte-trans')
-  });
-}
-
 require(['jquery', 'gpte'], function($, gpte){
   $(function(){
-    gpte_init();
+    // gpte_init();
+    $('#dh-preview').click(function(){
+      var form_data = {trans_html: '123'};
+      $.ajax({
+        url : SITE_URL + '/page/preview' + PAGE_PARA,
+        type : "post",
+        data : form_data,
+        dataType : "json",
+        success : function(data){
+          if(data.status == true){
+            window.open(BASE_URL + data.data[0]);
+          }else{
+            alert(data.msg);
+          }
+        },
+        error : function(data){
+          alert("服务器发生错误");
+        }
+      });
+    });
   });
 });

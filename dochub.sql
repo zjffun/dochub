@@ -50,11 +50,13 @@ CREATE TABLE participation (
  doc_id int UNSIGNED NOT NULL COMMENT '文档ID',
  page_para varchar(255) NOT NULL COMMENT '页面参数：/版本/...("/"为mark)',
  page_html text COMMENT '页面html',
- part_type enum('mark', 'c&t', 'proofread') NOT NULL COMMENT '角色(c&t: clear up and translate)',
+ part_type enum('mark', 'save', 'c&t', 'proofread') NOT NULL COMMENT '类型(c&t: clear up and translate)',
  part_time int NOT NULL COMMENT '参与时间',
  vote_up smallint UNSIGNED NOT NULL DEFAULT 0 COMMENT '赞同',
  vote_down smallint UNSIGNED NOT NULL DEFAULT 0 COMMENT '否决',
  is_default enum('true','false') NOT NULL DEFAULT 'false'  COMMENT '是否为默认显示',
+ is_publish enum('true','false') NOT NULL DEFAULT 'false'  COMMENT '是否为发布（保存为未发布）',
+ is_delete enum('true','false') NOT NULL DEFAULT 'false'  COMMENT '是否为删除',
  PRIMARY KEY (doc_id, page_para, part_time)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
