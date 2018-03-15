@@ -1,4 +1,4 @@
-<iframe id="doc-iframe" src="<?=base_url("docs/{$page_path}")?>" frameborder="0" scrolling="no"></iframe>
+<iframe id="doc-iframe" src="<?=base_url('docs'. $info['page_para'] . '/index-not-trans.html')?>" frameborder="0" scrolling="no"></iframe>
 <script>
   var doc = document.querySelector('#doc-iframe');
   doc.onload = function(){

@@ -1,5 +1,26 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
+class Doc_Controller extends MY_Controller {
+  public function __construct() {
+      parent::__construct();
+      $this->load->model('doc_model');
+  }
+
+  protected function view_dochf($view, $data = array()) {
+      $this->load->view('common/doc_header.html', $data);
+      $this->load->view($view);
+      $this->load->view('common/doc_footer.html');
+  }
+
+
+  protected function get_show_page($ver_id, $page_para){
+    return $this->page_model->get_best([
+      'ver_id' => $ver_id,
+      'page_para' => $page_para
+    ]);
+  }
+}
+
 class MY_Controller extends CI_Controller {
   public function __construct() {
       parent::__construct();
@@ -37,6 +58,12 @@ class MY_Controller extends CI_Controller {
     die();
   }
 
+  protected function msgpage(...$para){
+    $string = $this->load->view('common/msg.html', ['msg' => $para], TRUE);
+    echo $string;
+    die();
+  }
+
   protected function generateResult($para){
     // $para[0]是数组返回成功结果
     if (is_array($para[0])) {
@@ -60,28 +87,4 @@ class MY_Controller extends CI_Controller {
       $this->load->view($view);
       $this->load->view('common/doc_footer.html');
   }
-
-  protected function init_info(){
-    $segments = $this->uri->segments;
-    if (isset($this->not_init_doc_info) && in_array($segments[2], $this->not_init_doc_info)) {
-      return;
-    }
-    $doc = $this->doc_model->select(array('doc_name' => $segments[3]), 'row_array');
-    $page_version = isset($segments[4]) ? $segments[4] : $doc['default_version'];
-    $page_para_arr = array_slice($segments, 2);
-    if (count($segments) < 4) {
-      $page_para_arr[] = $page_version;
-    }
-    $page_para = '/' . implode('/', $page_para_arr);
-    $page_path = FCPATH . "docs{$page_para}/index.html";
-    $page_dir_path = FCPATH . "docs{$page_para}";
-    $this->info = array(
-      'doc' => $doc,
-      'page_version' => $page_version,
-      'page_para' => $page_para,
-      'page_path' => $page_path,
-      'page_dir_path' => $page_dir_path
-    );
-  }
-
 }

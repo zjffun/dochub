@@ -1,5 +1,5 @@
 require(['jquery'], function($){
-  $('#trans-html').keyup(function(){
+  $('#ori-url').keyup(function(){
     console.log($(this).val())
     if ($(this).val() != '') {
       $('#submit').prop('disabled', false);

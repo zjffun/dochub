@@ -1,21 +1,29 @@
 <div class="jumbotron">
   <h1 class="display-4">初始化《<?=$info['doc']['doc_name']?>》</h1>
-  <p class="lead">为《<?=$info['doc']['doc_name']?>》建立主页（推荐使用谷歌网页翻译翻译《<?=$info['doc']['doc_name']?>》主页得到的HTML代码。）</p>
+  <p class="lead">初始化《<?=$info['doc']['doc_name']?>》的原始页面（未翻译的HTML源码）</p>
 </div>
 <div class="container">
   <div style="max-width: 800px; margin: 0 auto;">
     <form id="project" action="">
       <div class="pt-3 clearfix">
-        <dl class="form-group w-100 pb-3 border-bottom">
+        <dl class="form-group w-100 pb-3">
           <dt class="input-label">
-            <label>《<?=$info['doc']['doc_name']?>》主页HTML源码</label>
+            <label>《<?=$info['doc']['doc_name']?>》原始页面url路径</label>
           </dt>
           <dd>
-            <textarea id="trans-html" name="trans_html" class="form-control" rows="20"></textarea>
+            <input id="ori-url" name="ori_url" class="form-control" rows="20"></input>
+          </dd>
+        </dl>
+        <dl class="form-group w-100 pb-3 border-bottom">
+          <dt class="input-label">
+            <label>《<?=$info['doc']['doc_name']?>》原始页面HTML源码</label>
+          </dt>
+          <dd>
+            <textarea id="ori-html" name="ori_html" class="form-control" rows="20"></textarea>
           </dd>
         </dl>
         <input id="doc-name" type="hidden" name="doc_name" value="<?=$info['doc']['doc_name']?>">
-        <button id="submit" type="button" class="btn btn-outline-primary" disabled="disabled" post_url="<?=site_url('doc/do_init_project' . $info['page_para'])?>">
+        <button id="submit" type="button" class="btn btn-outline-primary" disabled="disabled" post_url="<?=site_url('page/init_page' . $info['page_para'])?>">
           初始化《<?=$info['doc']['doc_name']?>》
         </button>
       </div>

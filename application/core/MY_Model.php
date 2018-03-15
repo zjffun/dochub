@@ -3,6 +3,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class MY_Model extends CI_Model {
   const TBL_USER = 'user';
   const TBL_DOC = 'doc';
+  const TBL_VER = 'ver';
+  const TBL_PAGE = 'page';
   const TBL_BROWSE_RECORD = 'browse_record';
   const TBL_PARTICIPATION = 'participation';
   const TBL_COLLECTION = 'collection';
@@ -23,12 +25,13 @@ class MY_Model extends CI_Model {
     return $this->db->replace($this->model_table, $form_data);
   }
   public function select($where, $type = null){
+    $result = $this->db->where($where)->get($this->model_table);
     switch ($type) {
       case 'row_array':
-        return $this->db->where($where)->get($this->model_table)->row_array();
+        return $result->row_array();
         break;
       default:
-        return $this->db->where($where)->get($this->model_table)->result_array();
+        return $result->result_array();
         break;
     }
   }
