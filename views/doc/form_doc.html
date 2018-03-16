@@ -1,17 +1,3 @@
-<link rel="stylesheet" href="/views/node_modules/jquery-tageditor/jquery.tag-editor.css">
-<style>
-  .tag-editor{
-    height: 70px;
-  }
-</style>
-<div class="container">
-  <div style="max-width: 700px; margin: 0 auto;">
-    <div class="border-bottom mt-3">
-      <h2 class="heading">新建文档翻译项目</h2>
-      <p class="description">
-        创建新的文档翻译项目，项目名不能与已有的文档翻译项目重名
-      </p>
-    </div>
     <form id="project" action="">
       <div class="pt-3 clearfix">
         <dl class="form-group">
@@ -19,12 +5,6 @@
             <label>项目名</label>
           </dt>
           <dd><input autocapitalize="off" autofocus="autofocus" class="form-control" id="doc-name" maxlength="100" name="doc_name" size="100" type="text"></dd>
-        </dl>
-        <dl class="form-group">
-          <dt class="input-label">
-            <label>默认版本</label>
-          </dt>
-          <dd><input placeholder="eg: v3.0.0" autocapitalize="off" autofocus="autofocus" class="form-control" id="default-version" maxlength="100" name="default_version" size="100" type="text"></dd>
         </dl>
         <dl class="form-group">
           <dt class="input-label">
@@ -40,10 +20,6 @@
             <textarea id="doc-tag" name="tag" class="form-control"></textarea>
           </dd>
         </dl>
-        <button id="submit" type="button" class="btn btn-outline-primary" disabled="disabled">
-          创建项目
-        </button>
       </div>
     </form>
-  </div>
-</div>
+

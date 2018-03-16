@@ -1,6 +1,6 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-class Page extends MY_Controller {
+class Page extends Doc_Controller {
   public function __construct(){
     parent::__construct();
     $this->load->library('form_validation');
@@ -8,86 +8,54 @@ class Page extends MY_Controller {
     $this->load->model('participation_model');
     $this->load->model('page_model');
 
-    $this->init_info();
+    $segments = $this->uri->segments;
+    // 文档检查
+    $doc = $this->doc_model->select_join_ver(array('doc_name' => $segments[3]), 'row_array');
+    !$doc && msg_err(['文档不存在', site_url("doc/init_doc")]);
+
+    // 版本检查
+    $ver = isset($segments[4]) ? 
+      isset($doc['vers'][$segments[4]]) ? $segments[4] : false : 
+      $doc['default_ver'] != '' ? $doc['default_ver']['ver_name'] : false;
+    !$ver && msg_err(['版本不存在', site_url("ver/init_ver/{$doc['doc_name']}")]);
+
+    $doc['this_ver'] = $doc['vers'][$ver];
+    $this->doc = $doc;
   }
 
   public function init_page(){
+    $this->view_inithf([
+      'doc/form_page.html',
+      // 'doc/form_participation.html', 
+    ], array(
+      'doc' => $this->doc,
+      'data' => ["《{$this->doc['doc_name']}》文档的{$this->doc['this_ver']['ver_name']}版本的页面", 
+        '新的页面', 
+        site_url("page/do_init_page/{$this->doc['doc_name']}/{$this->doc['this_ver']['ver_name']}")
+      ]));
+  }
+
+  public function do_init_page(){
+    $this->do_new_page();
+  }
+  public function do_new_page(){
     // 表单验证
-    $this->form_validation->set_rules('ori_html', '原始HTML代码', 'required');
+    $this->form_validation->set_rules('page_para', '页面参数', 'required');
+    $this->form_validation->set_rules('ori_url', '页面原网页url', 'required');
     if ($this->form_validation->run() == false) {
       $info = array();
       foreach ($this->form_validation->error_array() as $key => $value) {
         $info[] = array($key,$value);
       }
-      $this->returnResult('validation_faild', $info);
+      msg_err('validation_faild', $info);
     }
-    $ori_html = $this->input->post('ori_html');
-    // 判断文档是否存在
-    if (!$this->info['doc']) {
-      $this->returnResult('文档不存在');
-    }
-
-    // 判断版本是否存在
-    if (!in_array($this->info['page_version'], explode(',', $this->info['doc']['versions']))) {
-      $this->returnResult('该版本不存在');
-    }
-
-    // 判断是否初始化
-    $this->get_show_page($this->info['doc']['doc_id'], $this->info['page_para']) && $this->returnResult('已经初始化');
 
     // 写入数据库
-    !$this->page_model->insert(array(
-      'user_id' => $_SESSION['user']['user_id'],
-      'doc_id' => $this->info['doc']['doc_id'],
-      'page_para' => $this->info['page_para'],
-      'ori_url' => $this->input->post('ori_url'),
-    )) && $this->returnResult('写入数据库失败');
-    !$this->participation_model->insert(array(
-      'user_id' => $_SESSION['user']['user_id'],
-      'page_id' => $this->db->insert_id(),
-      'html' => $ori_html,
-      'part_type' => 'original',
-      'part_time' => time()
-    )) && $this->returnResult('写入数据库失败');
+    $post_data = $this->input->post($this->page_model->fields);
+    $post_data['ver_id'] = $this->doc['this_ver']['ver_id'];
+    !$this->page_model->insert($post_data) && meg_err('写入数据库失败');
     
-    // 初始化首页
-    $dir_path = FCPATH . 'docs/' . $this->info['page_para'];
-    !is_dir($dir_path) && mkdir($dir_path, 0777, true);
-    !file_put_contents($dir_path . '/index-not-trans.html', $ori_html) && $this->returnResult('写入页面失败');
-    
-    $this->returnResult(array('初始化成功'));
+    msg_succ(site_url("doc/show/{$this->doc['doc_name']}/{$this->doc['this_ver']['ver_name']}{$post_data['page_para']}"));
   }
-  public function save(){
-    !$this->participation_model->replace(array(
-      'user_id' => $_SESSION['user']['user_id'],
-      'doc_id' => $this->info['doc']['doc_id'],
-      'page_html' => $this->input->post('trans_html'),
-      'page_para' => $this->info['page_para'],
-      'part_type' => 'save',
-      'part_time' => time()
-    )) && $this->returnResult('写入数据库失败');
-    $this->returnResult(array('保存成功'));
-  }
-
-  public function publish(){
-    !$this->participation_model->insert(array(
-      'user_id' => $_SESSION['user']['user_id'],
-      'doc_id' => $this->info['doc']['doc_id'],
-      'page_html' => $this->input->post('trans_html'),
-      'page_para' => $this->info['page_para'],
-      'part_type' => 'c&t',
-      'part_time' => time()
-    )) && $this->returnResult('写入数据库失败');
-    $this->returnResult(array('发布成功'));
-  }
-
-  public function preview(){
-    $dir_path = FCPATH . 'temp';
-    $html_path = "/index-{$_SESSION['user']['user_id']}-" . time() .".html";
-    !is_dir($dir_path) && mkdir($dir_path, 0777, true);
-    !file_put_contents($dir_path . $html_path, $this->input->post('trans_html')) && $this->returnResult('写入页面失败');
-    $this->returnResult(array('temp' . $html_path));
-  }
-
 
 }

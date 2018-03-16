@@ -1,6 +1,6 @@
 <div class="jumbotron">
-  <h1 class="display-4">初始化《<?=$info['doc']['doc_name']?>》</h1>
-  <p class="lead">初始化《<?=$info['doc']['doc_name']?>》的原始页面（未翻译的HTML源码）</p>
+  <h1 class="display-4">初始化《123》</h1>
+  <p class="lead">初始化《123》的原始页面（未翻译的HTML源码）</p>
 </div>
 <div class="container">
   <div style="max-width: 800px; margin: 0 auto;">
@@ -8,7 +8,7 @@
       <div class="pt-3 clearfix">
         <dl class="form-group w-100 pb-3">
           <dt class="input-label">
-            <label>《<?=$info['doc']['doc_name']?>》原始页面url路径</label>
+            <label>《<?=123?>》原始页面url路径</label>
           </dt>
           <dd>
             <input id="ori-url" name="ori_url" class="form-control" rows="20"></input>
@@ -16,16 +16,13 @@
         </dl>
         <dl class="form-group w-100 pb-3 border-bottom">
           <dt class="input-label">
-            <label>《<?=$info['doc']['doc_name']?>》原始页面HTML源码</label>
+            <label>《<?=123?>》原始页面HTML源码</label>
           </dt>
           <dd>
             <textarea id="ori-html" name="ori_html" class="form-control" rows="20"></textarea>
           </dd>
         </dl>
-        <input id="doc-name" type="hidden" name="doc_name" value="<?=$info['doc']['doc_name']?>">
-        <button id="submit" type="button" class="btn btn-outline-primary" disabled="disabled" post_url="<?=site_url('page/init_page' . $info['page_para'])?>">
-          初始化《<?=$info['doc']['doc_name']?>》
-        </button>
+        <input id="doc-name" type="hidden" name="doc_name" value="<?='asdf'?>">
       </div>
     </form>
   </div>

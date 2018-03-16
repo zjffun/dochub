@@ -42,11 +42,11 @@ CREATE TABLE doc (
  PRIMARY KEY (doc_id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+#版本表
 CREATE TABLE ver (
  ver_id int UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '版本ID',
  ver_name varchar(64) NOT NULL COMMENT '版本号',
- translated_url varchar(255) NOT NULL DEFAULT '' COMMENT '已经翻译的版本的url地址（有该地址直接打开该地址）',
- is_default enum('true','false') NOT NULL DEFAULT 'false'  COMMENT '是否为默认打开的版本',
+ translated_url varchar(255) NOT NULL DEFAULT '' COMMENT '已经翻译完成的版本的url地址（有该地址直接打开该地址）',
  doc_id int UNSIGNED NOT NULL COMMENT '所属文档ID',
  user_id int UNSIGNED COMMENT '创建版本的用户的ID',
  PRIMARY KEY (ver_id)
@@ -55,7 +55,7 @@ CREATE TABLE ver (
 #页面表
 CREATE TABLE page (
  page_id int UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '页面ID',
- page_para varchar(255) NOT NULL COMMENT '页面参数：/xxx/xxx/..',
+ page_para varchar(255) NOT NULL COMMENT '页面参数（/xxx/xxx/..）',
  ori_url varchar(255) NOT NULL COMMENT '页面原网页url',
  ver_id int UNSIGNED NOT NULL COMMENT '所属文档版本的ID',
  user_id int UNSIGNED COMMENT '创建页面的用户的ID',
@@ -72,8 +72,8 @@ CREATE TABLE participation (
  is_default enum('true','false') NOT NULL DEFAULT 'false'  COMMENT '是否为默认显示',
  is_publish enum('true','false') NOT NULL DEFAULT 'false'  COMMENT '是否为发布（保存为未发布）',
  is_delete enum('true','false') NOT NULL DEFAULT 'false'  COMMENT '是否为删除',
- user_id int UNSIGNED NOT NULL COMMENT '参与翻译的用户ID',
  page_id int UNSIGNED NOT NULL COMMENT '翻译的页面ID',
+ user_id int UNSIGNED COMMENT '参与翻译的用户ID',
  PRIMARY KEY (page_id, part_time)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -111,11 +111,19 @@ VALUES
 -- (8,"angular-sanitize","AngularJS module for sanitizing HTML"),
 -- (9,"angular-resource","AngularJS module for interacting with RESTful server-side data sources")
 INSERT INTO ver 
-(ver_id, ver_name, doc_id, is_default) 
+(ver_id, ver_name, doc_id) 
 VALUES 
-(1,"v4.0",1, 'true'),
-(2,"v3.0",1, 'false'),
-(3,"v2.0",1, 'false');
+(1, "v4.0", 1);
+
+INSERT INTO page 
+(page_id, page_para, ori_url, ver_id, user_id) 
+VALUES 
+(1, "/", "http://getbootstrap.com/", "1", 1);
+
+INSERT INTO participation 
+(part_type, part_time, page_id, user_id, html) 
+VALUES 
+("original", UNIX_TIMESTAMP(), 1, 1, "http://getbootstrap.com/");
 
 
 -- INSERT INTO browse_record 

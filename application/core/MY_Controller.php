@@ -12,6 +12,16 @@ class Doc_Controller extends MY_Controller {
       $this->load->view('common/doc_footer.html');
   }
 
+  protected function view_inithf($views, $data = array()) {
+      $data['js'][] = 'doc-init';
+      $this->load->view('common/header.html', $data);
+      $this->load->view('doc/init_header.html');
+      foreach ($views as $key => $view) {
+        $this->load->view($view);
+      }
+      $this->load->view('doc/init_footer.html');
+      $this->load->view('common/footer.html');
+  }
 
   protected function get_show_page($ver_id, $page_para){
     return $this->page_model->get_best([
