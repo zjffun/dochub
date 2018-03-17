@@ -120,10 +120,10 @@ INSERT INTO page
 VALUES 
 (1, "/", "http://getbootstrap.com/", "1", 1);
 
-INSERT INTO participation 
-(part_type, part_time, page_id, user_id, html) 
-VALUES 
-("original", UNIX_TIMESTAMP(), 1, 1, "http://getbootstrap.com/");
+-- INSERT INTO participation 
+-- (part_type, part_time, page_id, user_id, html) 
+-- VALUES 
+-- ("original", UNIX_TIMESTAMP(), 1, 1, "http://getbootstrap.com/");
 
 
 -- INSERT INTO browse_record 

@@ -1,9 +1,10 @@
 <script>
-  PAGE_PARA = '<?=$info['page_para']?>';
+  THIS_PARA = '<?=$doc['this_para']?>';
+  ORI_URL = '<?=$doc['this_page']['ori_url']?>';
 </script>
 <div class="jumbotron">
-  <h1 class="display-4"><?=$info['doc']['doc_name']?></h1>
-  <p class="lead">将<?=$info['page_para']?>翻译为 中文（简体）</p>
+  <h1 class="display-4"><?=$doc['doc_name']?></h1>
+  <p class="lead">将<?=$doc['this_para']?>翻译为 中文（简体）</p>
 </div>
 
 <div>
@@ -24,6 +25,7 @@
           
           <button type="button" class="mr-2 btn btn-warning btn-sm">开始编辑</button>
 
+          <button id="dh-resolve" type="button" class="mr-2 btn btn-light btn-sm">解析资源路径</button>
           <button type="button" class="mr-2 btn btn-light btn-sm">修正pre标签排版bug</button>
           <div class="mr-2 input-group">
             <div class="input-group-prepend">
@@ -43,12 +45,12 @@
     <div class="row">
       <div class="col-md-6 border border-danger">
         <div class="row">
-          <iframe id="gpte-ori" class="w-100" frameborder="0" src="<?=base_url("docs{$info['page_para']}")?>"></iframe>
+          <iframe id="gpte-ori" class="w-100" frameborder="0" src="<?=base_url("docs{$doc['this_para']}/index-not-trans.html")?>"></iframe>
         </div>
       </div>
       <div class="col-md-6 border border-primary">
         <div class="row">
-          <iframe id="gpte-trans" class="w-100" frameborder="0" src="<?=base_url("docs{$info['page_para']}")?>"></iframe>
+          <iframe id="gpte-trans" class="w-100" frameborder="0" src="<?=base_url("docs{$doc['this_para']}/index-not-trans.html")?>"></iframe>
         </div>
       </div>
     </div>

@@ -23,10 +23,10 @@
   </footer>
   <script>
     function clearup_and_trans_doc(){
-      location.href = '<?=site_url("doc/translate{$info['page_para']}")?>'
+      location.href = '<?=site_url("participation/translate{$doc['this_para']}")?>'
     }
     function revise_doc(){
-      location.href = '<?=site_url("doc/revise{$info['page_para']}")?>'
+      location.href = '<?=site_url("participation/revise{$doc['this_para']}")?>'
     }
   </script>
 </body>

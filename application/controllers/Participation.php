@@ -31,6 +31,7 @@ class Participation extends Doc_Controller {
 
     $doc['this_ver'] = $doc['vers'][$ver];
     $doc['this_page'] = $page;
+    $doc['this_para'] = "/{$doc['doc_name']}/{$doc['this_ver']['ver_name']}{$doc['this_page']['page_para']}";
 
     $this->doc = $doc;
   }
@@ -42,8 +43,16 @@ class Participation extends Doc_Controller {
       'doc' => $this->doc,
       'data' => ["《{$this->doc['doc_name']}》文档的{$this->doc['this_ver']['ver_name']}版本的{$this->doc['this_page']['page_para']}页面的翻译", 
         '新的翻译', 
-        site_url("participation/do_new_part/{$this->doc['doc_name']}/{$this->doc['this_ver']['ver_name']}{$this->doc['this_page']['page_para']}")
+        site_url("participation/do_new_part{$this->doc['this_para']}")
       ]));
+  }
+
+  public function translate(){
+    $this->view_dochf('doc/translate.html', array('js' => ['doc-translate'], 'doc' => $this->doc));
+  }
+
+  public function revise(){
+    $this->view_dochf('doc/revise.html', ['js' => 'doc-revise']);
   }
 
   public function do_new_part(){
@@ -94,12 +103,12 @@ class Participation extends Doc_Controller {
     $this->returnResult(array('发布成功'));
   }
 
-  public function preview(){
+  public function do_preview(){
     $dir_path = FCPATH . 'temp';
     $html_path = "/index-{$_SESSION['user']['user_id']}-" . time() .".html";
     !is_dir($dir_path) && mkdir($dir_path, 0777, true);
     !file_put_contents($dir_path . $html_path, $this->input->post('trans_html')) && $this->returnResult('写入页面失败');
-    $this->returnResult(array('temp' . $html_path));
+    msg_succ('temp' . $html_path);
   }
 
 }

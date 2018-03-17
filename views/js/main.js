@@ -8,6 +8,7 @@ require.config({
     'bootstrap': 'node_modules/bootstrap/dist/js/bootstrap.bundle',
     'vue': 'node_modules/vue/dist/vue',
     'jquery-tageditor': 'node_modules/jquery-tageditor/jquery.tag-editor',
+    'urijs': 'node_modules/urijs/src',
     'gpte': 'node_modules/google-page-translation-editor/dist/gpte',
     'tool': 'js/tool',
     'index': 'js/index',

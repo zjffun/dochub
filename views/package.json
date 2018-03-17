@@ -17,6 +17,7 @@
     "google-page-translation-editor": "^1.0.2",
     "jquery-tageditor": "^1.0.1",
     "requirejs": "^2.3.5",
+    "urijs": "^1.19.1",
     "vue": "^2.5.13"
   },
   "devDependencies": {

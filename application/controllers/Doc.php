@@ -44,9 +44,15 @@ class Doc extends Doc_Controller {
       'page_para' => $page_para], 'row_array');
     !$page && msg_err(['页面不存在', site_url("page/init_page/{$doc['doc_name']}/{$ver}")]);
 
+    $doc['this_ver'] = $doc['vers'][$ver];
+    $doc['this_page'] = $page;
+    $doc['this_para'] = "/{$doc['doc_name']}/{$doc['this_ver']['ver_name']}{$doc['this_page']['page_para']}";
+
+    $this->doc = $doc;
+
     // 参与翻译检查
     $part = $this->get_show_page($doc['vers'][$ver]['ver_id'], $page_para);
-    !$part && msg_err(['参与翻译不存在', site_url("participation/new_part/{$doc['doc_name']}/{$ver}{$page_para}")]);
+    !$part && msg_err(['参与翻译不存在', site_url("participation/new_part/{$doc['this_para']}")]);
 
     // 未翻译
     if ($part['part_type'] == 'original') {
@@ -56,6 +62,7 @@ class Doc extends Doc_Controller {
         !file_put_contents($not_trans_path, $part['html']) && msg_err(['写入页面失败']);
       }
       $this->view_dochf('doc/show.html', array(
+        'doc' => $this->doc,
         'page_path' => $page_path . '/index-not-trans.html',
         'type' => 'not_trans'
       ));
@@ -80,14 +87,6 @@ class Doc extends Doc_Controller {
       'data' => ['文档翻译项目', 
       '创建新的文档翻译项目，项目名不能与已有的文档翻译项目重名', 
       site_url('doc/do_init_doc')]));
-  }
-
-  public function translate(){
-    $this->view_dochf('doc/translate.html', array('js' => ['doc-translate'], 'info' => $this->info));
-  }
-
-  public function revise(){
-    $this->view_dochf('doc/revise.html', ['js' => 'doc-revise']);
   }
 
   public function do_init_doc(){
@@ -139,7 +138,6 @@ class Doc extends Doc_Controller {
       return TRUE;
     }
   }
-
 
   private function update_docs_json(){
     $docs = $this->doc_model->all_docs();
