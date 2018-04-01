@@ -32,7 +32,7 @@ class Participation extends Doc_Controller {
     $doc['this_ver'] = $doc['vers'][$ver];
     $doc['this_page'] = $page;
     $doc['this_para'] = "/{$doc['doc_name']}/{$doc['this_ver']['ver_name']}{$doc['this_page']['page_para']}";
-
+    $doc['page_path'] = $page_path;
     $this->doc = $doc;
   }
 
@@ -48,6 +48,7 @@ class Participation extends Doc_Controller {
   }
 
   public function translate(){
+    // 整理并翻译
     $this->view_dochf('doc/translate.html', array('js' => ['doc-translate'], 'doc' => $this->doc));
   }
 

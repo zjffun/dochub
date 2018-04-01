@@ -1,5 +1,5 @@
 <script>
-  THIS_PARA = '<?=$doc['this_para']?>';
+  PAGE_PATH = '<?=$doc['page_path']?>';
   ORI_URL = '<?=$doc['this_page']['ori_url']?>';
 </script>
 <div class="jumbotron">
@@ -7,52 +7,6 @@
   <p class="lead">将<?=$doc['this_para']?>翻译为 中文（简体）</p>
 </div>
 
-<div>
-  <div style="position: sticky;top: 0;left: 0;z-index: 9999;">
-    <div class="card text-white bg-secondary">
-      <div class="card-body">
-        <div class="btn-toolbar" role="toolbar">
-          <div class="mr-5 btn-group">
-            <button id="dh-publish" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 发布</button>
-            <button id="dh-save" class="btn btn-success btn-sm"><i class="fa fa-save"></i> 保存</button>
-            <button id="dh-preview" class="btn btn-dark btn-sm"><i class="fa fa-eye"></i> 预览</button>
-            <button id="dh-discard" class="btn btn-danger btn-sm"><i class="fa fa-undo"></i> 放弃</button>
-          </div>
-          <div class="mr-5 btn-group">
-            <button onclick="alert('开发中。。。')" class="btn btn-primary btn-sm">下载html到本地整理</button>
-            <button onclick="alert('开发中。。。')" class="btn btn-primary btn-sm">上传本地整理后html</button>
-          </div>
-          
-          <button type="button" class="mr-2 btn btn-warning btn-sm">开始编辑</button>
+<div id="dh-pe">
 
-          <button id="dh-resolve" type="button" class="mr-2 btn btn-light btn-sm">解析资源路径</button>
-          <button type="button" class="mr-2 btn btn-light btn-sm">修正pre标签排版bug</button>
-          <div class="mr-2 input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text" id="">修正不翻译的元素：</span>
-            </div>
-            <div class="input-group-append">
-              <button onclick="test_gpte.correct_not_trans('select')" class="btn btn-success btn-sm">选择元素</button>
-              <button onclick="test_gpte.correct_not_trans('correct')" class="btn btn-danger btn-sm">进行修正</button>
-              <button onclick="test_gpte.correct_not_trans('clear')"  class="btn btn-info btn-sm">清除选择</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-md-6 border border-danger">
-        <div class="row">
-          <iframe id="gpte-ori" class="w-100" frameborder="0" src="<?=base_url("docs{$doc['this_para']}/index-not-trans.html")?>"></iframe>
-        </div>
-      </div>
-      <div class="col-md-6 border border-primary">
-        <div class="row">
-          <iframe id="gpte-trans" class="w-100" frameborder="0" src="<?=base_url("docs{$doc['this_para']}/index-not-trans.html")?>"></iframe>
-        </div>
-      </div>
-    </div>
-  </div>
 </div>

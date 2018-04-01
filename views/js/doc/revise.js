@@ -1,6 +1,5 @@
-import gpte_init from './gpte_init.js';
-require(['jquery', 'gpte'], function($, gpte){
+require(['jquery', 'PE'], function($, PE){
   $(function(){
-    gpte_init();
+    PE.init('#dh-revise')
   })
 })

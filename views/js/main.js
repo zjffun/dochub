@@ -9,7 +9,7 @@ require.config({
     'vue': 'node_modules/vue/dist/vue',
     'jquery-tageditor': 'node_modules/jquery-tageditor/jquery.tag-editor',
     'urijs': 'node_modules/urijs/src',
-    'gpte': 'node_modules/google-page-translation-editor/dist/gpte',
+    'PE': 'node_modules/@1010543618/page-editor/dist/pageeditor',
     'tool': 'js/tool',
     'index': 'js/index',
     'user-login': 'js/user/login',
