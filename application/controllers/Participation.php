@@ -29,6 +29,7 @@ class Participation extends Doc_Controller {
       'page_para' => $page_para], 'row_array');
     !$page && msg_err(['页面不存在', site_url("page/init_page/{$doc['doc_name']}/{$ver}")]);
 
+    $doc['page'] = $page;
     $doc['this_ver'] = $doc['vers'][$ver];
     $doc['this_page'] = $page;
     $doc['this_para'] = "/{$doc['doc_name']}/{$doc['this_ver']['ver_name']}{$doc['this_page']['page_para']}";
@@ -80,36 +81,37 @@ class Participation extends Doc_Controller {
     msg_succ(site_url("doc/show/{$this->doc['doc_name']}/{$this->doc['this_ver']['ver_name']}{$this->doc['this_page']['page_para']}"));
   }
 
-  public function save(){
-    !$this->participation_model->replace(array(
-      'user_id' => $_SESSION['user']['user_id'],
-      'doc_id' => $this->info['doc']['doc_id'],
-      'page_html' => $this->input->post('trans_html'),
-      'page_para' => $this->info['page_para'],
-      'part_type' => 'save',
-      'part_time' => time()
-    )) && $this->returnResult('写入数据库失败');
-    $this->returnResult(array('保存成功'));
-  }
-
-  public function publish(){
-    !$this->participation_model->insert(array(
-      'user_id' => $_SESSION['user']['user_id'],
-      'doc_id' => $this->info['doc']['doc_id'],
-      'page_html' => $this->input->post('trans_html'),
-      'page_para' => $this->info['page_para'],
-      'part_type' => 'c&t',
-      'part_time' => time()
-    )) && $this->returnResult('写入数据库失败');
-    $this->returnResult(array('发布成功'));
-  }
-
-  public function do_preview(){
-    $dir_path = FCPATH . 'temp';
-    $html_path = "/index-{$_SESSION['user']['user_id']}-" . time() .".html";
-    !is_dir($dir_path) && mkdir($dir_path, 0777, true);
-    !file_put_contents($dir_path . $html_path, $this->input->post('trans_html')) && $this->returnResult('写入页面失败');
-    msg_succ('temp' . $html_path);
+  public function do_pe(){
+    !($type = $this->input->post('type')) && msg_err('未指定type');
+    switch($type){
+      case 'publish':
+        !$this->participation_model->insert(array(
+          'user_id' => $_SESSION['user']['user_id'],
+          'page_id' => $this->doc['page']['page_id'],
+          'html' => $this->input->post('html'),
+          'part_type' => 'c&t',
+          'part_time' => time()
+        )) && msg_err('写入数据库失败');
+        msg_succ('发布成功');
+        break;
+      case 'save':
+        !$this->participation_model->replace(array(
+          'user_id' => $_SESSION['user']['user_id'],
+          'page_id' => $this->doc['page']['page_id'],
+          'html' => $this->input->post('html'),
+          'part_type' => 'save',
+          'part_time' => time()
+        )) && msg_err('写入数据库失败');
+        msg_succ('保存成功');
+        break;
+      case 'preview':
+        $dir_path = FCPATH . 'temp';
+        $html_path = "/index-{$_SESSION['user']['user_id']}-" . time() .".html";
+        !is_dir($dir_path) && mkdir($dir_path, 0777, true);
+        !file_put_contents($dir_path . $html_path, $this->input->post('html')) && $this->returnResult('写入页面失败');
+        msg_succ('temp' . $html_path);
+        break;
+    }
   }
 
 }

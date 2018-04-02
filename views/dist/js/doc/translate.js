@@ -10,7 +10,7 @@ require(['jquery', 'PE'], function($, PE){
       // 原始页面的url
       ori_url: ORI_URL,
       // 服务器的url
-      server_url: '',
+      server_url: SITE_URL + '/participation/do_pe' + THIS_PARA,
     });
   });
 });
