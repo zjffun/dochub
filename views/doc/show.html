@@ -1,9 +1,24 @@
 <iframe id="doc-iframe" src="<?=base_url("{$page_path}")?>" frameborder="0" scrolling="no"></iframe>
 <script>
-  var doc = document.querySelector('#doc-iframe');
-  doc.onload = function(){
-    doc_body = doc.contentDocument.body;
-    doc.width = document.body.scrollWidth;
-    doc.height = doc_body.scrollHeight + 50;
-  }
+  require(['jquery'], function(){
+    var i_resize = function(){
+      var doc = document.querySelector('#doc-iframe');
+      var doc_body = doc.contentDocument.body;
+      doc.width = document.body.clientWidth;
+      doc.height = doc_body.scrollHeight + 50;
+    }
+    
+    $(window).resize(function(){i_resize()})
+    // 调用第一次可能出来滚动条，需要第二次去掉滚动条的宽度
+    $('#doc-iframe').on('load', function(){
+      i_resize()
+      i_resize()
+      console.log($(this).contents().find("[dh-href]"))
+      $(this).contents().find("[dh-href]").click(function(e){
+        e.preventDefault()
+        e.stopPropagation()
+        top.location.href = '/index.php/doc/show/' + $(this).attr('dh-href')
+      })
+    })
+  })
 </script>

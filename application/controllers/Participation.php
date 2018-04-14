@@ -34,6 +34,7 @@ class Participation extends Doc_Controller {
     $doc['this_page'] = $page;
     $doc['this_para'] = "/{$doc['doc_name']}/{$doc['this_ver']['ver_name']}{$doc['this_page']['page_para']}";
     $doc['page_path'] = $page_path;
+
     $this->doc = $doc;
   }
 
@@ -54,7 +55,7 @@ class Participation extends Doc_Controller {
   }
 
   public function revise(){
-    $this->view_dochf('doc/revise.html', ['js' => 'doc-revise']);
+    $this->view_dochf('doc/revise.html', ['js' => ['doc-revise'], 'doc' => $this->doc]);
   }
 
   public function do_new_part(){

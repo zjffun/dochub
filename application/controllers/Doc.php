@@ -16,54 +16,57 @@ class Doc extends Doc_Controller {
     // $this->update_docs_json();die();
   }
 
-  public function show(){
+  public function show($doc_name, $ver_name = false){
+    !$doc_name && msg_err(['找不到该文档']);
     $segments = $this->uri->segments;
-    // 文档检查
-    $doc = $this->doc_model->select_join_ver(array('doc_name' => $segments[3]), 'row_array');
+    $page_seg = '';
+
+    // 一：文档检查
+    $doc = $this->doc_model->select_join_ver(array('doc_name' => $doc_name), 'row_array');
     !$doc && msg_err(['文档不存在', site_url("doc/init_doc")]);
+    $page_seg = '/' . $doc_name;
 
-    // 版本检查
-    $ver = isset($segments[4]) ? 
-      isset($doc['vers'][$segments[4]]) ? $segments[4] : false : 
-      $doc['default_ver'] != '' ? $doc['default_ver']['ver_name'] : false;
-    !$ver && msg_err(['版本不存在', site_url("ver/init_ver/{$doc['doc_name']}")]);
+    // 二：版本检查
+    $ver = $ver_name && isset($doc['vers'][$ver_name]) ? $doc['vers'][$ver_name] : $doc['default_ver'];
+    !$ver && msg_err(['版本不存在', site_url("ver/init_ver$page_seg")]);
+    $page_seg .= '/' . $ver['ver_name'];
 
-    // 生成page_para, page_path
+    // 三：页面检查
+    // 生成page_para
     $page_para = '/' . implode('/', count($segments) > 4 ? array_slice($segments, 4) : []);
-    $page_path = "/docs/{$doc['doc_name']}/{$ver}{$page_para}";
-    
+    $page_seg .= $page_para;
+
+    // 生成page_path
+    $page_path = "/docs$page_seg" . ($page_para == '/' ? '' : '/');
     // 有缓存直接输出
-    if (is_file(FCPATH . $page_path)) {
-      $this->view_dochf('doc/show.html', array('page_path' => $page_path));
+    if (is_file(FCPATH . $page_path . 'index.html')) {
+      $this->view_dochf('doc/show.html', array(
+        'page_path' => $page_path . 'index.html',
+        'page_seg' => $page_seg,
+      ));
       return;
     }
-
-    // 页面检查
+    
     $page = $this->page_model->select([
-      'ver_id' => $doc['vers'][$ver]['ver_id'], 
-      'page_para' => $page_para], 'row_array');
-    !$page && msg_err(['页面不存在', site_url("page/init_page/{$doc['doc_name']}/{$ver}")]);
+      'ver_id' => $ver['ver_id'], 
+      'page_para' => $page_para, 
+      'row_array']);
+    !$page && msg_err(['页面不存在', site_url("page/init_page/$page_seg")]);
 
-    $doc['this_ver'] = $doc['vers'][$ver];
-    $doc['this_page'] = $page;
-    $doc['this_para'] = "/{$doc['doc_name']}/{$doc['this_ver']['ver_name']}{$doc['this_page']['page_para']}";
-
-    $this->doc = $doc;
-
-    // 参与翻译检查
-    $part = $this->get_show_page($doc['vers'][$ver]['ver_id'], $page_para);
-    !$part && msg_err(['参与翻译不存在', site_url("participation/new_part/{$doc['this_para']}")]);
-
+    // 四：参与翻译检查
+    $part = $this->get_show_page($ver['ver_id'], $page_para);
+    !$part && msg_err(['参与翻译不存在', site_url("participation/new_part/$page_seg")]);
+    
     // 未翻译
     if ($part['part_type'] == 'original') {
-      $not_trans_path = FCPATH . $page_path . '/index-not-trans.html';
+      $not_trans_path = FCPATH . $page_path . 'index-not-trans.html';
       if (!is_file($not_trans_path)) {
         !is_dir(FCPATH . $page_path) && !mkdir(FCPATH . $page_path, 0777, true);
         !file_put_contents($not_trans_path, $part['html']) && msg_err(['写入页面失败']);
       }
       $this->view_dochf('doc/show.html', array(
-        'doc' => $this->doc,
-        'page_path' => $page_path . '/index-not-trans.html',
+        'page_path' => $page_path . 'index-not-trans.html',
+        'page_seg' => $page_seg,
         'type' => 'not_trans'
       ));
       return;
@@ -71,10 +74,13 @@ class Doc extends Doc_Controller {
     
     // 写入页面
     !is_dir(FCPATH . $page_path) && !mkdir(FCPATH . $page_path, 0777, true);
-    !file_put_contents(FCPATH . $page_path . '/index.html', $show_page['html']) && $this->msg_err(['写入页面失败']);
+    !file_put_contents(FCPATH . $page_path . 'index.html', $part['html']) && $this->msg_err(['写入页面失败']);
 
     // 展示页面
-    $this->view_dochf('doc/show.html', array('page_path' => $page_path));
+    $this->view_dochf('doc/show.html', array(
+      'page_path' => $page_path . 'index.html',
+      'page_seg' => $page_seg
+    ));
   }
 
   public function init_doc(){
