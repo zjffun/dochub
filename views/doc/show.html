@@ -17,7 +17,7 @@
       $(this).contents().find("[dh-href]").click(function(e){
         e.preventDefault()
         e.stopPropagation()
-        top.location.href = '/index.php/doc/show/' + $(this).attr('dh-href')
+        top.location.href = BASE_URL + '/index.php/doc/show/' + $(this).attr('dh-href')
       })
     })
   })

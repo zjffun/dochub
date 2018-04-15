@@ -2,9 +2,9 @@ require(['jquery', 'PE'], function($, PE){
   $(function(){
     PE.init({
       el: '#dh-pe',
-      ref_page_url: PAGE_PATH + '/index-not-trans.html',
+      ref_page_url: BASE_URL + PAGE_PATH + '/index-not-trans.html',
       // 右iframe中编辑用的页面的url
-      edit_page_url: PAGE_PATH + '/index-not-trans.html',
+      edit_page_url: BASE_URL + PAGE_PATH + '/index-not-trans.html',
       // 原始页面的url
       ori_url: ORI_URL,
       // 服务器的url

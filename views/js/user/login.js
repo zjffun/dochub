@@ -64,7 +64,7 @@ require(['vue', 'jquery'], function(Vue, $){
       if (document.referrer != '') {
         location.href = document.referrer;
       }else{
-        location.href = '/';
+        location.href = SITE_URL;
       }
     }else {
       switch(data['msg']){

@@ -73,7 +73,7 @@ class Participation extends Doc_Controller {
       case 'publish':
         !$this->participation_model->insert(array(
           'user_id' => $_SESSION['user']['user_id'],
-          'page_id' => $this->doc['page']['page_id'],
+          'page_id' => $this->doc['this_page']['page_id'],
           'html' => $this->input->post('html'),
           'part_type' => 'c&t',
           'part_time' => time()
@@ -83,7 +83,7 @@ class Participation extends Doc_Controller {
       case 'save':
         !$this->participation_model->replace(array(
           'user_id' => $_SESSION['user']['user_id'],
-          'page_id' => $this->doc['page']['page_id'],
+          'page_id' => $this->doc['this_page']['page_id'],
           'html' => $this->input->post('html'),
           'part_type' => 'save',
           'part_time' => time()

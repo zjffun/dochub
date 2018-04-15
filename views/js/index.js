@@ -1,5 +1,5 @@
 require(['vue', 'jquery'], function(Vue, $){
-  $.get('/docs.min.json', function(docs){
+  $.get(BASE_URL + 'docs.min.json', function(docs){
     var docs_top_9 = docs.slice(0, 8);
     new Vue({
       el: '#dh-search-docs',
