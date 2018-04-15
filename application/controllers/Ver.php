@@ -7,11 +7,8 @@ class Ver extends Doc_Controller {
     $this->load->model('doc_model');
     $this->load->model('ver_model');
 
-    $segments = $this->uri->segments;
-    // 文档检查
-    $doc = $this->doc_model->select_join_ver(array('doc_name' => $segments[3]), 'row_array');
-    !$doc && $this->returnResult('文档不存在');
-    $this->doc = $doc;
+    // 一：文档检查
+    $this->check_doc_name();
   }
   public function init_ver(){
     $this->view_inithf([

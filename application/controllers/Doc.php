@@ -12,50 +12,37 @@ class Doc extends Doc_Controller {
     $this->load->model('doc_model');
     $this->load->model('ver_model');
     $this->load->model('page_model');
-    
+
     // $this->update_docs_json();die();
   }
 
-  public function show($doc_name, $ver_name = false){
-    !$doc_name && msg_err(['找不到该文档']);
-    $segments = $this->uri->segments;
+  public function show(){
+    !$this->doc_name && msg_err(['找不到该文档']);
     $page_seg = '';
 
     // 一：文档检查
-    $doc = $this->doc_model->select_join_ver(array('doc_name' => $doc_name), 'row_array');
-    !$doc && msg_err(['文档不存在', site_url("doc/init_doc")]);
-    $page_seg = '/' . $doc_name;
+    $this->check_doc_name();
 
     // 二：版本检查
-    $ver = $ver_name && isset($doc['vers'][$ver_name]) ? $doc['vers'][$ver_name] : $doc['default_ver'];
-    !$ver && msg_err(['版本不存在', site_url("ver/init_ver$page_seg")]);
-    $page_seg .= '/' . $ver['ver_name'];
+    $this->check_ver();
 
     // 三：页面检查
-    // 生成page_para
-    $page_para = '/' . implode('/', count($segments) > 4 ? array_slice($segments, 4) : []);
-    $page_seg .= $page_para;
+    $this->check_page_para();
 
     // 生成page_path
-    $page_path = "/docs$page_seg" . ($page_para == '/' ? '' : '/');
+    $page_path = $this->create_page_path();
+    
     // 有缓存直接输出
     if (is_file(FCPATH . $page_path . 'index.html')) {
       $this->view_dochf('doc/show.html', array(
         'page_path' => $page_path . 'index.html',
-        'page_seg' => $page_seg,
       ));
       return;
     }
     
-    $page = $this->page_model->select([
-      'ver_id' => $ver['ver_id'], 
-      'page_para' => $page_para, 
-      'row_array']);
-    !$page && msg_err(['页面不存在', site_url("page/init_page/$page_seg")]);
-
     // 四：参与翻译检查
-    $part = $this->get_show_page($ver['ver_id'], $page_para);
-    !$part && msg_err(['参与翻译不存在', site_url("participation/new_part/$page_seg")]);
+    $part = $this->get_show_page($this->doc['this_ver']['ver_id'], $this->page_para);
+    !$part && msg_err(['参与翻译不存在', site_url("participation/new_part{$this->page_seg}")]);
     
     // 未翻译
     if ($part['part_type'] == 'original') {
@@ -66,7 +53,6 @@ class Doc extends Doc_Controller {
       }
       $this->view_dochf('doc/show.html', array(
         'page_path' => $page_path . 'index-not-trans.html',
-        'page_seg' => $page_seg,
         'type' => 'not_trans'
       ));
       return;
@@ -79,7 +65,6 @@ class Doc extends Doc_Controller {
     // 展示页面
     $this->view_dochf('doc/show.html', array(
       'page_path' => $page_path . 'index.html',
-      'page_seg' => $page_seg
     ));
   }
 
@@ -101,7 +86,7 @@ class Doc extends Doc_Controller {
   
   public function do_new_doc(){
     // 表单验证
-    $this->form_validation->set_rules('doc_name', '项目名',  'callback_check_doc_name');
+    $this->form_validation->set_rules('doc_name', '项目名',  'callback_c_doc_name');
     $this->form_validation->set_rules('description', '描述', 'max_length[1024]');
     $this->form_validation->set_rules('tags', '标签', 'max_length[255]');
     if ($this->form_validation->run() == false) {
@@ -136,7 +121,7 @@ class Doc extends Doc_Controller {
     $this->participation_model->replace($participation);
   }
 
-  public function check_doc_name($doc_name){
+  public function c_doc_name($doc_name){
     if($this->doc_model->select(array('doc_name' => $doc_name), 'row_array')){
       $this->form_validation->set_message('check_doc_name', "{field}已经存在");
       return FALSE;

@@ -8,19 +8,11 @@ class Page extends Doc_Controller {
     $this->load->model('participation_model');
     $this->load->model('page_model');
 
-    $segments = $this->uri->segments;
-    // 文档检查
-    $doc = $this->doc_model->select_join_ver(array('doc_name' => $segments[3]), 'row_array');
-    !$doc && msg_err(['文档不存在', site_url("doc/init_doc")]);
+    // 一：文档检查
+    $this->check_doc_name();
 
-    // 版本检查
-    $ver = isset($segments[4]) ? 
-      isset($doc['vers'][$segments[4]]) ? $segments[4] : false : 
-      $doc['default_ver'] != '' ? $doc['default_ver']['ver_name'] : false;
-    !$ver && msg_err(['版本不存在', site_url("ver/init_ver/{$doc['doc_name']}")]);
-
-    $doc['this_ver'] = $doc['vers'][$ver];
-    $this->doc = $doc;
+    // 二：版本检查
+    $this->check_ver();
   }
 
   public function init_page(){

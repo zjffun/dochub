@@ -4,7 +4,7 @@ class Doc_model extends MY_Model{
   public $fields = ['doc_id', 'doc_name', 'description', 'tag', 'user_id'];
   public function select_join_ver($where, $type = null){
     // 获取doc
-    $result = $this->db->where($where)->get($this->model_table)->row_array();
+    $result = $this->db->where($where)->limit(1)->get($this->model_table)->row_array();
     if(!$result) return false;
     
     // 获取ver

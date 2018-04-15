@@ -8,54 +8,39 @@ class Participation extends Doc_Controller {
     $this->load->model('participation_model');
     $this->load->model('page_model');
 
-    $segments = $this->uri->segments;
-    // 文档检查
-    $doc = $this->doc_model->select_join_ver(array('doc_name' => $segments[3]), 'row_array');
-    !$doc && msg_err(['文档不存在', site_url("doc/init_doc")]);
+    // 一：文档检查
+    $this->check_doc_name();
 
-    // 版本检查
-    $ver = isset($segments[4]) ? 
-      isset($doc['vers'][$segments[4]]) ? $segments[4] : false : 
-      $doc['default_ver'] != '' ? $doc['default_ver']['ver_name'] : false;
-    !$ver && msg_err(['版本不存在', site_url("ver/init_ver/{$doc['doc_name']}")]);
+    // 二：版本检查
+    $this->check_ver();
 
-    // 生成page_para, page_path
-    $page_para = '/' . implode('/', count($segments) > 4 ? array_slice($segments, 4) : []);
-    $page_path = "/docs/{$doc['doc_name']}/{$ver}{$page_para}";
+    // 三：页面检查
+    $this->check_page_para();
 
-    // 页面检查
-    $page = $this->page_model->select([
-      'ver_id' => $doc['vers'][$ver]['ver_id'], 
-      'page_para' => $page_para], 'row_array');
-    !$page && msg_err(['页面不存在', site_url("page/init_page/{$doc['doc_name']}/{$ver}")]);
-
-    $doc['page'] = $page;
-    $doc['this_ver'] = $doc['vers'][$ver];
-    $doc['this_page'] = $page;
-    $doc['this_para'] = "/{$doc['doc_name']}/{$doc['this_ver']['ver_name']}{$doc['this_page']['page_para']}";
-    $doc['page_path'] = $page_path;
-
-    $this->doc = $doc;
+    // 将page_path写入$this->doc
+    $this->create_page_path();
+    // var_dump($this->doc);die();
   }
 
   public function new_part(){
     $this->view_inithf([
       'doc/form_participation.html', 
-    ], array(
-      'doc' => $this->doc,
-      'data' => ["《{$this->doc['doc_name']}》文档的{$this->doc['this_ver']['ver_name']}版本的{$this->doc['this_page']['page_para']}页面的翻译", 
-        '新的翻译', 
-        site_url("participation/do_new_part{$this->doc['this_para']}")
-      ]));
+    ], [
+      'data' => 
+        ["《{$this->doc['doc_name']}》文档的{$this->doc['this_ver']['ver_name']}版本的{$this->doc['this_page']['page_para']}页面的翻译", 
+          '新的翻译', 
+          site_url("participation/do_new_part{$this->page_seg}")
+        ]
+    ]);
   }
 
   public function translate(){
     // 整理并翻译
-    $this->view_dochf('doc/translate.html', array('js' => ['doc-translate'], 'doc' => $this->doc));
+    $this->view_dochf('doc/translate.html', ['js' => ['doc-translate']]);
   }
 
   public function revise(){
-    $this->view_dochf('doc/revise.html', ['js' => ['doc-revise'], 'doc' => $this->doc]);
+    $this->view_dochf('doc/revise.html', ['js' => ['doc-revise']]);
   }
 
   public function do_new_part(){
