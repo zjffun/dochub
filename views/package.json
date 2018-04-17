@@ -12,7 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@1010543618/page-editor": "^1.0.6",
+    "@1010543618/page-editor": "^1.0.7",
     "bootstrap": "^4.0.0",
     "font-awesome": "^4.7.0",
     "jquery-tageditor": "^1.0.1",

@@ -1,17 +1,18 @@
-<iframe id="doc-iframe" src="<?=base_url("{$page_path}")?>" frameborder="0" scrolling="no"></iframe>
+<iframe id="doc-iframe" src="<?=base_url("{$page_path}")?>" frameborder="0"></iframe>
 <script>
   require(['jquery'], function(){
+    //body不用滚动条
+    $('body').css('overflow', 'hidden')
     var i_resize = function(){
+      //document.body.clientHeight和document.body.clientWidth页面刚加载时获取的高度有问题
       var doc = document.querySelector('#doc-iframe');
-      var doc_body = doc.contentDocument.body;
-      doc.width = document.body.clientWidth;
-      doc.height = doc_body.scrollHeight + 50;
+      doc.width = $(window).width();
+      doc.height = $(window).height() - 70
     }
     
     $(window).resize(function(){i_resize()})
-    // 调用第一次可能出来滚动条，需要第二次去掉滚动条的宽度
+    // body已禁止滚动 *调用第一次可能出来滚动条，需要第二次去掉滚动条的宽度*
     $('#doc-iframe').on('load', function(){
-      i_resize()
       i_resize()
       console.log($(this).contents().find("[dh-href]"))
       $(this).contents().find("[dh-href]").click(function(e){
