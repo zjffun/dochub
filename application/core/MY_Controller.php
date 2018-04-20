@@ -47,9 +47,10 @@ class Doc_Controller extends MY_Controller {
   // 二：版本检查
   protected function check_ver(){
     // 参数有版本名并且版本名存在就用该版本，否则用默认版本
-    !($this->doc['this_ver'] = $this->ver_name && isset($doc['vers'][$this->ver_name]) ? $doc['vers'][$this->ver_name] : $this->doc['default_ver']) && msg_err(['版本不存在', site_url("ver/init_ver{$this->page_seg}")]);
+    !($this->doc['this_ver'] = $this->ver_name && isset($this->doc['vers'][$this->ver_name]) ? $this->doc['vers'][$this->ver_name] : $this->doc['default_ver']) && msg_err(['版本不存在', site_url("ver/init_ver{$this->page_seg}")]);
     $this->ver_name = $this->doc['this_ver']['ver_name'];
     $this->doc['page_seg'] = $this->page_seg .= '/' . $this->ver_name;
+
   }
 
   // 三：页面检查

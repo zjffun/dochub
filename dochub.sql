@@ -46,7 +46,7 @@ CREATE TABLE doc (
 CREATE TABLE ver (
  ver_id int UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '版本ID',
  ver_name varchar(64) NOT NULL COMMENT '版本号',
- translated_url varchar(255) NOT NULL DEFAULT '' COMMENT '已经翻译完成的版本的url地址（有该地址直接打开该地址）',
+ translated_url varchar(255) DEFAULT '' COMMENT '已经翻译完成的版本的url地址（有该地址直接打开该地址）',
  doc_id int UNSIGNED NOT NULL COMMENT '所属文档ID',
  user_id int UNSIGNED COMMENT '创建版本的用户的ID',
  PRIMARY KEY (ver_id)
