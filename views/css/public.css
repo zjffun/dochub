@@ -1,0 +1,19 @@
+.dh-header {
+  position:relative;
+  text-align:center;
+  background-color:#27ae60;
+  color:#fff;
+  margin-bottom:0
+}
+.dh-header .jumbotron{
+  background: transparent;
+}
+@media screen and (min-width:768px) {
+  .dh-header h1 {
+    font-size:56px;
+    text-shadow:-5px 5px 0 rgba(0,0,0,.1)
+  }
+}
+.dh-header p {
+  color:#f4f4f4
+}

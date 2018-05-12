@@ -5,7 +5,7 @@ class Doc extends Doc_Controller {
   public function __construct(){
 
     $this->not_check = array(
-      'show'
+      'show', 'translating', 'category'
     );
     parent::__construct();
     $this->load->library('form_validation');
@@ -67,7 +67,19 @@ class Doc extends Doc_Controller {
       'page_path' => $page_path . 'index.html',
     ));
   }
-
+  public function category(){
+    $data['css'] = ['public'];
+    $this->load->library('pagination');
+    $this->config->load('pagination', TRUE, TRUE);
+    $config['base_url'] = site_url('doc/category');
+    $config['total_rows'] = $this->doc_model->countAllFiltered();
+    $config['per_page'] = 12;
+    $this->pagination->initialize(array_merge($this->config->item('pagination'), $config));
+    $data['docs'] = $this->doc_model->selectPage(isset($this->uri->segments[3]) ? $this->uri->segments[3] : 0, $config['per_page']);
+    // var_dump($data['docs'], $this->db->last_query());
+    $data['pagination'] = $this->pagination->create_links();
+    $this->viewhf('category.html', $data);
+  }
   public function init_doc(){
     $this->view_inithf([
       'doc/form_doc.html', 
