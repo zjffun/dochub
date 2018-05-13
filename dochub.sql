@@ -92,6 +92,13 @@ CREATE TABLE collection (
  doc_id int UNSIGNED NOT NULL COMMENT '文档ID'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+/*-----------------视图-----------------*/
+create view doc_ver_page as 
+  select doc.doc_id as doc_id, doc_name, description, tag, doc.user_id, 
+    ver.ver_id, ver_name, translated_url, 
+    page.page_id, page_para, ori_url
+  from doc, ver, page where ver.doc_id = doc.doc_id and page.ver_id = ver.ver_id;
+
 /*-----------------插入数据-----------------*/
 INSERT INTO user 
 (user_id, user_email, user_name, user_pwd, user_regist_time, activation_code) 
@@ -132,7 +139,10 @@ VALUES
 -- (1, 1, 3, now()),
 -- (1, 2, 3, now()),
 -- (1, 3, 3, now()),
--- (1, 4, 3, now());
+-- (1, 4, 3, now()),
+-- (1, 5, 3, now()),
+-- (1, 6, 3, now()),
+-- (1, 7, 3, now());
 
 -- INSERT INTO participation 
 -- (user_id, page_id, part_type, part_time) 

@@ -28,7 +28,8 @@ class User_model extends MY_Model{
 		return $this->db
 			->select('doc_name, description')
 			->where(self::TBL_BROWSE_RECORD . '.user_id',$user_id)
-			->join(self::TBL_DOC, self::TBL_DOC . '.doc_id = ' . self::TBL_BROWSE_RECORD . '.doc_id', 'left')
+			->join(self::VIEW_DOC_VER_PAGE, self::VIEW_DOC_VER_PAGE . '.page_id = ' . self::TBL_BROWSE_RECORD . '.page_id', 'left')
+			->group_by('doc_id')
 			->order_by('browse_times', 'DESC')
 			->get(self::TBL_BROWSE_RECORD)
 			->result_array();

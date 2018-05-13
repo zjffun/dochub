@@ -9,6 +9,7 @@ class MY_Model extends CI_Model {
   const TBL_PARTICIPATION = 'participation';
   const TBL_COLLECTION = 'collection';
 
+  const VIEW_DOC_VER_PAGE = 'doc_ver_page';
   public function __construct(){
     parent::__construct();
 
