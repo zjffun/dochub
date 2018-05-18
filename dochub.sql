@@ -63,10 +63,12 @@ CREATE TABLE page (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 #用户参与翻译页面表
+#PRIMARY KEY (page_id, part_time)不好还是用id比较好，虽然长短不一有点难看
 CREATE TABLE participation (
+ part_id int UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '页面ID',
  html text COMMENT '页面html',
  part_type enum('original', 'save', 'c&t', 'proofread') NOT NULL COMMENT '类型(c&t: clear up and translate)',
- part_time int NOT NULL COMMENT '参与时间',
+ part_time timestamp NOT NULL COMMENT '参与时间',
  vote_up smallint UNSIGNED NOT NULL DEFAULT 0 COMMENT '赞同',
  vote_down smallint UNSIGNED NOT NULL DEFAULT 0 COMMENT '否决',
  is_default enum('true','false') NOT NULL DEFAULT 'false'  COMMENT '是否为默认显示',
@@ -74,7 +76,7 @@ CREATE TABLE participation (
  is_delete enum('true','false') NOT NULL DEFAULT 'false'  COMMENT '是否为删除',
  page_id int UNSIGNED NOT NULL COMMENT '翻译的页面ID',
  user_id int UNSIGNED COMMENT '参与翻译的用户ID',
- PRIMARY KEY (page_id, part_time)
+ PRIMARY KEY (part_id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 #浏览记录表
@@ -93,11 +95,14 @@ CREATE TABLE collection (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 /*-----------------视图-----------------*/
+/*from doc, ver, page：这种方法只有doc, ver, page全存在才查出来*/
 create view doc_ver_page as 
   select doc.doc_id as doc_id, doc_name, description, tag, doc.user_id, 
     ver.ver_id, ver_name, translated_url, 
     page.page_id, page_para, ori_url
-  from doc, ver, page where ver.doc_id = doc.doc_id and page.ver_id = ver.ver_id;
+  from doc 
+  left join ver on ver.doc_id = doc.doc_id 
+  left join page on page.ver_id = ver.ver_id;
 
 /*-----------------插入数据-----------------*/
 INSERT INTO user 
@@ -108,59 +113,54 @@ VALUES
 INSERT INTO doc 
 (doc_id, doc_name, description) 
 VALUES 
-(1,"bootstrap", "Bootstrap是一个用HTML，CSS和JS开发的开源工具包。使用我们的Sass变量和mixins，响应式网格系统，大量预构建组件以及基于jQuery构建的强大插件，快速构建原型或构建整个应用程序。");
--- (2,"react","React is a JavaScript library for building user interfaces."),
--- (3,"react-dom","The entry point of the DOM-related rendering paths. It is intended to be paired with the isomorphic React, which is shipped as react to npm."),
--- (4,"vue","Simple, Fast & Composable MVVM for building interactive interfaces"),
--- (5,"d3","A JavaScript visualization library for HTML and SVG."),
--- (6,"angular.js","AngularJS is an MVC framework for building web applications. The core features include HTML enhanced with custom component and data-binding capabilities, dependency injection and strong focus on simplicity, testability, maintainability and boiler-plate reduction."),
--- (7,"angular-touch","AngularJS module for touch events and helpers for touch-enabled devices"),
--- (8,"angular-sanitize","AngularJS module for sanitizing HTML"),
--- (9,"angular-resource","AngularJS module for interacting with RESTful server-side data sources")
+(1,"bootstrap", "Bootstrap是一个用HTML，CSS和JS开发的开源工具包。使用我们的Sass变量和mixins，响应式网格系统，大量预构建组件以及基于jQuery构建的强大插件，快速构建原型或构建整个应用程序。"),
+(2,"react","React 是用于构建用户界面的JavaScript库。"),
+(3,"Rollup","Rollup 是一个 JavaScript 模块打包器,可以将小块代码编译成大块复杂的代码。"),
+(4,"Vue","Vue是一套用于构建用户界面的渐进式框架。"),
+(5,"d3","A JavaScript visualization library for HTML and SVG."),
+(6,"angular.js","AngularJS is an MVC framework for building web applications. The core features include HTML enhanced with custom component and data-binding capabilities, dependency injection and strong focus on simplicity, testability, maintainability and boiler-plate reduction."),
+(7,"angular-touch","AngularJS module for touch events and helpers for touch-enabled devices"),
+(8,"angular-sanitize","AngularJS module for sanitizing HTML"),
+(9,"angular-resource","AngularJS module for interacting with RESTful server-side data sources");
+
 INSERT INTO ver 
 (ver_id, ver_name, doc_id) 
 VALUES 
-(1, "v4.0", 1);
+(1, "v4.0", 1),
+(2, "v", 3),
+(3, "v2.x", 4);
 
 INSERT INTO page 
 (page_id, page_para, ori_url, ver_id, user_id) 
 VALUES 
-(1, "/", "http://getbootstrap.com/", "1", 1);
+(1, "/", "http://getbootstrap.com/", 1, 1),
+(2, "/", "", 2, 1),
+(3, "/", "", 3, 1);
 
--- INSERT INTO participation 
--- (part_type, part_time, page_id, user_id, html) 
--- VALUES 
--- ("original", UNIX_TIMESTAMP(), 1, 1, "http://getbootstrap.com/");
+INSERT INTO browse_record 
+(user_id, page_id, browse_times, last_browse_time) 
+VALUES 
+(1, 1, 3, now()),
+(1, 2, 3, now()),
+(1, 3, 3, now());
 
+INSERT INTO participation 
+(part_id, user_id, page_id, part_type, part_time) 
+VALUES 
+(1, 1, 1, 'original', now()),
+(2, 1, 2, 'save', now()),
+(3, 1, 3, 'c&t', now()),
+(4, 1, 1, 'proofread', now()),
+(5, 1, 2, 'c&t', now()),
+(6, 1, 3, 'c&t', now());
 
--- INSERT INTO browse_record 
--- (user_id, page_id, browse_times, last_browse_time) 
--- VALUES 
--- (1, 1, 3, now()),
--- (1, 2, 3, now()),
--- (1, 3, 3, now()),
--- (1, 4, 3, now()),
--- (1, 5, 3, now()),
--- (1, 6, 3, now()),
--- (1, 7, 3, now());
-
--- INSERT INTO participation 
--- (user_id, page_id, part_type, part_time) 
--- VALUES 
--- (1, 5, 'c&t', UNIX_TIMESTAMP()),
--- (1, 6, 'mark', UNIX_TIMESTAMP()),
--- (1, 6, 'c&t', UNIX_TIMESTAMP()),
--- (1, 6, 'proofread', UNIX_TIMESTAMP()+1),
--- (1, 7, 'mark', UNIX_TIMESTAMP()),
--- (1, 8, 'mark', UNIX_TIMESTAMP());
-
--- INSERT INTO collection 
--- (user_id, doc_id, collect_time)
--- VALUES 
--- (1, 1, now()),
--- (1, 2, now()),
--- (1, 3, now()),
--- (1, 9, now());
+INSERT INTO collection 
+(user_id, doc_id, collect_time)
+VALUES 
+(1, 1, now()),
+(1, 2, now()),
+(1, 3, now()),
+(1, 4, now());
 
 
 

@@ -38,8 +38,8 @@ class User_model extends MY_Model{
 		return $this->db
 			->select('doc_name, description, count(1) as count')
 			->where(self::TBL_PARTICIPATION . '.user_id',$user_id)
-			->join(self::TBL_DOC, self::TBL_DOC . '.doc_id = ' . self::TBL_PARTICIPATION . '.doc_id', 'left')
-			->group_by(self::TBL_DOC . '.doc_id')
+			->join(self::VIEW_DOC_VER_PAGE, self::VIEW_DOC_VER_PAGE . '.page_id = ' . self::TBL_PARTICIPATION . '.page_id', 'left')
+			->group_by(self::VIEW_DOC_VER_PAGE . '.doc_id')
 			->order_by('count', 'DESC')
 			->get(self::TBL_PARTICIPATION)
 			->result_array();
@@ -48,7 +48,7 @@ class User_model extends MY_Model{
 		return $this->db
 			->select('doc_name, description')
 			->where(self::TBL_COLLECTION . '.user_id',$user_id)
-			->join(self::TBL_DOC, self::TBL_DOC . '.doc_id = ' . self::TBL_COLLECTION . '.doc_id', 'left')
+			->join(self::VIEW_DOC_VER_PAGE, self::VIEW_DOC_VER_PAGE . '.doc_id = ' . self::TBL_COLLECTION . '.doc_id', 'left')
 			->order_by('collect_time', 'DESC')
 			->get(self::TBL_COLLECTION)
 			->result_array();
