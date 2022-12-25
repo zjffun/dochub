@@ -11,10 +11,13 @@
     "@types/react": "^18.0.26",
     "@types/react-dom": "^18.0.9",
     "axios": "^1.2.1",
+    "classnames": "^2.3.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.4.5",
     "react-scripts": "5.0.1",
+    "relation2-core": "^0.0.21",
+    "relation2-react": "^0.0.21",
     "typescript": "^4.9.4",
     "web-vitals": "^2.1.4"
   },
@@ -42,5 +45,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "sass": "^1.57.1"
   }
 }

@@ -1,0 +1,34 @@
+.relation-overview {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  &__header {
+    height: auto;
+    flex: 0 0 auto;
+    &__list {
+      display: flex;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      &__item {
+        display: var(--block-operation-display);
+      }
+    }
+  }
+  &__relations {
+    flex: 1 1 auto;
+
+    --block-operation-display: none;
+    --flex-operation-display: none;
+
+    &--show-options {
+      --block-operation-display: block;
+      --flex-operation-display: flex;
+    }
+  }
+}
+
+.optionsDialog {
+  margin: 0;
+  left: auto;
+}
