@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getListGroupByPath } from "../api";
+import Header from "../components/Header";
 import { IRelationGroupByPath } from "../types";
 
 function getHref(
@@ -18,33 +19,42 @@ function RelationList() {
   const [list, setList] = useState<IRelationGroupByPath[]>([]);
 
   const params = useParams();
-  const docName = params.id;
+  const nameId = params.nameId;
 
   useEffect(() => {
-    getListGroupByPath().then((data) => {
+    if (!nameId) return;
+
+    getListGroupByPath({
+      nameId,
+      page: 1,
+      pageSize: 20,
+    }).then((data) => {
       setList(data);
     });
   }, []);
 
   return (
-    <div>
-      <ul>
-        {list.map((item) => {
-          return (
-            <li key={item.fromPath}>
-              <a
-                target="_blank"
-                href={getHref(docName, item.fromPath, item.toPath)}
-              >
-                <span>{item.fromPath}</span>
-                <span>&nbsp;---&gt;---&nbsp;</span>
-                <span>{item.toPath}</span>
-              </a>
-            </li>
-          );
-        })}
-      </ul>
-    </div>
+    <>
+      <Header></Header>
+      <div>
+        <ul>
+          {list.map((item) => {
+            return (
+              <li key={item.fromPath}>
+                <a
+                  target="_blank"
+                  href={getHref(nameId, item.fromPath, item.toPath)}
+                >
+                  <span>{item.fromPath}</span>
+                  <span>&nbsp;---&gt;---&nbsp;</span>
+                  <span>{item.toPath}</span>
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </>
   );
 }
 

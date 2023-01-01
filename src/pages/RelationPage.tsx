@@ -1,5 +1,6 @@
 import classnames from "classnames";
 import { useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
 import { IRelationViewerData } from "relation2-core";
 import {
   CreateMode,
@@ -39,6 +40,9 @@ function RelationPage() {
     relationsWithOriginalContent: [],
   });
 
+  const params = useParams();
+  const nameId = params.nameId;
+
   const showDialog = (id: string) => {
     setCurrentUpdateCheckResultId(id);
     const relationWithOriginalContentInfo =
@@ -59,13 +63,14 @@ function RelationPage() {
     const fromPath = urlSearchParams.get("fromPath");
     const toPath = urlSearchParams.get("toPath");
 
-    if (!fromPath || !toPath) {
+    if (!fromPath || !toPath || !nameId) {
       return;
     }
 
     getRelationViewerData({
       fromPath,
       toPath,
+      nameId,
     }).then((data: any) => {
       setRelationViewerData(data);
     });
@@ -80,6 +85,11 @@ function RelationPage() {
       <main className={"relation-overview"}>
         <header className="relation-overview__header">
           <ul className="relation-overview__header__list">
+            <li className="relation-overview__header__list__item">
+              <a className="dochub__editor-name" href="/">
+                DocHub
+              </a>
+            </li>
             <li className="relation-overview__header__list__item">
               <button onClick={() => {}}>Open From File</button>
             </li>

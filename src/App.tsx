@@ -11,11 +11,11 @@ const router = createBrowserRouter([
     element: <DocumentList></DocumentList>,
   },
   {
-    path: "/doc/:id",
+    path: "/doc/:nameId",
     element: <RelationList></RelationList>,
   },
   {
-    path: "/relation/:id",
+    path: "/relation/:nameId",
     element: <RelationPage></RelationPage>,
   },
   {

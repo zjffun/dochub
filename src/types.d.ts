@@ -4,6 +4,7 @@ export interface IRelationGroupByPath {
 }
 
 export interface ICollection {
+  readonly nameId: string;
   readonly name: string;
   readonly groupName: string;
   readonly lang: string;

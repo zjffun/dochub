@@ -1,0 +1,15 @@
+.dochub {
+  &__header {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    background: #333;
+
+    &__name {
+      margin-left: 0.5em;
+      font-size: 1.8em;
+      color: #eee;
+      text-decoration: none;
+    }
+  }
+}

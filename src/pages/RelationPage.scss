@@ -3,6 +3,8 @@
   display: flex;
   flex-direction: column;
   &__header {
+    background: #333;
+    color: #eee;
     height: auto;
     flex: 0 0 auto;
     &__list {
@@ -31,4 +33,10 @@
 .optionsDialog {
   margin: 0;
   left: auto;
+}
+
+.dochub__editor-name {
+  color: #eee;
+  margin: 0 0.5em;
+  text-decoration: none;
 }
