@@ -8234,10 +8234,10 @@ relateurl@^0.2.7:
   resolved "https://registry.npmmirror.com/relateurl/-/relateurl-0.2.7.tgz#54dbf377e51440aca90a4cd274600d3ff2d888a9"
   integrity sha512-G08Dxvm4iDN3MLM0EsP62EDV9IuhXPR6blNz6Utcp7zyV3tr4HVNINt6MpaRWbxoOHT3Q7YN2P+jaHX8vUbgog==
 
-relation2-core@^0.0.21:
-  version "0.0.21"
-  resolved "https://registry.npmmirror.com/relation2-core/-/relation2-core-0.0.21.tgz#0c86b37bfd76c3d6bbb14beb87d69d7dcff93246"
-  integrity sha512-WWfHKIQGsvHu5c7JZuoUbZvLcCcjm4OfHB8gNChRkF9G9AQvoC3EFCca+xl56iaaiQyevrUItgFwu0C27YYltw==
+relation2-core@^0.0.22:
+  version "0.0.22"
+  resolved "https://registry.npmmirror.com/relation2-core/-/relation2-core-0.0.22.tgz#fbdab63d9492907137e4e8ff683fd95ba21f41d4"
+  integrity sha512-w8h9KK7zH0fs+N1/umgPWYewFU6PKvl3Agq/fkk0Rl1f5DaKznxKZvzwR9JhdrVXul5G9UofmnOAMjjshxbuKA==
   dependencies:
     diff "^5.0.0"
     fs-extra "^10.1.0"
@@ -8249,10 +8249,10 @@ relation2-core@^0.0.21:
     split-split "^0.0.2"
     unified "^10.1.2"
 
-relation2-react@^0.0.21:
-  version "0.0.21"
-  resolved "https://registry.npmmirror.com/relation2-react/-/relation2-react-0.0.21.tgz#ef4a8da9b3e811eab6b91e805facbe20123c9ed3"
-  integrity sha512-4f/nTeC8+1htipraPSuu4MGr4OUvRpCiEHIfNsFPIFFGQKNyuF76IQq/ZVmRpBmNVZNnRz7xFurEPbG4AOpqIQ==
+relation2-react@^0.0.22:
+  version "0.0.22"
+  resolved "https://registry.npmmirror.com/relation2-react/-/relation2-react-0.0.22.tgz#cb08898839271b340fa3ac64bcd9e82bce9f0e25"
+  integrity sha512-W9kYaTjN3LboRT2v/1/k7Lh/091+wgWRSXjDSnIEu6mtykqnPzKHhyCt5IBH+ASSrMRk9feRNH5EKKAA1q+eCA==
 
 remark-frontmatter@^4.0.1:
   version "4.0.1"
