@@ -47,7 +47,7 @@ function RelationPage() {
     setCurrentUpdateCheckResultId(id);
     const relationWithOriginalContentInfo =
       diffEditorRef.current.relationsWithOriginalContent.find(
-        (d) => d.id === id
+        (d: any) => d.id === id
       );
 
     if (!relationWithOriginalContentInfo) {
