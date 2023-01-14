@@ -6,6 +6,20 @@ import { ICollection } from "../types";
 
 import "./DocumentList.scss";
 
+function getTranslatedPercent(item: ICollection): number {
+  if (!item.originalLineNum || !item.translatedLineNum) {
+    return 0;
+  }
+  return Math.floor((item.originalLineNum / item.translatedLineNum) * 100);
+}
+
+function getConsistentPercent(item: ICollection): number {
+  if (!item.originalLineNum || !item.consistentLineNum) {
+    return 0;
+  }
+  return Math.floor((item.originalLineNum / item.consistentLineNum) * 100);
+}
+
 function DocumentList() {
   const [list, setList] = useState<ICollection[]>([]);
 
@@ -21,6 +35,8 @@ function DocumentList() {
       <div className="dochub-doc-list-wrapper">
         <ul className="dochub-doc-list">
           {list.map((item) => {
+            const translated = getTranslatedPercent(item);
+            const consistent = getConsistentPercent(item);
             return (
               <li className="dochub-doc-list__item" key={item.nameId}>
                 <div
@@ -37,19 +53,19 @@ function DocumentList() {
                       <div className="dochub-progress__bar">
                         <div
                           className="dochub-progress__bar__translated"
-                          style={{ width: "70%" }}
+                          style={{ right: `${100 - translated}%` }}
                         ></div>
                         <div
                           className="dochub-progress__bar__consistent"
-                          style={{ width: "50%" }}
+                          style={{ right: `${100 - consistent}%` }}
                         ></div>
                       </div>
                       <div className="dochub-progress__detail">
-                        50%{" "}
+                        {`${consistent}% `}
                         <span className="dochub-progress__detail__consistent">
                           consistent
                         </span>
-                        70%{" "}
+                        {`${translated}%`}
                         <span className="dochub-progress__detail__translated">
                           translated
                         </span>{" "}

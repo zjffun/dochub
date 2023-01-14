@@ -11,4 +11,7 @@ export interface ICollection {
   readonly desc: string;
   readonly logoUrl: string;
   readonly docUrl: string;
+  readonly originalLineNum: number;
+  readonly translatedLineNum: number;
+  readonly consistentLineNum: number;
 }

@@ -1,5 +1,7 @@
 .dochub-doc-list-wrapper {
   padding: 1.5em 0.9em;
+  background-color: #e0e0e0;
+  min-height: calc(100vh - 48px);
 }
 .dochub-doc-list {
   display: flex;
@@ -74,23 +76,24 @@
   &__bar {
     position: relative;
     height: 1.5em;
+    margin-top: 2em;
+    overflow: hidden;
     border-radius: 0.75em;
     background: #999;
-    margin-top: 2em;
 
     &__translated {
       position: absolute;
       top: 0;
-      left: 0;
       bottom: 0;
+      width: 100%;
       border-radius: 0.75em;
       background: lightsalmon;
     }
     &__consistent {
       position: absolute;
       top: 0;
-      left: 0;
       bottom: 0;
+      width: 100%;
       border-radius: 0.75em;
       background: lightgreen;
     }
@@ -101,11 +104,11 @@
     color: #666;
     margin-top: 0.5em;
     &__consistent {
-      color: lightgreen;
-      padding-right: 1em;
+      background: lightgreen;
+      margin-right: 1em;
     }
     &__translated {
-      color: lightsalmon;
+      background: lightsalmon;
     }
   }
 }
