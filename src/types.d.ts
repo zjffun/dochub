@@ -9,4 +9,6 @@ export interface ICollection {
   readonly groupName: string;
   readonly lang: string;
   readonly desc: string;
+  readonly logoUrl: string;
+  readonly docUrl: string;
 }

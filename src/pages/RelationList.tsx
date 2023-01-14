@@ -31,18 +31,19 @@ function RelationList() {
     }).then((data) => {
       setList(data);
     });
-  }, []);
+  }, [nameId]);
 
   return (
     <>
       <Header></Header>
-      <div>
-        <ul>
+      <div className="dochub-relation-list-wrapper">
+        <ul className="dochub-relation-list">
           {list.map((item) => {
             return (
-              <li key={item.fromPath}>
+              <li className="dochub-relation-list__item" key={item.fromPath}>
                 <a
                   target="_blank"
+                  rel="noreferrer"
                   href={getHref(nameId, item.fromPath, item.toPath)}
                 >
                   <span>{item.fromPath}</span>

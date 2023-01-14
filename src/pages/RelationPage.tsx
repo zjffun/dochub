@@ -74,7 +74,7 @@ function RelationPage() {
     }).then((data: any) => {
       setRelationViewerData(data);
     });
-  }, []);
+  }, [nameId]);
 
   if (!relationViewerData) {
     return null;
@@ -107,7 +107,7 @@ function RelationPage() {
               </label>
             </li>
             <li className="relation-overview__header__list__item">
-              <CreateMode onCreate={(data) => {}} />
+              <CreateMode onCreate={() => {}} />
             </li>
           </ul>
         </header>
@@ -121,10 +121,10 @@ function RelationPage() {
             relationViewerData={relationViewerData}
             options={options(showDialog)}
             ref={diffEditorRef}
-            onFromSave={(editor) => {
+            onFromSave={(editor: { getValue: () => any }) => {
               const content = editor?.getValue();
             }}
-            onToSave={(editor) => {
+            onToSave={(editor: { getValue: () => any }) => {
               const content = editor?.getValue();
             }}
           />

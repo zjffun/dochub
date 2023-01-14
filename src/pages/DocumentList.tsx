@@ -4,6 +4,8 @@ import { getCollections } from "../api";
 import Header from "../components/Header";
 import { ICollection } from "../types";
 
+import "./DocumentList.scss";
+
 function DocumentList() {
   const [list, setList] = useState<ICollection[]>([]);
 
@@ -16,16 +18,52 @@ function DocumentList() {
   return (
     <>
       <Header></Header>
-      <div>
-        <ul>
+      <div className="dochub-doc-list-wrapper">
+        <ul className="dochub-doc-list">
           {list.map((item) => {
             return (
-              <li key={item.nameId}>
-                <Link to={`/doc/${item.nameId}`}>
-                  <span>{item.name}</span>
-                  <span>&nbsp;---&nbsp;</span>
-                  <span>{item.desc}</span>
-                </Link>
+              <li className="dochub-doc-list__item" key={item.nameId}>
+                <div
+                  className="dochub-doc-list__item__bg"
+                  style={{
+                    backgroundImage: `url(${item.logoUrl})`,
+                  }}
+                ></div>
+                <a className="dochub-doc-list__item__link" href={item.docUrl}>
+                  <div className="dochub-project-card">
+                    <h2 className="dochub-project-card__name">{item.name}</h2>
+                    <p className="dochub-project-card__desc">{item.desc}</p>
+                    <div className="dochub-progress">
+                      <div className="dochub-progress__bar">
+                        <div
+                          className="dochub-progress__bar__translated"
+                          style={{ width: "70%" }}
+                        ></div>
+                        <div
+                          className="dochub-progress__bar__consistent"
+                          style={{ width: "50%" }}
+                        ></div>
+                      </div>
+                      <div className="dochub-progress__detail">
+                        50%{" "}
+                        <span className="dochub-progress__detail__consistent">
+                          consistent
+                        </span>
+                        70%{" "}
+                        <span className="dochub-progress__detail__translated">
+                          translated
+                        </span>{" "}
+                        |{" "}
+                        <Link
+                          className="dochub-progress__detail__contribute"
+                          to={`/doc/${item.nameId}`}
+                        >
+                          contribute
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </a>
               </li>
             );
           })}
