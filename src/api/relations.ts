@@ -16,7 +16,7 @@ export function getListGroupByPath({
   pageSize?: number;
   nameId: string;
 }) {
-  return client.get<any, IRelationGroupByPath[]>(
+  return client.get<any, { total: number; list: IRelationGroupByPath[] }>(
     "/relations/getListGroupByPath",
     {
       params: {

@@ -1,6 +1,9 @@
 export interface IRelationGroupByPath {
   fromPath: string;
   toPath: string;
+  originalLineNum: number;
+  translatedLineNum: number;
+  consistentLineNum: number;
 }
 
 export interface ICollection {

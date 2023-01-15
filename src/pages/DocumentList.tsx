@@ -3,22 +3,9 @@ import { Link } from "react-router-dom";
 import { getCollections } from "../api";
 import Header from "../components/Header";
 import { ICollection } from "../types";
+import { getConsistentPercent, getTranslatedPercent } from "../utils/progress";
 
 import "./DocumentList.scss";
-
-function getTranslatedPercent(item: ICollection): number {
-  if (!item.originalLineNum || !item.translatedLineNum) {
-    return 0;
-  }
-  return Math.floor((item.originalLineNum / item.translatedLineNum) * 100);
-}
-
-function getConsistentPercent(item: ICollection): number {
-  if (!item.originalLineNum || !item.consistentLineNum) {
-    return 0;
-  }
-  return Math.floor((item.originalLineNum / item.consistentLineNum) * 100);
-}
 
 function DocumentList() {
   const [list, setList] = useState<ICollection[]>([]);

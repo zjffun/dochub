@@ -6,6 +6,7 @@ import Header from "../components/Header";
 import { IRelationGroupByPath } from "../types";
 
 import "./RelationList.scss";
+import { getConsistentPercent, getTranslatedPercent } from "../utils/progress";
 
 function getHref(
   docName: string | undefined,
@@ -18,9 +19,11 @@ function getHref(
   return `/relation/${docName}?${urlSearchParams.toString()}`;
 }
 
+const pageSize = 20;
+
 function RelationList() {
   const [list, setList] = useState<IRelationGroupByPath[]>([]);
-  const [pageCount, setPageCount] = useState(10);
+  const [total, setTotal] = useState(0);
   const [forcePage, setForcePage] = useState(0);
 
   const params = useParams();
@@ -35,12 +38,22 @@ function RelationList() {
 
     getListGroupByPath({
       nameId,
-      page: 1,
-      pageSize: 20,
+      page: forcePage + 1,
+      pageSize,
     }).then((data) => {
-      setList(data);
+      if (Array.isArray(data.list)) {
+        setList(data.list);
+      } else {
+        setList([]);
+      }
+
+      if (data.total) {
+        setTotal(data.total);
+      } else {
+        setTotal(0);
+      }
     });
-  }, [nameId]);
+  }, [nameId, forcePage]);
 
   return (
     <>
@@ -50,24 +63,30 @@ function RelationList() {
           <tr className="dochub-relation-table__header">
             <th className="dochub-relation-table__th">#</th>
             <th className="dochub-relation-table__th">Name</th>
+            <th className="dochub-relation-table__th">Original</th>
             <th className="dochub-relation-table__th">Consistent</th>
             <th className="dochub-relation-table__th">Translated</th>
             <th className="dochub-relation-table__th"></th>
           </tr>
-          {list.map((item) => {
+          {list.map((item, i) => {
             return (
               <tr className="dochub-relation-table__tr" key={item.fromPath}>
                 <td className="dochub-relation-table__td dochub-relation-table__id">
-                  1
+                  {forcePage * pageSize + i + 1}
                 </td>
                 <td className="dochub-relation-table__td dochub-relation-table__name">
                   {item.toPath}
                 </td>
+                <td className="dochub-relation-table__td dochub-relation-table__original">
+                  <p>{item.originalLineNum} lines</p>
+                </td>
                 <td className="dochub-relation-table__td dochub-relation-table__consistent">
-                  1
+                  <p>{getConsistentPercent(item)}%</p>
+                  <p>{item.consistentLineNum} lines</p>
                 </td>
                 <td className="dochub-relation-table__td dochub-relation-table__translated">
-                  2
+                  <p>{getTranslatedPercent(item)}%</p>
+                  <p>{item.translatedLineNum} lines</p>
                 </td>
                 <td className="dochub-relation-table__td dochub-relation-table__operation">
                   <a href={getHref(nameId, item.fromPath, item.toPath)}>
@@ -77,21 +96,23 @@ function RelationList() {
               </tr>
             );
           })}
-          <tr className="dochub-relation-table__footer">
-            <td colSpan={5}>
-              <ReactPaginate
-                className="dochub-relation-table__pagination"
-                breakLabel="..."
-                nextLabel="next >"
-                onPageChange={handlePageClick}
-                pageRangeDisplayed={5}
-                forcePage={forcePage}
-                pageCount={pageCount}
-                previousLabel="< previous"
-                renderOnZeroPageCount={() => null}
-              />
-            </td>
-          </tr>
+          {total && (
+            <tr className="dochub-relation-table__footer">
+              <td colSpan={6}>
+                <ReactPaginate
+                  className="dochub-relation-table__pagination"
+                  breakLabel="..."
+                  nextLabel="next >"
+                  onPageChange={handlePageClick}
+                  pageRangeDisplayed={5}
+                  forcePage={forcePage}
+                  pageCount={Math.ceil(total / pageSize)}
+                  previousLabel="< previous"
+                  renderOnZeroPageCount={() => null}
+                />
+              </td>
+            </tr>
+          )}
         </table>
       </div>
     </>
