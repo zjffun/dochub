@@ -1,9 +1,10 @@
-import React from "react";
+import React, { lazy } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./App.css";
 import DocumentList from "./pages/DocumentList";
-import RelationList from "./pages/RelationList";
-import RelationPage from "./pages/RelationPage";
+
+const RelationList = lazy(() => import("./pages/RelationList"));
+const RelationPage = lazy(() => import("./pages/RelationPage"));
 
 const router = createBrowserRouter([
   {
@@ -12,15 +13,19 @@ const router = createBrowserRouter([
   },
   {
     path: "/doc/:nameId",
-    element: <RelationList></RelationList>,
+    element: (
+      <React.Suspense fallback={<>...</>}>
+        <RelationList></RelationList>
+      </React.Suspense>
+    ),
   },
   {
     path: "/relation/:nameId",
-    element: <RelationPage></RelationPage>,
-  },
-  {
-    path: "/aa",
-    element: <div>Hello world!aa</div>,
+    element: (
+      <React.Suspense fallback={<>...</>}>
+        <RelationPage></RelationPage>
+      </React.Suspense>
+    ),
   },
 ]);
 
