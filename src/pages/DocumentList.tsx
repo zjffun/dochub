@@ -48,12 +48,12 @@ function DocumentList() {
                           ></div>
                         </div>
                         <div className="dochub-progress__detail">
-                          {`${consistent}% `}
                           <span className="dochub-progress__detail__consistent">
+                            {`${consistent}% `}
                             consistent
                           </span>
-                          {`${translated}%`}
                           <span className="dochub-progress__detail__translated">
+                            {`${translated}%`}
                             translated
                           </span>{" "}
                           |{" "}
