@@ -90,7 +90,7 @@ function RelationPage() {
                 DocHub
               </a>
             </li>
-            <li className="relation-overview__header__list__item">
+            {/* <li className="relation-overview__header__list__item">
               <button onClick={() => {}}>Open From File</button>
             </li>
             <li className="relation-overview__header__list__item">
@@ -108,7 +108,7 @@ function RelationPage() {
             </li>
             <li className="relation-overview__header__list__item">
               <CreateMode onCreate={() => {}} />
-            </li>
+            </li> */}
           </ul>
         </header>
         <section

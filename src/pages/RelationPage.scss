@@ -21,11 +21,11 @@
     flex: 1 1 auto;
 
     --block-operation-display: none;
-    --flex-operation-display: none;
+    --relation-link__options-display: none;
 
     &--show-options {
       --block-operation-display: block;
-      --flex-operation-display: flex;
+      --relation-link__options-display: block;
     }
   }
 }
