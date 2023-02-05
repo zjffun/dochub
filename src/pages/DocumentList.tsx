@@ -12,7 +12,7 @@ function DocumentList() {
 
   useEffect(() => {
     getCollections().then((data) => {
-      setList(data);
+      setList(data.list);
     });
   }, []);
 

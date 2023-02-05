@@ -17,7 +17,7 @@ export function getListGroupByPath({
   nameId: string;
 }) {
   return client.get<any, { total: number; list: IRelationGroupByPath[] }>(
-    "/api/relations/getListGroupByPath",
+    "/api/relations/path-list",
     {
       params: {
         page,
@@ -33,7 +33,7 @@ export function getRelationViewerData({
   toPath,
   nameId,
 }: IGetRelationViewerDataParam) {
-  return client.get<any, any[]>("/api/relations/getRelationViewerData", {
+  return client.get<any, any[]>("/api/relations/viewer-data", {
     params: {
       fromPath,
       toPath,

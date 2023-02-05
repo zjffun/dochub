@@ -72,8 +72,8 @@ function RelationList() {
               <th className="dochub-relation-table__th">#</th>
               <th className="dochub-relation-table__th">Name</th>
               <th className="dochub-relation-table__th">Original</th>
-              <th className="dochub-relation-table__th">Consistent</th>
               <th className="dochub-relation-table__th">Translated</th>
+              <th className="dochub-relation-table__th">Consistent</th>
               <th className="dochub-relation-table__th"></th>
             </tr>
           </thead>
@@ -90,13 +90,13 @@ function RelationList() {
                   <td className="dochub-relation-table__td dochub-relation-table__original">
                     <p>{item.originalLineNum} lines</p>
                   </td>
-                  <td className="dochub-relation-table__td dochub-relation-table__consistent">
-                    <p>{getConsistentPercent(item)}%</p>
-                    <p>{item.consistentLineNum} lines</p>
-                  </td>
                   <td className="dochub-relation-table__td dochub-relation-table__translated">
                     <p>{getTranslatedPercent(item)}%</p>
                     <p>{item.translatedLineNum} lines</p>
+                  </td>
+                  <td className="dochub-relation-table__td dochub-relation-table__consistent">
+                    <p>{getConsistentPercent(item)}%</p>
+                    <p>{item.consistentLineNum} lines</p>
                   </td>
                   <td className="dochub-relation-table__td dochub-relation-table__operation">
                     <a href={getHref(nameId, item.fromPath, item.toPath)}>
