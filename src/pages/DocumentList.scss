@@ -1,5 +1,5 @@
 .dochub-doc-list-wrapper {
-  padding: 1.5em 0.9em;
+  padding: 1.5rem 1rem;
   background-color: #e0e0e0;
   min-height: calc(100vh - 48px);
 }
@@ -32,12 +32,6 @@
       }
     }
 
-    &__link {
-      display: block;
-      padding: 1.8em 1.8em 0.8em 1.8em;
-      text-decoration: none;
-    }
-
     &__bg {
       background-repeat: no-repeat;
       background-size: contain;
@@ -47,6 +41,19 @@
 }
 
 .dochub-project-card {
+  position: relative;
+  padding: 1.8em 1.8em 0.8em 1.8em;
+
+  &__link {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    cursor: pointer;
+  }
+
   &__name {
     font-size: 1.5em;
     color: #333;
@@ -103,6 +110,8 @@
       background: lightsalmon;
     }
     &__contribute {
+      position: relative;
+      z-index: 2;
       background: #e0e0e0;
     }
   }

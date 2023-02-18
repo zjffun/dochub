@@ -1,7 +1,9 @@
 import React, { lazy } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import "./App.css";
 import DocumentList from "./pages/DocumentList";
+import Store from "./store";
+
+import "./App.css";
 
 const RelationList = lazy(() => import("./pages/RelationList"));
 const RelationPage = lazy(() => import("./pages/RelationPage"));
@@ -56,9 +58,11 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <div className="App">
-      <RouterProvider router={router} />
-    </div>
+    <Store>
+      <div className="App">
+        <RouterProvider router={router} />
+      </div>
+    </Store>
   );
 }
 

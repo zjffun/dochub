@@ -1,0 +1,63 @@
+.dochub {
+  &__user-menu {
+    position: relative;
+    &__summary {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+
+      &::marker {
+        display: none;
+      }
+
+      &__avatar {
+        border-radius: 4px;
+        margin-right: 4px;
+      }
+    }
+    &__list {
+      position: absolute;
+      left: auto;
+      right: 0;
+      width: 180px;
+      margin-top: 8px;
+      padding: 0.5em 0;
+      background: #fff;
+      border: 1px solid #999;
+      border-radius: 8px;
+      z-index: 10;
+      &::before {
+        position: absolute;
+        left: auto;
+        right: 9px;
+        top: -16px;
+        border: 8px solid #0000;
+        border-bottom: 8px solid #fff;
+        content: "";
+      }
+      &__item {
+        padding: 0.2em 1em;
+        cursor: pointer;
+        &:hover {
+          background: lightskyblue;
+        }
+      }
+      &__divider {
+        border-top: 1px solid #999;
+        margin: 0.2rem 0;
+      }
+    }
+
+    .dropdown-caret {
+      color: #fff;
+      border-bottom-color: #0000;
+      border-left-color: #0000;
+      border-right-color: #0000;
+      border-style: solid;
+      border-width: 4px 4px 0;
+      height: 0;
+      width: 0;
+      content: "";
+    }
+  }
+}

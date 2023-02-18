@@ -6,10 +6,14 @@
     background: #333;
 
     &__name {
-      margin-left: 0.5em;
+      margin-left: 1rem;
       font-size: 1.8em;
       color: #eee;
       text-decoration: none;
+    }
+
+    &__right {
+      margin-right: 1rem;
     }
   }
 }
