@@ -1,14 +1,12 @@
-import { useContext, useState } from "react";
-import { StoreContext } from "../store";
+import { useState } from "react";
+import { useStoreContext } from "../store";
 import openSignInWindow from "../utils/openSignInWindow";
 import UserMenu from "./UserMenu";
 
 import "./Header.scss";
 
 function Header() {
-  const { userInfo } = useContext(StoreContext);
-
-  const [isOpeningSignInIframe, setIsOpeningSignInIframe] = useState(false);
+  const { userInfo } = useStoreContext();
 
   return (
     <header className="dochub__header">

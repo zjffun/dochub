@@ -6,6 +6,7 @@
     background: #333;
     color: #eee;
     height: auto;
+    padding: 0 0.5rem;
     flex: 0 0 auto;
     &__list {
       display: flex;
@@ -13,6 +14,7 @@
       margin: 0;
       padding: 0;
       &__item {
+        margin: 0 0.25rem;
         display: var(--block-operation-display);
       }
     }
@@ -37,6 +39,5 @@
 
 .dochub__editor-name {
   color: #eee;
-  margin: 0 0.5em;
   text-decoration: none;
 }

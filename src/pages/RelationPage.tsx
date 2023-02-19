@@ -1,13 +1,12 @@
 import classnames from "classnames";
 import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { IRelationViewerData } from "relation2-core";
-import {
-  CreateMode,
-  IRelationEditorRef,
-  RelationEditor,
-} from "relation2-react";
+import { IRelationEditorRef, RelationEditor } from "relation2-react";
 import { getRelationViewerData } from "../api";
+import { saveTranslatedContent } from "../api/translatedContent";
+import UserMenu from "../components/UserMenu";
+import { useStoreContext } from "../store";
 
 import "./RelationPage.scss";
 
@@ -25,18 +24,23 @@ const options = (showDialog: (id: string) => void) => (data: any) => {
 };
 
 function RelationPage() {
+  const navigate = useNavigate();
+  const { userInfo } = useStoreContext();
+
   const [showOptions, setShowOptions] = useState(false);
   const [updateRelationDialogVisible, setUpdateRelationDialogVisible] =
     useState(false);
   const [updateRelationData, setUpdateRelationData] = useState<any>(null);
   const [currentUpdateCheckResultId, setCurrentUpdateCheckResultId] =
     useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
   const [relationViewerData, setRelationViewerData] = useState<
     IRelationViewerData | undefined
   >();
 
-  const diffEditorRef = useRef<IRelationEditorRef>({
+  const diffEditorRef = useRef<IRelationEditorRef & { current: any }>({
+    current: null,
     relationsWithOriginalContent: [],
   });
 
@@ -56,6 +60,37 @@ function RelationPage() {
     }
 
     setUpdateRelationDialogVisible(true);
+  };
+
+  const handleSave = (editor: { getValue: () => any }) => {
+    const content = editor?.getValue();
+    const fromPath = relationViewerData?.fromPath;
+    const toPath = relationViewerData?.toPath;
+    const userName = userInfo?.login;
+
+    if (
+      nameId === undefined ||
+      fromPath === undefined ||
+      toPath === undefined ||
+      userName === undefined
+    ) {
+      throw Error("Invalid params nameId, fromPath, toPath, userName");
+    }
+
+    setIsSaving(true);
+    saveTranslatedContent({
+      fromPath,
+      toPath,
+      nameId,
+      content,
+    })
+      .then(({ title }) => {
+        const to = `/${userName}/${nameId}/${title}${window.location.search}`;
+        navigate(to);
+      })
+      .finally(() => {
+        setIsSaving(false);
+      });
   };
 
   useEffect(() => {
@@ -90,25 +125,13 @@ function RelationPage() {
                 DocHub
               </a>
             </li>
+            <li style={{ flex: "1 1 auto" }}></li>
             {/* <li className="relation-overview__header__list__item">
-              <button onClick={() => {}}>Open From File</button>
-            </li>
-            <li className="relation-overview__header__list__item">
-              <button onClick={() => {}}>Open To File</button>
-            </li>
-            <li className="relation-overview__header__list__item">
-              <label>
-                <input
-                  type="checkbox"
-                  checked={showOptions}
-                  onChange={(e) => setShowOptions(e.target.checked)}
-                />
-                Show Options
-              </label>
-            </li>
-            <li className="relation-overview__header__list__item">
-              <CreateMode onCreate={() => {}} />
+              <button onClick={() => {}}>Edit</button>
             </li> */}
+            <li className="relation-overview__header__list__item">
+              <UserMenu></UserMenu>
+            </li>
           </ul>
         </header>
         <section
@@ -124,9 +147,7 @@ function RelationPage() {
             onFromSave={(editor: { getValue: () => any }) => {
               const content = editor?.getValue();
             }}
-            onToSave={(editor: { getValue: () => any }) => {
-              const content = editor?.getValue();
-            }}
+            onToSave={handleSave}
           />
         </section>
       </main>

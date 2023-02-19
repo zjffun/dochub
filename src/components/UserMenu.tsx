@@ -20,7 +20,6 @@ function UserMenu() {
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
-      console.log("UserMenu.tsx:19", e);
       setIsOpeningMenu(false);
     };
 

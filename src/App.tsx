@@ -54,6 +54,14 @@ const router = createBrowserRouter([
       },
     ],
   },
+  {
+    path: "/:userName/:nameId/:title",
+    element: (
+      <React.Suspense fallback={<>...</>}>
+        <RelationPage></RelationPage>
+      </React.Suspense>
+    ),
+  },
 ]);
 
 function App() {

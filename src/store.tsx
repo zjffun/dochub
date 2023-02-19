@@ -1,7 +1,8 @@
-import React, { FC, useEffect } from "react";
+import React, { FC, useContext, useEffect } from "react";
 import { getUser } from "./api";
 
 export interface IUserInfo {
+  login: string;
   name: string;
   role: string;
   avatarUrl: string;
@@ -55,5 +56,7 @@ const Store: FC<{ children: any }> = ({ children }) => {
     <StoreContext.Provider value={store}>{children}</StoreContext.Provider>
   );
 };
+
+export const useStoreContext = () => useContext(StoreContext);
 
 export default Store;
