@@ -1,48 +1,45 @@
 import { useEffect, useState } from "react";
 import ReactPaginate from "react-paginate";
-import { useParams } from "react-router-dom";
-import { getListGroupByPath } from "../api";
+import { getDocs } from "../api";
 import Header from "../components/Header";
-import { IRelationGroupByPath } from "../types";
+import { IDoc } from "../types";
 
 import Loading from "../components/Loading";
 import { getConsistentPercent, getTranslatedPercent } from "../utils/progress";
 import "./RelationList.scss";
-
-function getHref(
-  docName: string | undefined,
-  fromPath: string,
-  toPath: string
-) {
-  const urlSearchParams = new URLSearchParams();
-  urlSearchParams.set("fromPath", fromPath);
-  urlSearchParams.set("toPath", toPath);
-  return `/relation/${docName}?${urlSearchParams.toString()}`;
-}
+import { Link } from "react-router-dom";
+import { useStoreContext } from "../store";
 
 const pageSize = 20;
 
 function RelationList() {
-  const [list, setList] = useState<IRelationGroupByPath[]>([]);
+  const { userInfo } = useStoreContext();
+
+  const [list, setList] = useState<IDoc[]>([]);
   const [total, setTotal] = useState(0);
   const [forcePage, setForcePage] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  const params = useParams();
-  const nameId = params.nameId;
+  function getTranslateLink(path: string) {
+    if (userInfo?.login) {
+      return `/translate${path}`;
+    }
+
+    return `/preview${path}`;
+  }
 
   function handlePageClick(data: any) {
     setForcePage(data.selected);
   }
 
   useEffect(() => {
-    if (!nameId) return;
     setLoading(true);
 
-    getListGroupByPath({
-      nameId,
+    getDocs({
       page: forcePage + 1,
       pageSize,
+      path: window.location.pathname,
+      depth: 999,
     })
       .then((data) => {
         if (Array.isArray(data.list)) {
@@ -60,7 +57,7 @@ function RelationList() {
       .finally(() => {
         setLoading(false);
       });
-  }, [nameId, forcePage]);
+  }, [forcePage]);
 
   return (
     <>
@@ -80,12 +77,12 @@ function RelationList() {
           <tbody>
             {list.map((item, i) => {
               return (
-                <tr className="dochub-relation-table__tr" key={item.fromPath}>
+                <tr className="dochub-relation-table__tr" key={item.path}>
                   <td className="dochub-relation-table__td dochub-relation-table__id">
                     {forcePage * pageSize + i + 1}
                   </td>
                   <td className="dochub-relation-table__td dochub-relation-table__name">
-                    {item.toPath}
+                    {item.path}
                   </td>
                   <td className="dochub-relation-table__td dochub-relation-table__original">
                     <p>{item.originalLineNum} lines</p>
@@ -99,9 +96,7 @@ function RelationList() {
                     <p>{item.consistentLineNum} lines</p>
                   </td>
                   <td className="dochub-relation-table__td dochub-relation-table__operation">
-                    <a href={getHref(nameId, item.fromPath, item.toPath)}>
-                      translate
-                    </a>
+                    <Link to={getTranslateLink(item.path)}>translate</Link>
                   </td>
                 </tr>
               );

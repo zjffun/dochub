@@ -1,6 +1,7 @@
 import classnames from "classnames";
 import { useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
 import { IRelationViewerData } from "relation2-core";
 import { IRelationEditorRef, RelationEditor } from "relation2-react";
 import { getRelationViewerData } from "../api";
@@ -8,7 +9,9 @@ import { saveTranslatedContent } from "../api/translatedContent";
 import UserMenu from "../components/UserMenu";
 import { useStoreContext } from "../store";
 
+import "react-toastify/dist/ReactToastify.css";
 import "./RelationPage.scss";
+import openSignInWindow from "../utils/openSignInWindow";
 
 const options = (showDialog: (id: string) => void) => (data: any) => {
   const OptionsComponent = () => {
@@ -26,6 +29,10 @@ const options = (showDialog: (id: string) => void) => (data: any) => {
 function RelationPage() {
   const navigate = useNavigate();
   const { userInfo } = useStoreContext();
+  const pathname = window.location.pathname;
+  const search = window.location.search;
+  const type = pathname.split("/")[1];
+  const docPath = pathname.replace(new RegExp(`^/${type}`), "");
 
   const [showOptions, setShowOptions] = useState(false);
   const [updateRelationDialogVisible, setUpdateRelationDialogVisible] =
@@ -44,8 +51,7 @@ function RelationPage() {
     relationsWithOriginalContent: [],
   });
 
-  const params = useParams();
-  const nameId = params.nameId;
+  const titleHref = `${pathname}${search}`;
 
   const showDialog = (id: string) => {
     setCurrentUpdateCheckResultId(id);
@@ -64,29 +70,28 @@ function RelationPage() {
 
   const handleSave = (editor: { getValue: () => any }) => {
     const content = editor?.getValue();
-    const fromPath = relationViewerData?.fromPath;
-    const toPath = relationViewerData?.toPath;
-    const userName = userInfo?.login;
 
-    if (
-      nameId === undefined ||
-      fromPath === undefined ||
-      toPath === undefined ||
-      userName === undefined
-    ) {
-      throw Error("Invalid params nameId, fromPath, toPath, userName");
+    if (!userInfo) {
+      openSignInWindow();
+      return;
     }
 
     setIsSaving(true);
     saveTranslatedContent({
-      fromPath,
-      toPath,
-      nameId,
+      path: docPath,
       content,
     })
-      .then(({ title }) => {
-        const to = `/${userName}/${nameId}/${title}${window.location.search}`;
-        navigate(to);
+      .then(({ path }) => {
+        toast.success("Translated content saved.");
+
+        if (path !== docPath) {
+          const to = `/${type}${path}${search}`;
+          navigate(to);
+        }
+      })
+      .catch((e) => {
+        toast.error("Failed to save translated content.");
+        console.error(e);
       })
       .finally(() => {
         setIsSaving(false);
@@ -94,22 +99,12 @@ function RelationPage() {
   };
 
   useEffect(() => {
-    const urlSearchParams = new URLSearchParams(window.location.search);
-    const fromPath = urlSearchParams.get("fromPath");
-    const toPath = urlSearchParams.get("toPath");
-
-    if (!fromPath || !toPath || !nameId) {
-      return;
-    }
-
     getRelationViewerData({
-      fromPath,
-      toPath,
-      nameId,
+      path: docPath,
     }).then((data: any) => {
       setRelationViewerData(data);
     });
-  }, [nameId]);
+  }, [docPath]);
 
   if (!relationViewerData) {
     return null;
@@ -121,14 +116,26 @@ function RelationPage() {
         <header className="relation-overview__header">
           <ul className="relation-overview__header__list">
             <li className="relation-overview__header__list__item">
-              <a className="dochub__editor-name" href="/">
-                DocHub
-              </a>
+              <h1>
+                <a className="dochub__editor-name" href="/">
+                  DocHub
+                </a>
+              </h1>
+            </li>
+            <li className="relation-overview__header__list__item">
+              <h2>
+                <a className="dochub__editor-title" href={titleHref}>
+                  {docPath}
+                </a>
+              </h2>
             </li>
             <li style={{ flex: "1 1 auto" }}></li>
             {/* <li className="relation-overview__header__list__item">
               <button onClick={() => {}}>Edit</button>
             </li> */}
+            <li className="relation-overview__header__list__item">
+              <button>Save</button>
+            </li>
             <li className="relation-overview__header__list__item">
               <UserMenu></UserMenu>
             </li>
@@ -151,6 +158,18 @@ function RelationPage() {
           />
         </section>
       </main>
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
     </div>
   );
 }

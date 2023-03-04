@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getCollections } from "../api";
+import { getDocs } from "../api";
 import Header from "../components/Header";
-import { ICollection } from "../types";
+import { IDoc } from "../types";
 import { getConsistentPercent, getTranslatedPercent } from "../utils/progress";
 
 import "./DocumentList.scss";
 
 function DocumentList() {
-  const [list, setList] = useState<ICollection[]>([]);
+  const [list, setList] = useState<IDoc[]>([]);
 
   useEffect(() => {
-    getCollections().then((data) => {
+    getDocs().then((data) => {
       setList(data.list);
     });
   }, []);
@@ -25,7 +25,7 @@ function DocumentList() {
             const translated = getTranslatedPercent(item);
             const consistent = getConsistentPercent(item);
             return (
-              <li className="dochub-doc-list__item" key={item.nameId}>
+              <li className="dochub-doc-list__item" key={item.name}>
                 <div
                   className="dochub-doc-list__item__bg"
                   style={{
@@ -61,7 +61,7 @@ function DocumentList() {
                         |{" "}
                         <Link
                           className="dochub-progress__detail__contribute"
-                          to={`/doc/${item.nameId}`}
+                          to={item.path}
                         >
                           contribute
                         </Link>

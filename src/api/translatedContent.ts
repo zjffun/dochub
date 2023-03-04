@@ -1,20 +1,14 @@
 import client from "./client";
 
 export function saveTranslatedContent({
-  fromPath,
-  toPath,
-  nameId,
+  path,
   content,
 }: {
-  fromPath: string;
-  toPath: string;
-  nameId: string;
+  path: string;
   content: string;
 }) {
-  return client.post<any, { title: string }>("/api/translated-content", {
-    fromPath,
-    toPath,
-    nameId,
+  return client.post<any, { path: string }>("/api/translated-content", {
+    path,
     content,
   });
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import ReactPaginate from "react-paginate";
-import { getCollections } from "../../api";
+import { getDocs } from "../../api";
 import {
   addRelations,
   deleteRelations,
@@ -8,7 +8,7 @@ import {
 } from "../../api/admin";
 import Header from "../../components/Header";
 import Loading from "../../components/Loading";
-import { ICollection } from "../../types";
+import { IDoc } from "../../types";
 import {
   getConsistentPercent,
   getTranslatedPercent,
@@ -18,7 +18,7 @@ import "./CollectionsPage.scss";
 const pageSize = 20;
 
 function AdminCollections() {
-  const [list, setList] = useState<ICollection[]>([]);
+  const [list, setList] = useState<IDoc[]>([]);
   const [total, setTotal] = useState(0);
   const [forcePage, setForcePage] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -30,7 +30,7 @@ function AdminCollections() {
   async function fetchList(forcePage: number) {
     setLoading(true);
 
-    getCollections(forcePage + 1, pageSize)
+    getDocs({ page: forcePage + 1, pageSize })
       .then((data) => {
         if (Array.isArray(data.list)) {
           setList(data.list);
@@ -49,7 +49,7 @@ function AdminCollections() {
       });
   }
 
-  async function handleImportRelationsClick(nameId: string) {
+  async function handleImportRelationsClick(collectionName: string) {
     const input = document.createElement("input");
     input.type = "file";
     input.accept = ".json";
@@ -62,7 +62,7 @@ function AdminCollections() {
         const text = e.target?.result;
         const relations = JSON.parse(text as string);
         relations.forEach((d: any) => {
-          d.nameId = nameId;
+          d.collectionName = collectionName;
         });
 
         await addRelations(relations);
@@ -73,24 +73,24 @@ function AdminCollections() {
     input.click();
   }
 
-  async function handleDeleteAllRelationsClick(nameId: string) {
+  async function handleDeleteAllRelationsClick(collectionName: string) {
     const res = window.confirm(
-      `Are you sure to delete all [${nameId}] relations?`
+      `Are you sure to delete all [${collectionName}] relations?`
     );
 
     if (res) {
-      await deleteRelations(nameId);
+      await deleteRelations(collectionName);
       await fetchList(forcePage);
     }
   }
 
-  async function handleUpdateProgressInfoClick(nameId: string) {
+  async function handleUpdateProgressInfoClick(collectionName: string) {
     const res = window.confirm(
-      `Are you sure to update [${nameId}] progress info?`
+      `Are you sure to update [${collectionName}] progress info?`
     );
 
     if (res) {
-      await updateProgressInfo(nameId);
+      await updateProgressInfo(collectionName);
       await fetchList(forcePage);
     }
   }
@@ -108,7 +108,7 @@ function AdminCollections() {
             <tr className="dochub-admin-collections__header">
               <th className="dochub-admin-collections__th">#</th>
               <th className="dochub-admin-collections__th">Name</th>
-              <th className="dochub-admin-collections__th">NameId</th>
+              <th className="dochub-admin-collections__th">collectionName</th>
               <th className="dochub-admin-collections__th">Original</th>
               <th className="dochub-admin-collections__th">Translated</th>
               <th className="dochub-admin-collections__th">Consistent</th>
@@ -118,7 +118,7 @@ function AdminCollections() {
           <tbody>
             {list.map((item, i) => {
               return (
-                <tr className="dochub-admin-collections__tr" key={item.nameId}>
+                <tr className="dochub-admin-collections__tr" key={item.path}>
                   <td className="dochub-admin-collections__td dochub-admin-collections__id">
                     {forcePage * pageSize + i + 1}
                   </td>
@@ -126,7 +126,7 @@ function AdminCollections() {
                     {item.name}
                   </td>
                   <td className="dochub-admin-collections__td dochub-admin-collections__name">
-                    {item.nameId}
+                    {item.path}
                   </td>
                   <td className="dochub-admin-collections__td dochub-admin-collections__original">
                     <p>{item.originalLineNum} lines</p>
@@ -141,17 +141,17 @@ function AdminCollections() {
                   </td>
                   <td className="dochub-admin-collections__td dochub-admin-collections__operation">
                     <button
-                      onClick={() => handleImportRelationsClick(item.nameId)}
+                      onClick={() => handleImportRelationsClick(item.path)}
                     >
                       Import Relations
                     </button>
                     <button
-                      onClick={() => handleDeleteAllRelationsClick(item.nameId)}
+                      onClick={() => handleDeleteAllRelationsClick(item.path)}
                     >
                       Delete All Relations
                     </button>
                     <button
-                      onClick={() => handleUpdateProgressInfoClick(item.nameId)}
+                      onClick={() => handleUpdateProgressInfoClick(item.path)}
                     >
                       Update Progress Info
                     </button>

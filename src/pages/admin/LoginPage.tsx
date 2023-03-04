@@ -20,7 +20,7 @@ function AdminLogin() {
         fromData.get("password") as string
       );
       localStorage.setItem("access_token", access_token);
-      navigate("/admin/collections");
+      navigate("/admin/collection");
     }
   }
 

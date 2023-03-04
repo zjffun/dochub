@@ -14,29 +14,16 @@ const AdminLogin = lazy(() => import("./pages/admin/LoginPage"));
 
 const router = createBrowserRouter([
   {
+    id: "home",
     path: "/",
     element: <DocumentList></DocumentList>,
   },
   {
-    path: "/doc/:nameId",
-    element: (
-      <React.Suspense fallback={<>...</>}>
-        <RelationList></RelationList>
-      </React.Suspense>
-    ),
-  },
-  {
-    path: "/relation/:nameId",
-    element: (
-      <React.Suspense fallback={<>...</>}>
-        <RelationPage></RelationPage>
-      </React.Suspense>
-    ),
-  },
-  {
+    id: "admin",
     path: "/admin",
     children: [
       {
+        id: "admin-login",
         path: "login",
         element: (
           <React.Suspense fallback={<>...</>}>
@@ -45,7 +32,8 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "collections",
+        id: "admin-collection",
+        path: "collection",
         element: (
           <React.Suspense fallback={<>...</>}>
             <AdminCollections></AdminCollections>
@@ -55,10 +43,45 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/:userName/:nameId/:title",
+    id: "user",
+    path: "/user",
+    children: [
+      {
+        id: "user-home",
+        path: ":login",
+        element: (
+          <React.Suspense fallback={<>...</>}>
+            {/* TODO: user home */}
+            <RelationPage></RelationPage>
+          </React.Suspense>
+        ),
+      },
+    ],
+  },
+  {
+    id: "preview",
+    path: "preview/*",
     element: (
       <React.Suspense fallback={<>...</>}>
         <RelationPage></RelationPage>
+      </React.Suspense>
+    ),
+  },
+  {
+    id: "translate",
+    path: "translate/*",
+    element: (
+      <React.Suspense fallback={<>...</>}>
+        <RelationPage></RelationPage>
+      </React.Suspense>
+    ),
+  },
+  {
+    id: "doc",
+    path: "/*",
+    element: (
+      <React.Suspense fallback={<>...</>}>
+        <RelationList></RelationList>
       </React.Suspense>
     ),
   },

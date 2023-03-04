@@ -1,17 +1,8 @@
-export interface IRelationGroupByPath {
-  fromPath: string;
-  toPath: string;
-  originalLineNum: number;
-  translatedLineNum: number;
-  consistentLineNum: number;
-}
-
-export interface ICollection {
-  readonly nameId: string;
+export interface IDoc {
+  readonly path: string;
   readonly name: string;
-  readonly groupName: string;
-  readonly lang: string;
   readonly desc: string;
+  readonly lang: string;
   readonly logoUrl: string;
   readonly docUrl: string;
   readonly originalLineNum: number;
