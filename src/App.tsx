@@ -5,7 +5,8 @@ import Store from "./store";
 
 import "./App.css";
 
-const RelationList = lazy(() => import("./pages/RelationList"));
+const CreateDoc = lazy(() => import("./pages/CreateDoc"));
+const DocList = lazy(() => import("./pages/DocList"));
 const RelationPage = lazy(() => import("./pages/RelationPage"));
 
 // admin
@@ -59,6 +60,15 @@ const router = createBrowserRouter([
     ],
   },
   {
+    id: "new",
+    path: "new/*",
+    element: (
+      <React.Suspense fallback={<>...</>}>
+        <CreateDoc></CreateDoc>
+      </React.Suspense>
+    ),
+  },
+  {
     id: "preview",
     path: "preview/*",
     element: (
@@ -81,7 +91,7 @@ const router = createBrowserRouter([
     path: "/*",
     element: (
       <React.Suspense fallback={<>...</>}>
-        <RelationList></RelationList>
+        <DocList></DocList>
       </React.Suspense>
     ),
   },

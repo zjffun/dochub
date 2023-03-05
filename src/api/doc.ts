@@ -19,3 +19,7 @@ export function getDocs(params: GetDocsParams = {}) {
     params: getDocsParams,
   });
 }
+
+export function createDoc(doc: IDoc) {
+  return client.post<any, IDoc>("/api/doc", doc);
+}

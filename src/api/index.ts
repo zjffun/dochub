@@ -1,3 +1,3 @@
-export * from "./docs";
-export * from "./relations";
-export * from "./users";
+export * from "./doc";
+export * from "./relation";
+export * from "./user";

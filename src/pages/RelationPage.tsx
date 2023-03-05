@@ -8,10 +8,11 @@ import { getRelationViewerData } from "../api";
 import { saveTranslatedContent } from "../api/translatedContent";
 import UserMenu from "../components/UserMenu";
 import { useStoreContext } from "../store";
+import openSignInWindow from "../utils/openSignInWindow";
+import pathInfo from "../utils/pathInfo";
 
 import "react-toastify/dist/ReactToastify.css";
 import "./RelationPage.scss";
-import openSignInWindow from "../utils/openSignInWindow";
 
 const options = (showDialog: (id: string) => void) => (data: any) => {
   const OptionsComponent = () => {
@@ -27,12 +28,11 @@ const options = (showDialog: (id: string) => void) => (data: any) => {
 };
 
 function RelationPage() {
+  const search = window.location.search;
+  const { pathname, type, docPath } = pathInfo();
+
   const navigate = useNavigate();
   const { userInfo } = useStoreContext();
-  const pathname = window.location.pathname;
-  const search = window.location.search;
-  const type = pathname.split("/")[1];
-  const docPath = pathname.replace(new RegExp(`^/${type}`), "");
 
   const [showOptions, setShowOptions] = useState(false);
   const [updateRelationDialogVisible, setUpdateRelationDialogVisible] =

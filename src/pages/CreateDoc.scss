@@ -1,0 +1,15 @@
+.dochub-create-doc {
+  &-container {
+    max-width: 900px;
+    padding: 1.5em 0.9em;
+    margin: 0 auto;
+  }
+  &-form {
+    &__item {
+      margin-bottom: 0.5rem;
+      &__label {
+        display: block;
+      }
+    }
+  }
+}
