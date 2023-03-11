@@ -1,6 +1,6 @@
 export function getTranslatedPercent(item: {
-  originalLineNum: number;
-  translatedLineNum: number;
+  originalLineNum?: number;
+  translatedLineNum?: number;
 }): number {
   if (!item.originalLineNum || !item.translatedLineNum) {
     return 0;
@@ -9,8 +9,8 @@ export function getTranslatedPercent(item: {
 }
 
 export function getConsistentPercent(item: {
-  originalLineNum: number;
-  consistentLineNum: number;
+  originalLineNum?: number;
+  consistentLineNum?: number;
 }): number {
   if (!item.originalLineNum || !item.consistentLineNum) {
     return 0;
