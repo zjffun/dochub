@@ -1,0 +1,63 @@
+.dochub-doc-list {
+  &-container {
+    max-width: 900px;
+    padding: 1.5em 0.9em;
+    margin: 0 auto;
+  }
+  &-navigation {
+    display: flex;
+  }
+  &-table {
+    width: 100%;
+    &__header {
+      position: sticky;
+      top: 0;
+      background: #ddd;
+    }
+    &__th {
+      padding: 1em;
+    }
+
+    &__tr {
+      border-bottom: 1px solid #ddd;
+
+      &:hover {
+        background: #f5f5f5;
+      }
+    }
+    &__td {
+      padding: 1em;
+    }
+    &__name {
+      word-break: break-all;
+    }
+    &__id,
+    &__consistent,
+    &__translated,
+    &__operation {
+      min-width: max-content;
+    }
+
+    &__footer {
+      position: sticky;
+      bottom: 0;
+    }
+
+    &__pagination {
+      background: #f5f5f5;
+      display: flex;
+      li {
+        a {
+          display: block;
+          padding: 1em;
+        }
+        &.selected {
+          a {
+            color: royalblue;
+          }
+          background: #ddd;
+        }
+      }
+    }
+  }
+}

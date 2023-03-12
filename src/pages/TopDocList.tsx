@@ -5,9 +5,9 @@ import Header from "../components/Header";
 import { IDoc } from "../types";
 import { getConsistentPercent, getTranslatedPercent } from "../utils/progress";
 
-import "./DocumentList.scss";
+import "./TopDocList.scss";
 
-function DocumentList() {
+function TopDocList() {
   const [list, setList] = useState<IDoc[]>([]);
 
   useEffect(() => {
@@ -78,4 +78,4 @@ function DocumentList() {
   );
 }
 
-export default DocumentList;
+export default TopDocList;

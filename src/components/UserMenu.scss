@@ -42,6 +42,15 @@
         &:hover {
           background: lightskyblue;
         }
+        &--link {
+          padding: 0;
+          & > a {
+            display: block;
+            padding: 0.2em 1em;
+            color: inherit;
+            background: none;
+          }
+        }
       }
       &__divider {
         border-top: 1px solid #999;

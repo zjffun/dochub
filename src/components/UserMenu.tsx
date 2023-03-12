@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { StoreContext } from "../store";
 
 import "./UserMenu.scss";
@@ -42,8 +43,10 @@ function UserMenu() {
         <span className="dropdown-caret"></span>
       </summary>
       <ul className="dochub__user-menu__list">
-        <li className="dochub__user-menu__list__item">
-          Signed in as <b>{userInfo?.name || ""}</b>
+        <li className="dochub__user-menu__list__item dochub__user-menu__list__item--link">
+          <Link to={`/user/${userInfo?.login}`}>
+            Signed in as <b>{userInfo?.name || ""}</b>
+          </Link>
         </li>
         <li className="dochub__user-menu__list__divider"></li>
         <li className="dochub__user-menu__list__item" onClick={signOut}>
