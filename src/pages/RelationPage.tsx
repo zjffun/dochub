@@ -2,10 +2,9 @@ import classnames from "classnames";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
-import { IRelationViewerData } from "relation2-core";
+import { IViewerContents, IViewerRelation } from "relation2-core";
 import { IRelationEditorRef, RelationEditor } from "relation2-react";
-import { getRelationViewerData } from "../api";
-import { saveTranslatedContent } from "../api/translatedContent";
+import { getViewerData, saveTranslatedContent } from "../api";
 import UserMenu from "../components/UserMenu";
 import { useStoreContext } from "../store";
 import openSignInWindow from "../utils/openSignInWindow";
@@ -13,6 +12,25 @@ import pathInfo from "../utils/pathInfo";
 
 import "react-toastify/dist/ReactToastify.css";
 import "./RelationPage.scss";
+import {
+  createCommit,
+  createPr,
+  createPrBranch,
+  getTranslatedOwnerAndRepo,
+} from "../api/github";
+
+export interface IRelationViewerData {
+  fromPath: string;
+  toPath: string;
+  fromModifiedContent: string;
+  toModifiedContent: string;
+  translatedOwner: string;
+  translatedRepo: string;
+  translatedBranch: string;
+  translatedRev: string;
+  viewerRelations: IViewerRelation[];
+  viewerContents: IViewerContents;
+}
 
 const options = (showDialog: (id: string) => void) => (data: any) => {
   const OptionsComponent = () => {
@@ -68,7 +86,11 @@ function RelationPage() {
     setUpdateRelationDialogVisible(true);
   };
 
-  const handleSave = (editor: { getValue: () => any }) => {
+  const handleSave = () => {
+    // TODO: optimize
+    const editor =
+      diffEditorRef.current?.current?.diffEditorRef?.current?.[1]?.getModifiedEditor();
+
     const content = editor?.getValue();
 
     if (!userInfo) {
@@ -98,8 +120,85 @@ function RelationPage() {
       });
   };
 
+  const handleCreatePrClick = async () => {
+    if (!userInfo) {
+      openSignInWindow();
+      return;
+    }
+
+    const translatedOwner = relationViewerData?.translatedOwner;
+    const translatedRepo = relationViewerData?.translatedRepo;
+    const translatedBranch = relationViewerData?.translatedBranch;
+    const translatedRev = relationViewerData?.translatedRev;
+    const toPath = relationViewerData?.toPath;
+    const toModifiedContent = relationViewerData?.toModifiedContent;
+
+    if (translatedOwner === undefined) {
+      throw new Error("translatedOwner is not defined");
+    }
+
+    if (translatedRepo === undefined) {
+      throw new Error("translatedRepo is not defined");
+    }
+
+    if (translatedBranch === undefined) {
+      throw new Error("translatedBranch is not defined");
+    }
+
+    if (translatedRev === undefined) {
+      throw new Error("translatedRev is not defined");
+    }
+
+    if (toPath === undefined) {
+      throw new Error("toPath is not defined");
+    }
+
+    if (toModifiedContent === undefined) {
+      throw new Error("toModifiedContent is not defined");
+    }
+
+    const { owner, repo } = await getTranslatedOwnerAndRepo({
+      translatedOwner,
+      translatedRepo,
+      owner: userInfo.login,
+    });
+
+    const { branch, sha } = await createPrBranch({
+      owner,
+      repo,
+      rev: translatedRev,
+    });
+
+    const { oid, headline } = await createCommit({
+      owner,
+      repo,
+      branch,
+      sha,
+      path: toPath,
+      contents: toModifiedContent,
+    });
+
+    const { url } = await createPr({
+      owner,
+      repo,
+      branch,
+      base: translatedBranch,
+      title: headline,
+      draft: true,
+    });
+
+    toast.success(
+      <div>
+        <span>Create PR successfully.</span>
+        <a href={url}>Goto PR</a>
+      </div>
+    );
+
+    window.open(url, "_blank");
+  };
+
   useEffect(() => {
-    getRelationViewerData({
+    getViewerData({
       path: docPath,
     }).then((data: any) => {
       setRelationViewerData(data);
@@ -134,7 +233,10 @@ function RelationPage() {
               <button onClick={() => {}}>Edit</button>
             </li> */}
             <li className="relation-overview__header__list__item">
-              <button>Save</button>
+              <button onClick={handleSave}>Save</button>
+            </li>
+            <li className="relation-overview__header__list__item">
+              <button onClick={handleCreatePrClick}>Create PR</button>
             </li>
             <li className="relation-overview__header__list__item">
               <UserMenu></UserMenu>

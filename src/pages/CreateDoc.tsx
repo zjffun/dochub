@@ -1,8 +1,8 @@
 // @ts-ignore
-import GitHub from "github-api";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { createDoc } from "../api";
+import { getBranchRev, getContents } from "../api/github";
 import Header from "../components/Header";
 import Loading from "../components/Loading";
 import { githubUrl } from "../utils/githubUrl";
@@ -43,55 +43,47 @@ function RelationList() {
     setLoading(true);
 
     try {
-      const token = window.localStorage.getItem("github_token");
-      const gh = new GitHub({ token });
       // originalRev
-      const originalRepository = gh.getRepo(
-        data.originalOwner,
-        data.originalRepo
-      );
-      const originalRevRes = await originalRepository.getBranch(
-        data.originalBranch
-      );
-      const originalRev = originalRevRes.data.commit.sha;
+      const originalRev = await getBranchRev({
+        owner: data.originalOwner,
+        repo: data.originalRepo,
+        branch: data.originalBranch,
+      });
       if (!originalRev) {
         throw new Error("originalRev is empty");
       }
       postData.originalRev = originalRev;
 
       // translatedRev
-      const translatedRepository = gh.getRepo(
-        data.translatedOwner,
-        data.translatedRepo
-      );
-      const translatedRevRes = await translatedRepository.getBranch(
-        data.translatedBranch
-      );
-      const translatedRev = translatedRevRes.data.commit.sha;
+      const translatedRev = await getBranchRev({
+        owner: data.translatedOwner,
+        repo: data.translatedRepo,
+        branch: data.translatedBranch,
+      });
       if (!translatedRev) {
         throw new Error("translatedRev is empty");
       }
       postData.translatedRev = translatedRev;
 
       // originalContent
-      const originalContentRes = await originalRepository.getContents(
-        originalRev,
-        data.originalPath,
-        true
-      );
-      const originalContent = originalContentRes.data;
+      const originalContent = await getContents({
+        owner: data.originalOwner,
+        repo: data.originalRepo,
+        rev: originalRev,
+        path: data.originalPath,
+      });
       if (!originalContent) {
         throw new Error("originalContent is empty");
       }
       postData.originalContent = originalContent;
 
       // translatedContent
-      const translatedContentRes = await translatedRepository.getContents(
-        translatedRev,
-        data.translatedPath,
-        true
-      );
-      const translatedContent = translatedContentRes.data;
+      const translatedContent = await getContents({
+        owner: data.translatedOwner,
+        repo: data.translatedRepo,
+        rev: translatedRev,
+        path: data.translatedPath,
+      });
       if (!translatedContent) {
         throw new Error("translatedContent is empty");
       }

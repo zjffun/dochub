@@ -12,6 +12,10 @@ export class GetDocsParams {
   }
 }
 
+export interface IGetViewerDataParam {
+  path: string;
+}
+
 export function getDocs(params: GetDocsParams = {}) {
   const getDocsParams = new GetDocsParams(params);
 
@@ -22,4 +26,25 @@ export function getDocs(params: GetDocsParams = {}) {
 
 export function createDoc(doc: IDoc) {
   return client.post<any, IDoc>("/api/doc", doc);
+}
+
+export function getViewerData({ path }: IGetViewerDataParam) {
+  return client.get<any, any[]>("/api/doc/viewer-data", {
+    params: {
+      path,
+    },
+  });
+}
+
+export function saveTranslatedContent({
+  path,
+  content,
+}: {
+  path: string;
+  content: string;
+}) {
+  return client.put<any, { path: string }>("/api/doc", {
+    path,
+    translatedContent: content,
+  });
 }
