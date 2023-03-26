@@ -1,61 +1,57 @@
 .dochub-doc-list {
-  &-container {
-    max-width: 900px;
-    padding: 1.5em 0.9em;
-    margin: 0 auto;
-  }
-  &-navigation {
-    display: flex;
-  }
-  &-table {
+  max-width: 1012px;
+  padding: 1.5em 1em;
+  margin: 0 auto;
+
+  &__ul {
     width: 100%;
-    &__header {
-      position: sticky;
-      top: 0;
-      background: #ddd;
-    }
-    &__th {
-      padding: 1em;
-    }
-
-    &__tr {
-      border-bottom: 1px solid #ddd;
-
-      &:hover {
-        background: #f5f5f5;
+    padding: 0;
+    margin: 0;
+    border: 1px solid var(--md-sys-color-outline);
+    border-radius: 0.5rem;
+    list-style: none;
+    &__li {
+      padding: 1rem;
+      border-bottom: 1px solid var(--md-sys-color-outline);
+      &:last-child {
+        border-bottom: none;
       }
     }
-    &__td {
-      padding: 1em;
-    }
-    &__name {
-      word-break: break-all;
-    }
-    &__id,
-    &__consistent,
-    &__translated,
-    &__operation {
-      min-width: max-content;
-    }
+  }
 
-    &__footer {
-      position: sticky;
-      bottom: 0;
-    }
+  &__empty {
+    padding-top: 3rem;
+    text-align: center;
+    font-size: var(--md-sys-typescale-title-large-font-size);
+  }
 
-    &__pagination {
-      background: #f5f5f5;
-      display: flex;
+  &__pagination {
+    margin-top: 1rem;
+    text-align: center;
+    // react-paginate style
+    > ul {
+      display: inline-flex;
       li {
+        border-radius: 0.25rem;
+
         a {
           display: block;
-          padding: 1em;
+          padding: 0.5rem 1rem;
         }
+
         &.selected {
           a {
-            color: royalblue;
+            color: var(--md-sys-color-on-primary-container);
           }
-          background: #ddd;
+          background: var(--md-sys-color-primary-container);
+        }
+
+        &.disabled {
+          a {
+            color: var(--md-ref-palette-neutral-variant50);
+            cursor: default;
+            text-decoration: none;
+          }
         }
       }
     }

@@ -1,40 +1,40 @@
 import { useEffect, useState } from "react";
 import ReactPaginate from "react-paginate";
-import { Link } from "react-router-dom";
+import { useLocation } from "react-router";
 import { getDocs } from "../api";
+import DocHeader from "../components/DocHeader";
+import DocItem from "../components/DocItem";
 import Header from "../components/Header";
 import Loading from "../components/Loading";
-import { useStoreContext } from "../store";
 import { IDoc } from "../types";
-import { getConsistentPercent, getTranslatedPercent } from "../utils/progress";
 
 import "./DocList.scss";
 
 const pageSize = 20;
 
-function RelationList() {
-  const pathname = window.location.pathname;
-
-  const { userInfo } = useStoreContext();
-
+function DocList() {
+  const location = useLocation();
   const [list, setList] = useState<IDoc[]>([]);
   const [total, setTotal] = useState(0);
   const [forcePage, setForcePage] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  function getTranslateLink(path: string) {
-    if (userInfo?.login) {
-      return `/translate${path}`;
-    }
+  const pathname = location.pathname;
 
-    return `/preview${path}`;
+  function handlePageClick({ selected }: { selected: number }) {
+    getList({
+      forcePage: selected,
+      pathname,
+    });
   }
 
-  function handlePageClick(data: any) {
-    setForcePage(data.selected);
-  }
-
-  useEffect(() => {
+  function getList({
+    forcePage,
+    pathname,
+  }: {
+    forcePage: number;
+    pathname: string;
+  }) {
     setLoading(true);
 
     getDocs({
@@ -55,94 +55,68 @@ function RelationList() {
         } else {
           setTotal(0);
         }
+
+        setForcePage(forcePage);
+        window.scrollTo(0, 0);
       })
       .finally(() => {
         setLoading(false);
       });
-  }, [forcePage, pathname]);
+  }
+
+  useEffect(() => {
+    getList({
+      forcePage: 0,
+      pathname,
+    });
+  }, [pathname]);
 
   return (
     <>
       <Header></Header>
-      <div className="dochub-doc-list-container">
-        <div className="dochub-doc-list-navigation">
-          <div
-            style={{
-              flex: "1 1 auto",
-            }}
-          ></div>
-          <Link to={`/new${pathname}`}>Add doc</Link>
-        </div>
-        <table className="dochub-doc-list-table">
-          <thead>
-            <tr className="dochub-doc-list-table__header">
-              <th className="dochub-doc-list-table__th">#</th>
-              <th className="dochub-doc-list-table__th">Name</th>
-              <th className="dochub-doc-list-table__th">Original</th>
-              <th className="dochub-doc-list-table__th">Translated</th>
-              <th className="dochub-doc-list-table__th">Consistent</th>
-              <th className="dochub-doc-list-table__th"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {list.map((item, i) => {
+      <DocHeader></DocHeader>
+      <div className="dochub-doc-list">
+        {total > 0 && (
+          <ul className="dochub-doc-list__ul">
+            {list.map((item) => {
               return (
-                <tr className="dochub-doc-list-table__tr" key={item.path}>
-                  <td className="dochub-doc-list-table__td dochub-doc-list-table__id">
-                    {forcePage * pageSize + i + 1}
-                  </td>
-                  <td className="dochub-doc-list-table__td dochub-doc-list-table__name">
-                    {item.path}
-                  </td>
-                  <td className="dochub-doc-list-table__td dochub-doc-list-table__original">
-                    <p>{item.originalLineNum} lines</p>
-                  </td>
-                  <td className="dochub-doc-list-table__td dochub-doc-list-table__translated">
-                    <p>{getTranslatedPercent(item)}%</p>
-                    <p>{item.translatedLineNum} lines</p>
-                  </td>
-                  <td className="dochub-doc-list-table__td dochub-doc-list-table__consistent">
-                    <p>{getConsistentPercent(item)}%</p>
-                    <p>{item.consistentLineNum} lines</p>
-                  </td>
-                  <td className="dochub-doc-list-table__td dochub-doc-list-table__operation">
-                    <Link to={getTranslateLink(item.path)}>translate</Link>
-                  </td>
-                </tr>
+                <li className="dochub-doc-list__ul__li">
+                  <DocItem
+                    key={item.path}
+                    path={item.path}
+                    originalLineNum={item.originalLineNum}
+                    translatedLineNum={item.translatedLineNum}
+                    consistentLineNum={item.consistentLineNum}
+                  ></DocItem>
+                </li>
               );
             })}
-          </tbody>
-          <tfoot>
-            {total === 0 && (
-              <tr className="dochub-doc-list-table__footer">
-                <td colSpan={6} className="dochub-doc-list-table__td">
-                  No data.
-                </td>
-              </tr>
-            )}
-            {total > pageSize && (
-              <tr className="dochub-doc-list-table__footer">
-                <td colSpan={6}>
-                  <ReactPaginate
-                    className="dochub-doc-list-table__pagination"
-                    breakLabel="..."
-                    nextLabel="next >"
-                    onPageChange={handlePageClick}
-                    pageRangeDisplayed={5}
-                    forcePage={forcePage}
-                    pageCount={Math.ceil(total / pageSize)}
-                    previousLabel="< previous"
-                    renderOnZeroPageCount={() => null}
-                  />
-                </td>
-              </tr>
-            )}
-          </tfoot>
-        </table>
+          </ul>
+        )}
+        {total === 0 && (
+          <div className="dochub-doc-list__empty">
+            No results matched your search.
+          </div>
+        )}
+        {total > pageSize && (
+          <div className="dochub-doc-list__pagination">
+            <ReactPaginate
+              className=""
+              breakLabel="..."
+              nextLabel="next >"
+              onPageChange={handlePageClick}
+              pageRangeDisplayed={5}
+              forcePage={forcePage}
+              pageCount={Math.ceil(total / pageSize)}
+              previousLabel="< previous"
+              renderOnZeroPageCount={() => null}
+            />
+          </div>
+        )}
         <Loading loading={loading}></Loading>
       </div>
     </>
   );
 }
 
-export default RelationList;
+export default DocList;

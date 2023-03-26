@@ -189,8 +189,7 @@ function RelationPage() {
 
     toast.success(
       <div>
-        <span>Create PR successfully.</span>
-        <a href={url}>Goto PR</a>
+        <span>Create PR successfully.</span> <a href={url}>Goto PR</a>
       </div>
     );
 

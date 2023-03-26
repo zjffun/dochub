@@ -1,0 +1,17 @@
+.dochub-doc-item {
+  &__title {
+    font-size: var(--md-sys-typescale-title-large-font-size);
+    font-weight: var(--md-sys-typescale-title-large-font-weight);
+  }
+
+  &__path {
+    font-size: var(--md-sys-typescale-body-small-font-size);
+  }
+
+  &__footer {
+    margin-top: 1rem;
+    &__item {
+      margin-right: 1rem;
+    }
+  }
+}

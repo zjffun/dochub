@@ -1,0 +1,67 @@
+@import url(./reset.css);
+
+:root {
+  --md-sys-elevation-1: 0px 3px 1px -2px var(--md-sys-color-outline),
+    0px 2px 2px 0px var(--md-sys-color-outline),
+    0px 1px 5px 0px var(--md-sys-color-outline);
+}
+
+body {
+  font-size: var(--md-sys-typescale-body-medium-font-size);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans",
+    Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  color: var(--md-sys-color-on-background);
+  background: var(--md-sys-color-background);
+}
+
+a {
+  color: var(--md-sys-color-primary);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+a:hover,
+a:active {
+  color: var(--md-sys-color-primary);
+  text-decoration: underline;
+}
+
+.btn {
+  position: relative;
+  display: inline-block;
+  padding: 5px 16px;
+  color: var(--md-sys-color-on-background);
+  background: var(--md-sys-color-background);
+  font-size: var(--md-sys-typescale-label-large-font-size);
+  font-weight: var(--md-sys-typescale-label-large-font-weight);
+  line-height: var(--md-sys-typescale-label-large-line-height);
+  letter-spacing: var(--md-sys-typescale-label-large-letter-tracking);
+  text-decoration: none;
+  border: none;
+  border-radius: 6px;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: pointer;
+  user-select: none;
+  appearance: none;
+
+  &:hover,
+  &:active {
+    box-shadow: var(--md-sys-elevation-1);
+    text-decoration: none;
+  }
+
+  &:active {
+    box-shadow: none;
+  }
+}
+
+.btn-primary {
+  color: var(--md-sys-color-on-secondary);
+  background-color: var(--md-sys-color-secondary);
+
+  &:hover,
+  &:active {
+    color: var(--md-sys-color-on-secondary);
+  }
+}

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { getDocs } from "../api";
 import Header from "../components/Header";
 import { IDoc } from "../types";
-import { getConsistentPercent, getTranslatedPercent } from "../utils/progress";
+import { getPercent } from "../utils/progress";
 
 import "./TopDocList.scss";
 
@@ -19,15 +19,21 @@ function TopDocList() {
   return (
     <>
       <Header></Header>
-      <div className="dochub-doc-list-wrapper">
-        <ul className="dochub-doc-list">
+      <div className="dochub-top-doc-list">
+        <ul className="dochub-top-doc-list__ul">
           {list.map((item) => {
-            const translated = getTranslatedPercent(item);
-            const consistent = getConsistentPercent(item);
+            const translated = getPercent(
+              item.translatedLineNum,
+              item.originalLineNum
+            );
+            const consistent = getPercent(
+              item.consistentLineNum,
+              item.originalLineNum
+            );
             return (
-              <li className="dochub-doc-list__item" key={item.name}>
+              <li className="dochub-top-doc-list__ul__li" key={item.name}>
                 <div
-                  className="dochub-doc-list__item__bg"
+                  className="dochub-top-doc-list__ul__li__bg"
                   style={{
                     backgroundImage: `url(${item.logoUrl})`,
                   }}

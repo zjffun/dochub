@@ -1,0 +1,8 @@
+.dochub {
+  &-doc-header {
+    display: flex;
+    align-items: center;
+    background: var(--md-sys-color-surface-variant);
+    padding: 0.5rem 1rem;
+  }
+}

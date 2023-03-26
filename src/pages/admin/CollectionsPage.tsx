@@ -9,10 +9,7 @@ import {
 import Header from "../../components/Header";
 import Loading from "../../components/Loading";
 import { IDoc } from "../../types";
-import {
-  getConsistentPercent,
-  getTranslatedPercent,
-} from "../../utils/progress";
+import { getPercent } from "../../utils/progress";
 import "./CollectionsPage.scss";
 
 const pageSize = 20;
@@ -132,11 +129,17 @@ function AdminCollections() {
                     <p>{item.originalLineNum} lines</p>
                   </td>
                   <td className="dochub-admin-collections__td dochub-admin-collections__translated">
-                    <p>{getTranslatedPercent(item)}%</p>
+                    <p>
+                      {getPercent(item.translatedLineNum, item.originalLineNum)}
+                      %
+                    </p>
                     <p>{item.translatedLineNum} lines</p>
                   </td>
                   <td className="dochub-admin-collections__td dochub-admin-collections__consistent">
-                    <p>{getConsistentPercent(item)}%</p>
+                    <p>
+                      {getPercent(item.consistentLineNum, item.originalLineNum)}
+                      %
+                    </p>
                     <p>{item.consistentLineNum} lines</p>
                   </td>
                   <td className="dochub-admin-collections__td dochub-admin-collections__operation">

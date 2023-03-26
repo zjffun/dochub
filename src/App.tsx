@@ -1,7 +1,7 @@
 import { RouterProvider } from "react-router-dom";
 import Store from "./store";
 
-import "./App.css";
+import "./App.scss";
 import router from "./router";
 
 function App() {
