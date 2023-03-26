@@ -28,7 +28,8 @@ async function getBranchRev({
         ref(qualifiedName: $branch) {
           target {
             ... on Commit {
-              oid
+              oid,
+              committedDate
             }
           }
         }
@@ -41,7 +42,54 @@ async function getBranchRev({
     }
   );
 
-  return res.repository.ref.target.oid;
+  return {
+    oid: res.repository.ref.target.oid,
+    date: res.repository.ref.target.committedDate,
+  };
+}
+
+async function getLastOriginalFromRev({
+  owner,
+  repo,
+  branch,
+  date,
+}: {
+  owner: string;
+  repo: string;
+  branch: string;
+  date: string;
+}) {
+  const octokit = getOctokit();
+
+  const res = await octokit.graphql<any>(
+    `query($owner: String!, $repo: String!, $branch: String!, $date: GitTimestamp!) {
+      repository(owner: $owner, name: $repo) {
+        ref(qualifiedName: $branch) {
+          target {
+            ... on Commit {
+              history(first: 1, until: $date) {
+                nodes {
+                  oid,
+                  committedDate
+                }
+              }
+            }
+          }
+        }
+      }    
+    }`,
+    {
+      owner,
+      repo,
+      branch,
+      date,
+    }
+  );
+
+  return {
+    oid: res.repository.ref.target.history.nodes[0].oid,
+    date: res.repository.ref.target.history.nodes[0].committedDate,
+  };
 }
 
 async function getContents({
@@ -316,6 +364,7 @@ async function createPr({
 
 export {
   getBranchRev,
+  getLastOriginalFromRev,
   getContents,
   getTranslatedOwnerAndRepo,
   createPrBranch,

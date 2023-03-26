@@ -2,7 +2,11 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { createDoc } from "../api";
-import { getBranchRev, getContents } from "../api/github";
+import {
+  getBranchRev,
+  getContents,
+  getLastOriginalFromRev,
+} from "../api/github";
 import Header from "../components/Header";
 import Loading from "../components/Loading";
 import { githubUrl } from "../utils/githubUrl";
@@ -32,6 +36,8 @@ function RelationList() {
       originalPath: data.originalPath,
       originalRev: "",
       originalContent: "",
+      originalFromRev: "",
+      originalFromContent: "",
       translatedOwner: data.translatedOwner,
       translatedRepo: data.translatedRepo,
       translatedBranch: data.translatedBranch,
@@ -43,33 +49,11 @@ function RelationList() {
     setLoading(true);
 
     try {
-      // originalRev
-      const originalRev = await getBranchRev({
-        owner: data.originalOwner,
-        repo: data.originalRepo,
-        branch: data.originalBranch,
-      });
-      if (!originalRev) {
-        throw new Error("originalRev is empty");
-      }
-      postData.originalRev = originalRev;
-
-      // translatedRev
-      const translatedRev = await getBranchRev({
-        owner: data.translatedOwner,
-        repo: data.translatedRepo,
-        branch: data.translatedBranch,
-      });
-      if (!translatedRev) {
-        throw new Error("translatedRev is empty");
-      }
-      postData.translatedRev = translatedRev;
-
       // originalContent
       const originalContent = await getContents({
         owner: data.originalOwner,
         repo: data.originalRepo,
-        rev: originalRev,
+        rev: data.originalRev,
         path: data.originalPath,
       });
       if (!originalContent) {
@@ -77,11 +61,23 @@ function RelationList() {
       }
       postData.originalContent = originalContent;
 
+      // originalFromContent
+      const originalFromContent = await getContents({
+        owner: data.originalOwner,
+        repo: data.originalRepo,
+        rev: data.originalFromRev,
+        path: data.originalPath,
+      });
+      if (!originalFromContent) {
+        throw new Error("originalFromContent is empty");
+      }
+      postData.originalFromContent = originalFromContent;
+
       // translatedContent
       const translatedContent = await getContents({
         owner: data.translatedOwner,
         repo: data.translatedRepo,
-        rev: translatedRev,
+        rev: data.translatedRev,
         path: data.translatedPath,
       });
       if (!translatedContent) {
@@ -98,16 +94,46 @@ function RelationList() {
     }
   });
 
-  function handleParseOriginalUrlClick() {
+  async function handleParseOriginalUrlClick() {
     const originalUrl = watch("originalUrl");
     const parsedOriginalUrl = githubUrl(originalUrl);
     setValue("originalOwner", parsedOriginalUrl.owner);
     setValue("originalRepo", parsedOriginalUrl.repo);
     setValue("originalBranch", parsedOriginalUrl.branch);
     setValue("originalPath", parsedOriginalUrl.path);
+
+    const { oid, date } = await getBranchRev({
+      owner: parsedOriginalUrl.owner,
+      repo: parsedOriginalUrl.repo,
+      branch: parsedOriginalUrl.branch,
+    });
+    if (!oid) {
+      throw new Error("originalRev is empty");
+    }
+    setValue("originalRev", oid);
+    if (!date) {
+      throw new Error("originalRevDate is empty");
+    }
+    setValue("originalRevDate", date);
+
+    const { oid: originalFromRev, date: originalFromRevDate } =
+      await getLastOriginalFromRev({
+        owner: parsedOriginalUrl.owner,
+        repo: parsedOriginalUrl.repo,
+        branch: parsedOriginalUrl.branch,
+        date: watch("translatedRevDate") || date,
+      });
+    if (!originalFromRev) {
+      throw new Error("originalFromRev is empty");
+    }
+    setValue("originalFromRev", originalFromRev);
+    if (!originalFromRevDate) {
+      throw new Error("originalFromRevDate is empty");
+    }
+    setValue("originalFromRevDate", originalFromRevDate);
   }
 
-  function handleParseTranslatedUrlClick() {
+  async function handleParseTranslatedUrlClick() {
     const translatedUrl = watch("translatedUrl");
     const parsedTranslatedUrl = githubUrl(translatedUrl);
     setValue("translatedOwner", parsedTranslatedUrl.owner);
@@ -118,6 +144,20 @@ function RelationList() {
       "path",
       `${parsedTranslatedUrl.owner}/${parsedTranslatedUrl.repo}/${parsedTranslatedUrl.branch}/${parsedTranslatedUrl.path}`
     );
+
+    const { oid, date } = await getBranchRev({
+      owner: parsedTranslatedUrl.owner,
+      repo: parsedTranslatedUrl.repo,
+      branch: parsedTranslatedUrl.branch,
+    });
+    if (!oid) {
+      throw new Error("translatedRev is empty");
+    }
+    setValue("translatedRev", oid);
+    if (!date) {
+      throw new Error("translatedRevDate is empty");
+    }
+    setValue("translatedRevDate", date);
   }
 
   return (
@@ -194,6 +234,24 @@ function RelationList() {
           <div className="dochub-create-doc-form__item">
             <label>
               <span className="dochub-create-doc-form__item__label">
+                Original Rev
+              </span>
+              <input {...register("originalRev")} type="text" />
+              {watch("originalRevDate")}
+            </label>
+          </div>
+          <div className="dochub-create-doc-form__item">
+            <label>
+              <span className="dochub-create-doc-form__item__label">
+                Original From Rev
+              </span>
+              <input {...register("originalFromRev")} type="text" />
+            </label>
+            {watch("originalFromRevDate")}
+          </div>
+          <div className="dochub-create-doc-form__item">
+            <label>
+              <span className="dochub-create-doc-form__item__label">
                 Translated Owner
               </span>
               <input {...register("translatedOwner")} type="text" />
@@ -221,6 +279,15 @@ function RelationList() {
                 Translated Path
               </span>
               <input {...register("translatedPath")} type="text" />
+            </label>
+          </div>
+          <div className="dochub-create-doc-form__item">
+            <label>
+              <span className="dochub-create-doc-form__item__label">
+                Translated Rev
+              </span>
+              <input {...register("translatedRev")} type="text" />
+              <span>{watch("translatedRevDate")}</span>
             </label>
           </div>
           <button type="submit">Create</button>
