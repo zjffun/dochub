@@ -38,12 +38,16 @@ function TopDocList() {
                     backgroundImage: `url(${item.logoUrl})`,
                   }}
                 >
-                  <div className="dochub-project-card">
+                  <div className="dochub-project-card surface on-surface-text">
                     <a className="dochub-project-card__link" href={item.docUrl}>
                       <span style={{ visibility: "hidden" }}>{item.name}</span>
                     </a>
-                    <h2 className="dochub-project-card__name">{item.name}</h2>
-                    <p className="dochub-project-card__desc">{item.desc}</p>
+                    <h2 className="dochub-project-card__name title-large">
+                      {item.name}
+                    </h2>
+                    <p className="dochub-project-card__desc body-small">
+                      {item.desc}
+                    </p>
                     <div className="dochub-progress">
                       <div className="dochub-progress__bar">
                         <div

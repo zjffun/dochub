@@ -1,10 +1,16 @@
 import classnames from "classnames";
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { toast, ToastContainer } from "react-toastify";
 import { IViewerContents, IViewerRelation } from "relation2-core";
 import { IRelationEditorRef, RelationEditor } from "relation2-react";
 import { getViewerData, saveTranslatedContent } from "../api";
+import {
+  createCommit,
+  createPr,
+  createPrBranch,
+  getTranslatedOwnerAndRepo,
+} from "../api/github";
 import UserMenu from "../components/UserMenu";
 import { useStoreContext } from "../store";
 import openSignInWindow from "../utils/openSignInWindow";
@@ -12,12 +18,6 @@ import pathInfo from "../utils/pathInfo";
 
 import "react-toastify/dist/ReactToastify.css";
 import "./RelationPage.scss";
-import {
-  createCommit,
-  createPr,
-  createPrBranch,
-  getTranslatedOwnerAndRepo,
-} from "../api/github";
 
 export interface IRelationViewerData {
   fromPath: string;

@@ -2,6 +2,13 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Theme
+
+- Primary: `#0969da`
+- Secondary: `#2c8747`
+- Tertiary: `#ddf4ff`
+- Neutral: `#ffffff`
+
 ## Available Scripts
 
 In the project directory, you can run:

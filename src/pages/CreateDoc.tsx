@@ -1,11 +1,13 @@
 // @ts-ignore
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router";
 import { createDoc } from "../api";
 import {
   getBranchRev,
   getContents,
   getLastOriginalFromRev,
+  getPathRev,
 } from "../api/github";
 import Header from "../components/Header";
 import Loading from "../components/Loading";
@@ -16,6 +18,8 @@ import "./CreateDoc.scss";
 
 function RelationList() {
   const { docPath } = pathInfo();
+
+  const navigate = useNavigate();
 
   const {
     register,
@@ -34,15 +38,15 @@ function RelationList() {
       originalRepo: data.originalRepo,
       originalBranch: data.originalBranch,
       originalPath: data.originalPath,
-      originalRev: "",
+      originalRev: data.originalRev,
       originalContent: "",
-      originalFromRev: "",
+      originalFromRev: data.originalFromRev,
       originalFromContent: "",
       translatedOwner: data.translatedOwner,
       translatedRepo: data.translatedRepo,
       translatedBranch: data.translatedBranch,
       translatedPath: data.translatedPath,
-      translatedRev: "",
+      translatedRev: data.translatedRev,
       translatedContent: "",
     };
 
@@ -86,7 +90,9 @@ function RelationList() {
       postData.translatedContent = translatedContent;
 
       // create doc
-      await createDoc(postData);
+      const { path } = await createDoc(postData);
+
+      navigate(`/translate${path}`);
     } catch (error) {
       console.error(error);
     } finally {
@@ -94,7 +100,21 @@ function RelationList() {
     }
   });
 
-  async function handleParseOriginalUrlClick() {
+  async function handleParseClick() {
+    try {
+      await parseTranslatedUrl();
+    } catch (error) {
+      console.error(error);
+    }
+
+    try {
+      await parseOriginalUrl();
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function parseOriginalUrl() {
     const originalUrl = watch("originalUrl");
     const parsedOriginalUrl = githubUrl(originalUrl);
     setValue("originalOwner", parsedOriginalUrl.owner);
@@ -133,7 +153,7 @@ function RelationList() {
     setValue("originalFromRevDate", originalFromRevDate);
   }
 
-  async function handleParseTranslatedUrlClick() {
+  async function parseTranslatedUrl() {
     const translatedUrl = watch("translatedUrl");
     const parsedTranslatedUrl = githubUrl(translatedUrl);
     setValue("translatedOwner", parsedTranslatedUrl.owner);
@@ -145,10 +165,11 @@ function RelationList() {
       `${parsedTranslatedUrl.owner}/${parsedTranslatedUrl.repo}/${parsedTranslatedUrl.branch}/${parsedTranslatedUrl.path}`
     );
 
-    const { oid, date } = await getBranchRev({
+    const { oid, date } = await getPathRev({
       owner: parsedTranslatedUrl.owner,
       repo: parsedTranslatedUrl.repo,
       branch: parsedTranslatedUrl.branch,
+      path: parsedTranslatedUrl.path,
     });
     if (!oid) {
       throw new Error("translatedRev is empty");
@@ -163,136 +184,242 @@ function RelationList() {
   return (
     <>
       <Header></Header>
-      <div className="dochub-create-doc-container">
+      <div className="dochub-create-doc">
+        <h2 className="dochub-create-doc-title">Create a new document</h2>
         <form onSubmit={handleFromSubmit} className="dochub-create-doc-form">
-          <div className="dochub-create-doc-form__item">
-            <label>
-              <span className="dochub-create-doc-form__item__label">
-                Original URL
-              </span>
-              <input {...register("originalUrl")} type="text" />
-              <button type="button" onClick={handleParseOriginalUrlClick}>
+          <section className="dochub-create-doc-form-container surface">
+            <h3
+              className="dochub-create-doc-form-subtitle title-large "
+              style={{ marginBottom: "1rem" }}
+            >
+              Auto fill through GitHub URL
+            </h3>
+            <div className="dochub-create-doc-form__item">
+              <label>
+                <span className="dochub-create-doc-form__item__label">
+                  GitHub Original URL
+                </span>
+                <input
+                  {...register("originalUrl")}
+                  className="input"
+                  type="text"
+                  style={{ width: "100%" }}
+                />
+              </label>
+            </div>
+            <div className="dochub-create-doc-form__item">
+              <label>
+                <span className="dochub-create-doc-form__item__label">
+                  GitHub Translated URL
+                </span>
+                <input
+                  {...register("translatedUrl")}
+                  className="input"
+                  type="text"
+                  style={{ width: "100%" }}
+                />
+              </label>
+            </div>
+            <div>
+              <button className="btn" type="button" onClick={handleParseClick}>
                 parse
               </button>
-            </label>
+            </div>
+          </section>
+
+          <div className="dochub-create-doc-form-container surface">
+            <div className="dochub-create-doc-form__item">
+              <label>
+                <span className="dochub-create-doc-form__item__label">
+                  Doc Path
+                </span>
+                <span className="dochub-create-doc-form-doc-path">
+                  <span className="dochub-create-doc-form-doc-path__prefix">
+                    {docPath}/
+                  </span>
+                  <input
+                    {...register("path", { required: true })}
+                    className="input"
+                    type="text"
+                    style={{ flex: "1 1 auto" }}
+                  />
+                </span>
+                <p>{errors.path && <span>This field is required</span>}</p>
+              </label>
+            </div>
           </div>
-          <div className="dochub-create-doc-form__item">
-            <label>
-              <span className="dochub-create-doc-form__item__label">
-                Translated URL
-              </span>
-              <input {...register("translatedUrl")} type="text" />
-              <button type="button" onClick={handleParseTranslatedUrlClick}>
-                parse
-              </button>
-            </label>
+
+          <div className="dochub-create-doc-original-translated">
+            <section className="dochub-create-doc-form-container surface">
+              <details>
+                <summary>
+                  <span className="title-medium">Original</span>
+                </summary>
+                <div className="dochub-create-doc-form__item">
+                  <label>
+                    <span className="dochub-create-doc-form__item__label">
+                      Owner
+                    </span>
+                    <input
+                      {...register("originalOwner")}
+                      className="input"
+                      type="text"
+                      style={{ width: "100%" }}
+                    />
+                  </label>
+                </div>
+                <div className="dochub-create-doc-form__item">
+                  <label>
+                    <span className="dochub-create-doc-form__item__label">
+                      Repo
+                    </span>
+                    <input
+                      {...register("originalRepo")}
+                      className="input"
+                      type="text"
+                      style={{ width: "100%" }}
+                    />
+                  </label>
+                </div>
+                <div className="dochub-create-doc-form__item">
+                  <label>
+                    <span className="dochub-create-doc-form__item__label">
+                      Branch
+                    </span>
+                    <input
+                      {...register("originalBranch")}
+                      className="input"
+                      type="text"
+                      style={{ width: "100%" }}
+                    />
+                  </label>
+                </div>
+                <div className="dochub-create-doc-form__item">
+                  <label>
+                    <span className="dochub-create-doc-form__item__label">
+                      Path
+                    </span>
+                    <input
+                      {...register("originalPath")}
+                      className="input"
+                      type="text"
+                      style={{ width: "100%" }}
+                    />
+                  </label>
+                </div>
+                <div className="dochub-create-doc-form__item">
+                  <label>
+                    <span className="dochub-create-doc-form__item__label">
+                      Rev
+                    </span>
+                    <input
+                      {...register("originalRev")}
+                      className="input"
+                      type="text"
+                      style={{ width: "100%" }}
+                    />
+                    <p>{watch("originalRevDate")}</p>
+                  </label>
+                </div>
+                <div className="dochub-create-doc-form__item">
+                  <label>
+                    <span className="dochub-create-doc-form__item__label">
+                      From Rev
+                    </span>
+                    <input
+                      {...register("originalFromRev")}
+                      className="input"
+                      type="text"
+                      style={{ width: "100%" }}
+                    />
+                    <p>{watch("originalFromRevDate")}</p>
+                  </label>
+                </div>
+              </details>
+            </section>
+
+            <section className="dochub-create-doc-form-container surface">
+              <details>
+                <summary>
+                  <span className="title-medium">Translated</span>
+                </summary>
+
+                <div className="dochub-create-doc-form__item">
+                  <label>
+                    <span className="dochub-create-doc-form__item__label">
+                      Owner
+                    </span>
+                    <input
+                      {...register("translatedOwner")}
+                      className="input"
+                      type="text"
+                      style={{ width: "100%" }}
+                    />
+                  </label>
+                </div>
+                <div className="dochub-create-doc-form__item">
+                  <label>
+                    <span className="dochub-create-doc-form__item__label">
+                      Repo
+                    </span>
+                    <input
+                      {...register("translatedRepo")}
+                      className="input"
+                      type="text"
+                      style={{ width: "100%" }}
+                    />
+                  </label>
+                </div>
+                <div className="dochub-create-doc-form__item">
+                  <label>
+                    <span className="dochub-create-doc-form__item__label">
+                      Branch
+                    </span>
+                    <input
+                      {...register("translatedBranch")}
+                      className="input"
+                      type="text"
+                      style={{ width: "100%" }}
+                    />
+                  </label>
+                </div>
+                <div className="dochub-create-doc-form__item">
+                  <label>
+                    <span className="dochub-create-doc-form__item__label">
+                      Path
+                    </span>
+                    <input
+                      {...register("translatedPath")}
+                      className="input"
+                      type="text"
+                      style={{ width: "100%" }}
+                    />
+                  </label>
+                </div>
+                <div className="dochub-create-doc-form__item">
+                  <label>
+                    <span className="dochub-create-doc-form__item__label">
+                      Rev
+                    </span>
+                    <input
+                      {...register("translatedRev")}
+                      className="input"
+                      type="text"
+                      style={{ width: "100%" }}
+                    />
+                    <p>{watch("translatedRevDate")}</p>
+                  </label>
+                </div>
+              </details>
+            </section>
           </div>
-          <div className="dochub-create-doc-form__item">
-            <label>
-              <span className="dochub-create-doc-form__item__label">
-                Doc Path
-              </span>
-              <span>
-                <span>{docPath}/</span>
-                <input {...register("path", { required: true })} type="text" />
-                {errors.path && <span>This field is required</span>}
-              </span>
-            </label>
-          </div>
-          <div className="dochub-create-doc-form__item">
-            <label>
-              <span className="dochub-create-doc-form__item__label">
-                Original Owner
-              </span>
-              <input {...register("originalOwner")} type="text" />
-            </label>
-          </div>
-          <div className="dochub-create-doc-form__item">
-            <label>
-              <span className="dochub-create-doc-form__item__label">
-                Original Repo
-              </span>
-              <input {...register("originalRepo")} type="text" />
-            </label>
-          </div>
-          <div className="dochub-create-doc-form__item">
-            <label>
-              <span className="dochub-create-doc-form__item__label">
-                Original Branch
-              </span>
-              <input {...register("originalBranch")} type="text" />
-            </label>
-          </div>
-          <div className="dochub-create-doc-form__item">
-            <label>
-              <span className="dochub-create-doc-form__item__label">
-                Original Path
-              </span>
-              <input {...register("originalPath")} type="text" />
-            </label>
-          </div>
-          <div className="dochub-create-doc-form__item">
-            <label>
-              <span className="dochub-create-doc-form__item__label">
-                Original Rev
-              </span>
-              <input {...register("originalRev")} type="text" />
-              {watch("originalRevDate")}
-            </label>
-          </div>
-          <div className="dochub-create-doc-form__item">
-            <label>
-              <span className="dochub-create-doc-form__item__label">
-                Original From Rev
-              </span>
-              <input {...register("originalFromRev")} type="text" />
-            </label>
-            {watch("originalFromRevDate")}
-          </div>
-          <div className="dochub-create-doc-form__item">
-            <label>
-              <span className="dochub-create-doc-form__item__label">
-                Translated Owner
-              </span>
-              <input {...register("translatedOwner")} type="text" />
-            </label>
-          </div>
-          <div className="dochub-create-doc-form__item">
-            <label>
-              <span className="dochub-create-doc-form__item__label">
-                Translated Repo
-              </span>
-              <input {...register("translatedRepo")} type="text" />
-            </label>
-          </div>
-          <div className="dochub-create-doc-form__item">
-            <label>
-              <span className="dochub-create-doc-form__item__label">
-                Translated Branch
-              </span>
-              <input {...register("translatedBranch")} type="text" />
-            </label>
-          </div>
-          <div className="dochub-create-doc-form__item">
-            <label>
-              <span className="dochub-create-doc-form__item__label">
-                Translated Path
-              </span>
-              <input {...register("translatedPath")} type="text" />
-            </label>
-          </div>
-          <div className="dochub-create-doc-form__item">
-            <label>
-              <span className="dochub-create-doc-form__item__label">
-                Translated Rev
-              </span>
-              <input {...register("translatedRev")} type="text" />
-              <span>{watch("translatedRevDate")}</span>
-            </label>
-          </div>
-          <button type="submit">Create</button>
+
+          <button className="btn btn-primary" type="submit">
+            Create
+          </button>
         </form>
       </div>
+
       <Loading loading={loading}></Loading>
     </>
   );

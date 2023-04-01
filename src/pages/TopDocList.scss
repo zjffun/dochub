@@ -40,16 +40,6 @@
     z-index: 1;
     cursor: pointer;
   }
-
-  &__name {
-    font-size: 1.5em;
-    color: var(--md-sys-color-on-primary-container);
-  }
-
-  &__desc {
-    font-size: 0.9em;
-    color: var(--md-sys-color-outline);
-  }
 }
 
 .dochub-progress {

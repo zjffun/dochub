@@ -48,6 +48,52 @@ async function getBranchRev({
   };
 }
 
+async function getPathRev({
+  owner,
+  repo,
+  branch,
+  path,
+}: {
+  owner: string;
+  repo: string;
+  branch: string;
+  path: string;
+}) {
+  const octokit = getOctokit();
+
+  const res = await octokit.graphql<any>(
+    `query($owner: String!, $repo: String!, $branch: String!, $path: String!) {
+      repository(owner: $owner, name: $repo) {
+        ref(qualifiedName: $branch) {
+          target {
+            ... on Commit {
+              history(first: 1, path: $path) {
+                edges {
+                  node {
+                    oid,
+                    committedDate
+                  }
+                }
+              }
+            }
+          }
+        }
+      }    
+    }`,
+    {
+      owner,
+      repo,
+      branch,
+      path,
+    }
+  );
+
+  return {
+    oid: res.repository.ref.target.history.edges[0].node.oid,
+    date: res.repository.ref.target.history.edges[0].node.committedDate,
+  };
+}
+
 async function getLastOriginalFromRev({
   owner,
   repo,
@@ -364,6 +410,7 @@ async function createPr({
 
 export {
   getBranchRev,
+  getPathRev,
   getLastOriginalFromRev,
   getContents,
   getTranslatedOwnerAndRepo,
