@@ -1,7 +1,7 @@
 import classnames from "classnames";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { IViewerContents, IViewerRelation } from "relation2-core";
 import { IRelationEditorRef, RelationEditor } from "relation2-react";
 import { getViewerData, saveTranslatedContent } from "../api";
@@ -16,7 +16,6 @@ import { useStoreContext } from "../store";
 import openSignInWindow from "../utils/openSignInWindow";
 import pathInfo from "../utils/pathInfo";
 
-import "react-toastify/dist/ReactToastify.css";
 import "./RelationPage.scss";
 
 export interface IRelationViewerData {
@@ -259,18 +258,6 @@ function RelationPage() {
           />
         </section>
       </main>
-      <ToastContainer
-        position="top-center"
-        autoClose={2000}
-        hideProgressBar
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="dark"
-      />
     </div>
   );
 }
