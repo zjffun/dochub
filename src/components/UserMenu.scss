@@ -23,7 +23,6 @@
       width: 180px;
       margin-top: 8px;
       padding: 0.5em 0;
-      background: var(--md-sys-color-primary-container);
       border: 1px solid var(--md-sys-color-outline);
       border-radius: 8px;
       z-index: 10;
@@ -33,7 +32,7 @@
         right: 9px;
         top: -16px;
         border: 8px solid #0000;
-        border-bottom: 8px solid var(--md-sys-color-primary-container);
+        border-bottom: 8px solid var(--md-sys-color-outline);
         content: "";
       }
       &__item {
@@ -50,6 +49,9 @@
             padding: 0.2em 1em;
             color: inherit;
             background: none;
+            &:hover {
+              color: inherit;
+            }
           }
         }
       }

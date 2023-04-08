@@ -1,5 +1,5 @@
 // @ts-ignore
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { createDoc } from "../api";
@@ -11,6 +11,8 @@ import {
 } from "../api/github";
 import Header from "../components/Header";
 import Loading from "../components/Loading";
+import { useStoreContext } from "../store";
+import { IFormOption } from "../types";
 import { githubUrl } from "../utils/githubUrl";
 import pathInfo from "../utils/pathInfo";
 
@@ -18,8 +20,10 @@ import "./CreateDoc.scss";
 
 function RelationList() {
   const { docPath } = pathInfo();
-
+  const { userInfo } = useStoreContext();
   const navigate = useNavigate();
+
+  const [startPathOptions, setStartPathOptions] = useState<IFormOption[]>([]);
 
   const {
     register,
@@ -33,7 +37,7 @@ function RelationList() {
 
   const handleFromSubmit = handleSubmit(async (data) => {
     const postData = {
-      path: `${docPath}/${data.path}`,
+      path: `${data.startPath}${data.path}`,
       originalOwner: data.originalOwner,
       originalRepo: data.originalRepo,
       originalBranch: data.originalBranch,
@@ -181,6 +185,26 @@ function RelationList() {
     setValue("translatedRevDate", date);
   }
 
+  const globalRef = useRef<{
+    setValue?: typeof setValue;
+  }>({});
+  globalRef.current.setValue = setValue;
+
+  useEffect(() => {
+    const options: IFormOption[] = [
+      { label: `${docPath}/`, value: `${docPath}/` },
+    ];
+    if (userInfo?.login) {
+      options.unshift({
+        label: `/${userInfo.login}${docPath}/`,
+        value: `/${userInfo.login}${docPath}/`,
+      });
+    }
+    setStartPathOptions(options);
+
+    globalRef.current?.setValue?.("startPath", options[0].value);
+  }, [userInfo?.login, docPath]);
+
   return (
     <>
       <Header></Header>
@@ -189,7 +213,7 @@ function RelationList() {
         <form onSubmit={handleFromSubmit} className="dochub-create-doc-form">
           <section className="dochub-create-doc-form-container surface">
             <h3
-              className="dochub-create-doc-form-subtitle title-large "
+              className="dochub-create-doc-form-subtitle title-large"
               style={{ marginBottom: "1rem" }}
             >
               Auto fill through GitHub URL
@@ -234,12 +258,23 @@ function RelationList() {
                   Doc Path
                 </span>
                 <span className="dochub-create-doc-form-doc-path">
-                  <span className="dochub-create-doc-form-doc-path__prefix">
-                    {docPath}/
-                  </span>
+                  <select
+                    {...register("startPath", {
+                      required: true,
+                    })}
+                    className="dochub-create-doc-form-doc-path__select select"
+                  >
+                    {startPathOptions.map((o) => {
+                      return (
+                        <option value={o.value} key={o.value}>
+                          {o.label}
+                        </option>
+                      );
+                    })}
+                  </select>
                   <input
                     {...register("path", { required: true })}
-                    className="input"
+                    className="dochub-create-doc-form-doc-path__input input"
                     type="text"
                     style={{ flex: "1 1 auto" }}
                   />

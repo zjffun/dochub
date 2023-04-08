@@ -24,6 +24,20 @@ a:active {
   text-decoration: underline;
 }
 
+.select {
+  padding: 4px 0.5rem;
+  border: 1px solid var(--md-sys-color-outline);
+  background: var(--md-sys-color-surface-light);
+  color: var(--md-sys-color-on-surface-light);
+  border-radius: 6px;
+  font-size: var(--md-sys-typescale-label-large-font-size);
+  font-weight: var(--md-sys-typescale-label-large-font-weight);
+  height: calc(var(--md-sys-typescale-label-large-line-height) + 10px);
+  &:focus-visible {
+    outline-color: var(--md-sys-color-primary);
+  }
+}
+
 .input {
   padding: 4px 0.5rem;
   border: 1px solid var(--md-sys-color-outline);

@@ -42,7 +42,7 @@ function UserMenu() {
         />
         <span className="dropdown-caret"></span>
       </summary>
-      <ul className="dochub__user-menu__list">
+      <ul className="dochub__user-menu__list surface">
         <li className="dochub__user-menu__list__item dochub__user-menu__list__item--link">
           <Link to={`/user/${userInfo?.login}`}>
             Signed in as <b>{userInfo?.name || ""}</b>

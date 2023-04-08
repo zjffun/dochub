@@ -5,7 +5,8 @@ import TopDocList from "./pages/TopDocList";
 const CreateDoc = lazy(() => import("./pages/CreateDoc"));
 const DocList = lazy(() => import("./pages/DocList"));
 const RelationPage = lazy(() => import("./pages/RelationPage"));
-const UserHome = lazy(() => import("./pages/UserHome"));
+const UserHomeOverview = lazy(() => import("./pages/UserHome/Overview"));
+const UserHomeDocuments = lazy(() => import("./pages/UserHome/Documents"));
 
 // admin
 const AdminCollections = lazy(() => import("./pages/admin/CollectionsPage"));
@@ -46,11 +47,20 @@ const router = createBrowserRouter([
     path: "/user",
     children: [
       {
-        id: "user-home",
+        id: "user-home-documents",
+        path: ":login/documents",
+        element: (
+          <React.Suspense fallback={<>...</>}>
+            <UserHomeDocuments></UserHomeDocuments>
+          </React.Suspense>
+        ),
+      },
+      {
+        id: "user-home-overview",
         path: ":login",
         element: (
           <React.Suspense fallback={<>...</>}>
-            <UserHome></UserHome>
+            <UserHomeOverview></UserHomeOverview>
           </React.Suspense>
         ),
       },

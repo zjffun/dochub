@@ -21,3 +21,16 @@ export interface IDoc {
   readonly translatedRev?: string;
   readonly translatedContent?: string;
 }
+
+export interface IFormOption {
+  label: string;
+  value: string;
+}
+
+export interface IUserInfo {
+  login: string;
+  name: string;
+  role: string;
+  avatarUrl: string;
+  email: string;
+}

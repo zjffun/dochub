@@ -1,0 +1,15 @@
+.dochub-user-home-profile {
+  &__avatar {
+    margin-bottom: 1rem;
+    &__img {
+      overflow: hidden;
+      border-radius: 50%;
+    }
+  }
+  &__name {
+    font-size: 1.5rem;
+  }
+  &__login {
+    font-size: 1.25rem;
+  }
+}

@@ -20,9 +20,14 @@
     &-doc-path {
       display: flex;
       align-items: center;
-      &__prefix {
-        width: max-content;
-        flex: 0 0 auto;
+      &__select {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        border-right: 0;
+      }
+      &__input {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
       }
     }
 
