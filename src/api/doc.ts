@@ -28,6 +28,14 @@ export function createDoc(doc: IDoc) {
   return client.post<any, IDoc>("/api/doc", doc);
 }
 
+export function deleteDoc(path: string) {
+  return client.delete<any, { path: string }>("/api/doc", {
+    params: {
+      path,
+    },
+  });
+}
+
 export function getViewerData({ path }: IGetViewerDataParam) {
   return client.get<any, any[]>("/api/doc/viewer-data", {
     params: {

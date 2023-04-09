@@ -1,12 +1,8 @@
-import { useStoreContext } from "../store";
-
 import { Link } from "react-router-dom";
 import "./DocHeader.scss";
 import Paths from "./Paths";
 
-function Header() {
-  const pathname = window.location.pathname;
-
+function DocHeader({ pathname }: { pathname: string }) {
   return (
     <section className="dochub-doc-header">
       <Paths paths={pathname}></Paths>
@@ -22,4 +18,4 @@ function Header() {
   );
 }
 
-export default Header;
+export default DocHeader;

@@ -13,7 +13,7 @@ function DocListPage() {
   return (
     <>
       <Header></Header>
-      <DocHeader></DocHeader>
+      <DocHeader pathname={pathname}></DocHeader>
       <DocList pathname={pathname}></DocList>
     </>
   );

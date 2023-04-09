@@ -1,4 +1,12 @@
 .dochub-doc-item {
+  cursor: pointer;
+
+  &:hover {
+    .dochub-doc-item__footer__delete {
+      display: inline-block;
+    }
+  }
+
   &__title {
     font-size: var(--md-sys-typescale-title-large-font-size);
     font-weight: var(--md-sys-typescale-title-large-font-weight);
@@ -9,9 +17,17 @@
   }
 
   &__footer {
+    display: flex;
+    min-height: 1.5rem;
     margin-top: 1rem;
+
     &__item {
       margin-right: 1rem;
+    }
+
+    &__delete {
+      align-self: flex-start;
+      display: none;
     }
   }
 }

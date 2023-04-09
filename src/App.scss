@@ -82,6 +82,10 @@ a:active {
   }
 }
 
+.btn-small {
+  padding: 2px 8px;
+}
+
 .btn-primary {
   color: var(--md-sys-color-on-secondary);
   background-color: var(--md-sys-color-secondary);
@@ -90,5 +94,16 @@ a:active {
   &:hover,
   &:active {
     color: var(--md-sys-color-on-secondary);
+  }
+}
+
+.btn-danger {
+  color: var(--md-sys-color-on-error);
+  background-color: var(--md-sys-color-error);
+  border: none;
+
+  &:hover,
+  &:active {
+    color: var(--md-sys-color-on-error);
   }
 }

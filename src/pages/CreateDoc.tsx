@@ -194,11 +194,14 @@ function RelationList() {
     const options: IFormOption[] = [
       { label: `${docPath}/`, value: `${docPath}/` },
     ];
+
     if (userInfo?.login) {
-      options.unshift({
-        label: `/${userInfo.login}${docPath}/`,
-        value: `/${userInfo.login}${docPath}/`,
-      });
+      if (!docPath.startsWith(`/${userInfo.login}`)) {
+        options.unshift({
+          label: `/${userInfo.login}${docPath}/`,
+          value: `/${userInfo.login}${docPath}/`,
+        });
+      }
     }
     setStartPathOptions(options);
 

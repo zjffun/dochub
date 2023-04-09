@@ -1,4 +1,5 @@
 import { useParams } from "react-router";
+import DocHeader from "../../components/DocHeader";
 import DocList from "../../components/DocList";
 import CommonContainer from "./components/CommonContainer";
 
@@ -17,6 +18,7 @@ function UserHome() {
   return (
     <CommonContainer login={login} type="documents">
       <div className="dochub-user-home-documents">
+        <DocHeader pathname={pathname}></DocHeader>
         <DocList pathname={pathname}></DocList>
       </div>
     </CommonContainer>

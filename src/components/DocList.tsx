@@ -79,6 +79,12 @@ function DocList({ pathname }: { pathname: string }) {
                     originalLineNum={item.originalLineNum}
                     translatedLineNum={item.translatedLineNum}
                     consistentLineNum={item.consistentLineNum}
+                    onDeleteDoc={() => {
+                      getList({
+                        forcePage: 0,
+                        pathname,
+                      });
+                    }}
                   ></DocItem>
                 </li>
               );
