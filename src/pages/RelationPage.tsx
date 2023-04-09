@@ -108,6 +108,8 @@ function RelationPage() {
         if (path !== docPath) {
           const to = `/${type}${path}${search}`;
           navigate(to);
+        } else {
+          fetchViewerData({ docPath: docPath });
         }
       })
       .catch((e) => {
@@ -178,9 +180,10 @@ function RelationPage() {
     });
 
     const { url } = await createPr({
-      owner,
-      repo,
-      branch,
+      owner: translatedOwner,
+      repo: translatedRepo,
+      head: `${owner}:${branch}`,
+      head_repo: repo,
       base: translatedBranch,
       title: headline,
       draft: true,
@@ -195,11 +198,17 @@ function RelationPage() {
     window.open(url, "_blank");
   };
 
-  useEffect(() => {
+  const fetchViewerData = async ({ docPath }: { docPath: string }) => {
     getViewerData({
       path: docPath,
     }).then((data: any) => {
       setRelationViewerData(data);
+    });
+  };
+
+  useEffect(() => {
+    fetchViewerData({
+      docPath: docPath,
     });
   }, [docPath]);
 

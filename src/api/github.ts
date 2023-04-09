@@ -379,7 +379,8 @@ async function createCommit({
 async function createPr({
   owner,
   repo,
-  branch,
+  head,
+  head_repo,
   base,
   title,
   body,
@@ -387,7 +388,8 @@ async function createPr({
 }: {
   owner: string;
   repo: string;
-  branch: string;
+  head: string;
+  head_repo: string;
   base: string;
   title: string;
   body?: string;
@@ -398,7 +400,8 @@ async function createPr({
   const res = await octokit.rest.pulls.create({
     owner,
     repo,
-    head: branch,
+    head,
+    head_repo,
     base,
     title,
     body,
