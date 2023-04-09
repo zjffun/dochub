@@ -1,5 +1,5 @@
 import React, { FC, useContext, useEffect } from "react";
-import { getUser } from "./api";
+import { getUser, getUserMute } from "./api";
 import { IUserInfo } from "./types";
 
 export const StoreContext = React.createContext<{
@@ -25,7 +25,7 @@ const Store: FC<{ children: any }> = ({ children }) => {
   };
 
   useEffect(() => {
-    getUser().then((user) => {
+    getUserMute().then((user) => {
       stateRef.current.setUserInfo(user);
     });
   }, []);
