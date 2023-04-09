@@ -1,7 +1,7 @@
 .dochub {
   &__user-menu {
     position: relative;
-    color: #000;
+    color: var(--md-sys-color-on-primary-container);
     &__summary {
       display: flex;
       align-items: center;
@@ -23,8 +23,7 @@
       width: 180px;
       margin-top: 8px;
       padding: 0.5em 0;
-      background: #fff;
-      border: 1px solid #999;
+      border: 1px solid var(--md-sys-color-outline);
       border-radius: 8px;
       z-index: 10;
       &::before {
@@ -33,14 +32,27 @@
         right: 9px;
         top: -16px;
         border: 8px solid #0000;
-        border-bottom: 8px solid #fff;
+        border-bottom: 8px solid var(--md-sys-color-outline);
         content: "";
       }
       &__item {
         padding: 0.2em 1em;
         cursor: pointer;
         &:hover {
-          background: lightskyblue;
+          color: var(--md-sys-color-on-primary);
+          background: var(--md-sys-color-primary);
+        }
+        &--link {
+          padding: 0;
+          & > a {
+            display: block;
+            padding: 0.2em 1em;
+            color: inherit;
+            background: none;
+            &:hover {
+              color: inherit;
+            }
+          }
         }
       }
       &__divider {

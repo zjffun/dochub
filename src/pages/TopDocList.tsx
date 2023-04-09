@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getCollections } from "../api";
+import { getDocs } from "../api";
 import Header from "../components/Header";
-import { ICollection } from "../types";
-import { getConsistentPercent, getTranslatedPercent } from "../utils/progress";
+import { IDoc } from "../types";
+import { getPercent } from "../utils/progress";
 
-import "./DocumentList.scss";
+import "./TopDocList.scss";
 
-function DocumentList() {
-  const [list, setList] = useState<ICollection[]>([]);
+function TopDocList() {
+  const [list, setList] = useState<IDoc[]>([]);
 
   useEffect(() => {
-    getCollections().then((data) => {
+    getDocs().then((data) => {
       setList(data.list);
     });
   }, []);
@@ -19,25 +19,35 @@ function DocumentList() {
   return (
     <>
       <Header></Header>
-      <div className="dochub-doc-list-wrapper">
-        <ul className="dochub-doc-list">
+      <div className="dochub-top-doc-list">
+        <ul className="dochub-top-doc-list__ul">
           {list.map((item) => {
-            const translated = getTranslatedPercent(item);
-            const consistent = getConsistentPercent(item);
+            const translated = getPercent(
+              item.translatedLineNum,
+              item.originalLineNum
+            );
+            const consistent = getPercent(
+              item.consistentLineNum,
+              item.originalLineNum
+            );
             return (
-              <li className="dochub-doc-list__item" key={item.nameId}>
+              <li className="dochub-top-doc-list__ul__li" key={item.name}>
                 <div
-                  className="dochub-doc-list__item__bg"
+                  className="dochub-top-doc-list__ul__li__bg"
                   style={{
                     backgroundImage: `url(${item.logoUrl})`,
                   }}
                 >
-                  <div className="dochub-project-card">
+                  <div className="dochub-project-card surface on-surface-text">
                     <a className="dochub-project-card__link" href={item.docUrl}>
                       <span style={{ visibility: "hidden" }}>{item.name}</span>
                     </a>
-                    <h2 className="dochub-project-card__name">{item.name}</h2>
-                    <p className="dochub-project-card__desc">{item.desc}</p>
+                    <h2 className="dochub-project-card__name title-large">
+                      {item.name}
+                    </h2>
+                    <p className="dochub-project-card__desc body-small">
+                      {item.desc}
+                    </p>
                     <div className="dochub-progress">
                       <div className="dochub-progress__bar">
                         <div
@@ -61,7 +71,7 @@ function DocumentList() {
                         |{" "}
                         <Link
                           className="dochub-progress__detail__contribute"
-                          to={`/doc/${item.nameId}`}
+                          to={item.path}
                         >
                           contribute
                         </Link>
@@ -78,4 +88,4 @@ function DocumentList() {
   );
 }
 
-export default DocumentList;
+export default TopDocList;

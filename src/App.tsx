@@ -1,68 +1,10 @@
-import React, { lazy } from "react";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import DocumentList from "./pages/DocumentList";
+import { RouterProvider } from "react-router-dom";
+import router from "./router";
 import Store from "./store";
 
-import "./App.css";
-
-const RelationList = lazy(() => import("./pages/RelationList"));
-const RelationPage = lazy(() => import("./pages/RelationPage"));
-
-// admin
-const AdminCollections = lazy(() => import("./pages/admin/CollectionsPage"));
-const AdminLogin = lazy(() => import("./pages/admin/LoginPage"));
-
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <DocumentList></DocumentList>,
-  },
-  {
-    path: "/doc/:nameId",
-    element: (
-      <React.Suspense fallback={<>...</>}>
-        <RelationList></RelationList>
-      </React.Suspense>
-    ),
-  },
-  {
-    path: "/relation/:nameId",
-    element: (
-      <React.Suspense fallback={<>...</>}>
-        <RelationPage></RelationPage>
-      </React.Suspense>
-    ),
-  },
-  {
-    path: "/admin",
-    children: [
-      {
-        path: "login",
-        element: (
-          <React.Suspense fallback={<>...</>}>
-            <AdminLogin></AdminLogin>
-          </React.Suspense>
-        ),
-      },
-      {
-        path: "collections",
-        element: (
-          <React.Suspense fallback={<>...</>}>
-            <AdminCollections></AdminCollections>
-          </React.Suspense>
-        ),
-      },
-    ],
-  },
-  {
-    path: "/:userName/:nameId/:title",
-    element: (
-      <React.Suspense fallback={<>...</>}>
-        <RelationPage></RelationPage>
-      </React.Suspense>
-    ),
-  },
-]);
+import "react-toastify/dist/ReactToastify.css";
+import "./App.scss";
+import { ToastContainer } from "react-toastify";
 
 function App() {
   return (
@@ -70,6 +12,18 @@ function App() {
       <div className="App">
         <RouterProvider router={router} />
       </div>
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
     </Store>
   );
 }

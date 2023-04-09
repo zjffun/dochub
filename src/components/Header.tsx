@@ -18,10 +18,7 @@ function Header() {
         {userInfo ? (
           <UserMenu></UserMenu>
         ) : (
-          <button
-            className="dochub__header__sign-in"
-            onClick={openSignInWindow}
-          >
+          <button className="btn" onClick={openSignInWindow}>
             Sign in
           </button>
         )}

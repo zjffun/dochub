@@ -1,13 +1,6 @@
 import React, { FC, useContext, useEffect } from "react";
 import { getUser } from "./api";
-
-export interface IUserInfo {
-  login: string;
-  name: string;
-  role: string;
-  avatarUrl: string;
-  email: string;
-}
+import { IUserInfo } from "./types";
 
 export const StoreContext = React.createContext<{
   userInfo: IUserInfo | null;

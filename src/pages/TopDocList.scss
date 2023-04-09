@@ -1,0 +1,95 @@
+.dochub-top-doc-list {
+  padding: 1.5rem 1rem;
+  min-height: calc(100vh - 48px);
+
+  &__ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    &__li {
+      position: relative;
+      min-width: 24em;
+      max-width: 100%;
+      background: var(--md-sys-color-primary-container);
+
+      &:hover {
+        .dochub-progress__detail {
+          visibility: visible;
+        }
+      }
+
+      &__bg {
+        background-repeat: no-repeat;
+        background-size: contain;
+        background-position: right;
+      }
+    }
+  }
+}
+
+.dochub-project-card {
+  position: relative;
+  padding: 1.5rem 1.5rem 1rem 1.5rem;
+
+  &__link {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    cursor: pointer;
+  }
+}
+
+.dochub-progress {
+  &:hover {
+    .dochub-progress__detail {
+      visibility: visible;
+    }
+  }
+  &__bar {
+    position: relative;
+    height: 1.5em;
+    margin-top: 2em;
+    overflow: hidden;
+    border-radius: 0.75em;
+    background: var(--md-sys-color-outline);
+    opacity: 0.7;
+
+    &__consistent {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 100%;
+      border-radius: 0.75em;
+      background: var(--md-sys-color-secondary-container);
+    }
+    &__translated {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 100%;
+      border-radius: 0.75em;
+      background: var(--md-sys-color-tertiary-container);
+    }
+  }
+  &__detail {
+    visibility: hidden;
+    font-size: 0.8em;
+    color: var(--md-sys-color-outline);
+    margin-top: 0.5em;
+    &__consistent {
+      background: var(--md-sys-color-secondary-container);
+      margin-right: 1em;
+    }
+    &__translated {
+      background: var(--md-sys-color-tertiary-container);
+    }
+    &__contribute {
+      position: relative;
+      z-index: 2;
+      background: var(--md-sys-color-primary-container);
+    }
+  }
+}

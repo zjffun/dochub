@@ -1,0 +1,24 @@
+.dochub-user-home-common-container {
+  --dochub-user-home-common-container-side-bar-width: 296px;
+
+  &__nav {
+    padding-left: calc(
+      var(--dochub-user-home-common-container-side-bar-width) + 2rem
+    );
+    border-bottom: 1px solid var(--md-sys-color-outline);
+  }
+
+  &__content {
+    display: flex;
+    gap: 1rem;
+    padding: 0 1rem;
+    &__profile {
+      margin-top: -1rem;
+      width: var(--dochub-user-home-common-container-side-bar-width);
+    }
+    &__main {
+      flex: 1 1 auto;
+      padding: 1rem;
+    }
+  }
+}

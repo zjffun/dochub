@@ -1,14 +1,35 @@
 import classnames from "classnames";
 import { useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { IRelationViewerData } from "relation2-core";
+import { useNavigate } from "react-router";
+import { toast } from "react-toastify";
+import { IViewerContents, IViewerRelation } from "relation2-core";
 import { IRelationEditorRef, RelationEditor } from "relation2-react";
-import { getRelationViewerData } from "../api";
-import { saveTranslatedContent } from "../api/translatedContent";
+import { getViewerData, saveTranslatedContent } from "../api";
+import {
+  createCommit,
+  createPr,
+  createPrBranch,
+  getTranslatedOwnerAndRepo,
+} from "../api/github";
 import UserMenu from "../components/UserMenu";
 import { useStoreContext } from "../store";
+import openSignInWindow from "../utils/openSignInWindow";
+import pathInfo from "../utils/pathInfo";
 
 import "./RelationPage.scss";
+
+export interface IRelationViewerData {
+  fromPath: string;
+  toPath: string;
+  fromModifiedContent: string;
+  toModifiedContent: string;
+  translatedOwner: string;
+  translatedRepo: string;
+  translatedBranch: string;
+  translatedRev: string;
+  viewerRelations: IViewerRelation[];
+  viewerContents: IViewerContents;
+}
 
 const options = (showDialog: (id: string) => void) => (data: any) => {
   const OptionsComponent = () => {
@@ -24,6 +45,9 @@ const options = (showDialog: (id: string) => void) => (data: any) => {
 };
 
 function RelationPage() {
+  const search = window.location.search;
+  const { pathname, type, docPath } = pathInfo();
+
   const navigate = useNavigate();
   const { userInfo } = useStoreContext();
 
@@ -44,8 +68,7 @@ function RelationPage() {
     relationsWithOriginalContent: [],
   });
 
-  const params = useParams();
-  const nameId = params.nameId;
+  const titleHref = `${pathname}${search}`;
 
   const showDialog = (id: string) => {
     setCurrentUpdateCheckResultId(id);
@@ -62,54 +85,123 @@ function RelationPage() {
     setUpdateRelationDialogVisible(true);
   };
 
-  const handleSave = (editor: { getValue: () => any }) => {
-    const content = editor?.getValue();
-    const fromPath = relationViewerData?.fromPath;
-    const toPath = relationViewerData?.toPath;
-    const userName = userInfo?.login;
+  const handleSave = () => {
+    // TODO: optimize
+    const editor =
+      diffEditorRef.current?.current?.diffEditorRef?.current?.[1]?.getModifiedEditor();
 
-    if (
-      nameId === undefined ||
-      fromPath === undefined ||
-      toPath === undefined ||
-      userName === undefined
-    ) {
-      throw Error("Invalid params nameId, fromPath, toPath, userName");
+    const content = editor?.getValue();
+
+    if (!userInfo) {
+      openSignInWindow();
+      return;
     }
 
     setIsSaving(true);
     saveTranslatedContent({
-      fromPath,
-      toPath,
-      nameId,
+      path: docPath,
       content,
     })
-      .then(({ title }) => {
-        const to = `/${userName}/${nameId}/${title}${window.location.search}`;
-        navigate(to);
+      .then(({ path }) => {
+        toast.success("Translated content saved.");
+
+        if (path !== docPath) {
+          const to = `/${type}${path}${search}`;
+          navigate(to);
+        }
+      })
+      .catch((e) => {
+        toast.error("Failed to save translated content.");
+        console.error(e);
       })
       .finally(() => {
         setIsSaving(false);
       });
   };
 
-  useEffect(() => {
-    const urlSearchParams = new URLSearchParams(window.location.search);
-    const fromPath = urlSearchParams.get("fromPath");
-    const toPath = urlSearchParams.get("toPath");
-
-    if (!fromPath || !toPath || !nameId) {
+  const handleCreatePrClick = async () => {
+    if (!userInfo) {
+      openSignInWindow();
       return;
     }
 
-    getRelationViewerData({
-      fromPath,
-      toPath,
-      nameId,
+    const translatedOwner = relationViewerData?.translatedOwner;
+    const translatedRepo = relationViewerData?.translatedRepo;
+    const translatedBranch = relationViewerData?.translatedBranch;
+    const translatedRev = relationViewerData?.translatedRev;
+    const toPath = relationViewerData?.toPath;
+    const toModifiedContent = relationViewerData?.toModifiedContent;
+
+    if (translatedOwner === undefined) {
+      throw new Error("translatedOwner is not defined");
+    }
+
+    if (translatedRepo === undefined) {
+      throw new Error("translatedRepo is not defined");
+    }
+
+    if (translatedBranch === undefined) {
+      throw new Error("translatedBranch is not defined");
+    }
+
+    if (translatedRev === undefined) {
+      throw new Error("translatedRev is not defined");
+    }
+
+    if (toPath === undefined) {
+      throw new Error("toPath is not defined");
+    }
+
+    if (toModifiedContent === undefined) {
+      throw new Error("toModifiedContent is not defined");
+    }
+
+    const { owner, repo } = await getTranslatedOwnerAndRepo({
+      translatedOwner,
+      translatedRepo,
+      owner: userInfo.login,
+    });
+
+    const { branch, sha } = await createPrBranch({
+      owner,
+      repo,
+      rev: translatedRev,
+    });
+
+    const { oid, headline } = await createCommit({
+      owner,
+      repo,
+      branch,
+      sha,
+      path: toPath,
+      contents: toModifiedContent,
+    });
+
+    const { url } = await createPr({
+      owner,
+      repo,
+      branch,
+      base: translatedBranch,
+      title: headline,
+      draft: true,
+    });
+
+    toast.success(
+      <div>
+        <span>Create PR successfully.</span> <a href={url}>Goto PR</a>
+      </div>
+    );
+
+    window.open(url, "_blank");
+  };
+
+  useEffect(() => {
+    getViewerData({
+      path: docPath,
     }).then((data: any) => {
       setRelationViewerData(data);
     });
-  }, [nameId]);
+  }, [docPath]);
 
   if (!relationViewerData) {
     return null;
@@ -121,14 +213,29 @@ function RelationPage() {
         <header className="relation-overview__header">
           <ul className="relation-overview__header__list">
             <li className="relation-overview__header__list__item">
-              <a className="dochub__editor-name" href="/">
-                DocHub
-              </a>
+              <h1>
+                <a className="dochub__editor-name" href="/">
+                  DocHub
+                </a>
+              </h1>
+            </li>
+            <li className="relation-overview__header__list__item">
+              <h2>
+                <a className="dochub__editor-title" href={titleHref}>
+                  {docPath}
+                </a>
+              </h2>
             </li>
             <li style={{ flex: "1 1 auto" }}></li>
             {/* <li className="relation-overview__header__list__item">
               <button onClick={() => {}}>Edit</button>
             </li> */}
+            <li className="relation-overview__header__list__item">
+              <button onClick={handleSave}>Save</button>
+            </li>
+            <li className="relation-overview__header__list__item">
+              <button onClick={handleCreatePrClick}>Create PR</button>
+            </li>
             <li className="relation-overview__header__list__item">
               <UserMenu></UserMenu>
             </li>

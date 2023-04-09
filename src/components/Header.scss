@@ -3,17 +3,18 @@
     height: 48px;
     display: flex;
     align-items: center;
-    background: #333;
+    background: #24292f;
+    padding: 0 1rem;
 
-    &__name {
-      margin-left: 1rem;
+    &__name,
+    &__name:hover,
+    &__name:active {
       font-size: 1.8em;
-      color: #eee;
+      color: #fff;
       text-decoration: none;
     }
 
     &__right {
-      margin-right: 1rem;
     }
   }
 }

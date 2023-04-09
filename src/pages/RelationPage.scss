@@ -37,7 +37,16 @@
   left: auto;
 }
 
-.dochub__editor-name {
-  color: #eee;
-  text-decoration: none;
+.dochub__editor {
+  &-name {
+    color: #eee;
+    text-decoration: none;
+  }
+  &-title {
+    color: #eee;
+    text-decoration: none;
+    &:hover {
+      color: #eee;
+    }
+  }
 }
