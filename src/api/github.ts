@@ -240,6 +240,8 @@ async function getTranslatedOwnerAndRepo({
     if (forkRes.status !== 202) {
       throw Error("Failed to fork the repo.");
     }
+
+    repo = forkRes.data.name;
   }
 
   return {
