@@ -61,6 +61,11 @@ function DocList({
         setForcePage(forcePage);
         window.scrollTo(0, 0);
       })
+      .catch(() => {
+        setList([]);
+        setTotal(0);
+        setForcePage(0);
+      })
       .finally(() => {
         setLoading(false);
       });

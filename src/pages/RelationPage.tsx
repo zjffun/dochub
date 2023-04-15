@@ -229,9 +229,13 @@ function RelationPage() {
   const fetchViewerData = async ({ docPath }: { docPath: string }) => {
     getViewerData({
       path: docPath,
-    }).then((data: any) => {
-      setRelationViewerData(data);
-    });
+    })
+      .then((data: any) => {
+        setRelationViewerData(data);
+      })
+      .catch(() => {
+        setRelationViewerData(undefined);
+      });
   };
 
   useEffect(() => {
