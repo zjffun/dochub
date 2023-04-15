@@ -11,6 +11,7 @@ import {
   createPrBranch,
   getTranslatedOwnerAndRepo,
 } from "../api/github";
+import Loading from "../components/Loading";
 import UserMenu from "../components/UserMenu";
 import { useStoreContext } from "../store";
 import openSignInWindow from "../utils/openSignInWindow";
@@ -51,6 +52,7 @@ function RelationPage() {
   const navigate = useNavigate();
   const { userInfo } = useStoreContext();
 
+  const [loading, setLoading] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
   const [updateRelationDialogVisible, setUpdateRelationDialogVisible] =
     useState(false);
@@ -85,117 +87,143 @@ function RelationPage() {
     setUpdateRelationDialogVisible(true);
   };
 
-  const handleSave = () => {
+  const getTranslatedContent = () => {
     // TODO: optimize
     const editor =
       diffEditorRef.current?.current?.diffEditorRef?.current?.[1]?.getModifiedEditor();
 
     const content = editor?.getValue();
 
-    if (!userInfo) {
-      openSignInWindow();
+    return content;
+  };
+
+  const saveTranslate = async () => {
+    const content = getTranslatedContent();
+
+    return saveTranslatedContent({
+      path: docPath,
+      content,
+    });
+  };
+
+  const handleSave = async () => {
+    if (loading) {
       return;
     }
 
-    setIsSaving(true);
-    saveTranslatedContent({
-      path: docPath,
-      content,
-    })
-      .then(({ path }) => {
+    try {
+      setLoading(true);
+
+      if (!userInfo) {
+        openSignInWindow();
+        return;
+      }
+
+      // TODO: optimize
+      await saveTranslate().then(({ path }) => {
         toast.success("Translated content saved.");
 
         if (path !== docPath) {
           const to = `/${type}${path}${search}`;
           navigate(to);
-        } else {
-          fetchViewerData({ docPath: docPath });
         }
-      })
-      .catch((e) => {
-        toast.error("Failed to save translated content.");
-        console.error(e);
-      })
-      .finally(() => {
-        setIsSaving(false);
       });
+    } catch (error) {
+      toast.error("Failed to save translated content.");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCreatePrClick = async () => {
-    if (!userInfo) {
-      openSignInWindow();
+    if (loading) {
       return;
     }
+    try {
+      setLoading(true);
+      if (!userInfo) {
+        openSignInWindow();
+        return;
+      }
 
-    const translatedOwner = relationViewerData?.translatedOwner;
-    const translatedRepo = relationViewerData?.translatedRepo;
-    const translatedBranch = relationViewerData?.translatedBranch;
-    const translatedRev = relationViewerData?.translatedRev;
-    const toPath = relationViewerData?.toPath;
-    const toModifiedContent = relationViewerData?.toModifiedContent;
+      const translatedOwner = relationViewerData?.translatedOwner;
+      const translatedRepo = relationViewerData?.translatedRepo;
+      const translatedBranch = relationViewerData?.translatedBranch;
+      const translatedRev = relationViewerData?.translatedRev;
+      const toPath = relationViewerData?.toPath;
+      const toModifiedContent = getTranslatedContent();
 
-    if (translatedOwner === undefined) {
-      throw new Error("translatedOwner is not defined");
+      if (translatedOwner === undefined) {
+        throw new Error("translatedOwner is not defined");
+      }
+
+      if (translatedRepo === undefined) {
+        throw new Error("translatedRepo is not defined");
+      }
+
+      if (translatedBranch === undefined) {
+        throw new Error("translatedBranch is not defined");
+      }
+
+      if (translatedRev === undefined) {
+        throw new Error("translatedRev is not defined");
+      }
+
+      if (toPath === undefined) {
+        throw new Error("toPath is not defined");
+      }
+
+      if (toModifiedContent === undefined) {
+        throw new Error("toModifiedContent is not defined");
+      }
+
+      await saveTranslate();
+
+      const { owner, repo } = await getTranslatedOwnerAndRepo({
+        translatedOwner,
+        translatedRepo,
+        owner: userInfo.login,
+      });
+
+      const { branch, sha } = await createPrBranch({
+        owner,
+        repo,
+        rev: translatedRev,
+      });
+
+      const { oid, headline } = await createCommit({
+        owner,
+        repo,
+        branch,
+        sha,
+        path: toPath,
+        contents: toModifiedContent,
+      });
+
+      const { url } = await createPr({
+        owner: translatedOwner,
+        repo: translatedRepo,
+        head: `${owner}:${branch}`,
+        head_repo: repo,
+        base: translatedBranch,
+        title: headline,
+        draft: true,
+      });
+
+      toast.success(
+        <div>
+          <span>Create PR successfully.</span> <a href={url}>Goto PR</a>
+        </div>
+      );
+
+      window.open(url, "_blank");
+    } catch (error) {
+      toast.error("Failed to create PR.");
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
-
-    if (translatedRepo === undefined) {
-      throw new Error("translatedRepo is not defined");
-    }
-
-    if (translatedBranch === undefined) {
-      throw new Error("translatedBranch is not defined");
-    }
-
-    if (translatedRev === undefined) {
-      throw new Error("translatedRev is not defined");
-    }
-
-    if (toPath === undefined) {
-      throw new Error("toPath is not defined");
-    }
-
-    if (toModifiedContent === undefined) {
-      throw new Error("toModifiedContent is not defined");
-    }
-
-    const { owner, repo } = await getTranslatedOwnerAndRepo({
-      translatedOwner,
-      translatedRepo,
-      owner: userInfo.login,
-    });
-
-    const { branch, sha } = await createPrBranch({
-      owner,
-      repo,
-      rev: translatedRev,
-    });
-
-    const { oid, headline } = await createCommit({
-      owner,
-      repo,
-      branch,
-      sha,
-      path: toPath,
-      contents: toModifiedContent,
-    });
-
-    const { url } = await createPr({
-      owner: translatedOwner,
-      repo: translatedRepo,
-      head: `${owner}:${branch}`,
-      head_repo: repo,
-      base: translatedBranch,
-      title: headline,
-      draft: true,
-    });
-
-    toast.success(
-      <div>
-        <span>Create PR successfully.</span> <a href={url}>Goto PR</a>
-      </div>
-    );
-
-    window.open(url, "_blank");
   };
 
   const fetchViewerData = async ({ docPath }: { docPath: string }) => {
@@ -267,6 +295,7 @@ function RelationPage() {
           />
         </section>
       </main>
+      <Loading loading={loading}></Loading>
     </div>
   );
 }
