@@ -3,13 +3,20 @@ import ReactPaginate from "react-paginate";
 import { getDocs } from "../api";
 import DocItem from "../components/DocItem";
 import Loading from "../components/Loading";
+import useCurrentRef from "../hooks/useCurrentRef";
 import { IDoc } from "../types";
 
 import "./DocList.scss";
 
 const pageSize = 20;
 
-function DocList({ pathname }: { pathname: string }) {
+function DocList({
+  pathname,
+  isDelete,
+}: {
+  pathname: string;
+  isDelete?: boolean;
+}) {
   const [list, setList] = useState<IDoc[]>([]);
   const [total, setTotal] = useState(0);
   const [forcePage, setForcePage] = useState(0);
@@ -36,6 +43,7 @@ function DocList({ pathname }: { pathname: string }) {
       pageSize,
       path: pathname,
       depth: 999,
+      isDelete,
     })
       .then((data) => {
         if (Array.isArray(data.list)) {
@@ -58,27 +66,37 @@ function DocList({ pathname }: { pathname: string }) {
       });
   }
 
+  const currentRef = useCurrentRef<{
+    getList: typeof getList;
+    pathname: typeof pathname;
+  }>({
+    getList,
+    pathname,
+  });
+
   useEffect(() => {
-    getList({
+    currentRef.current.getList({
       forcePage: 0,
       pathname,
     });
-  }, [pathname]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname, isDelete]);
 
   return (
     <>
-      <div className="dochub-doc-list">
+      <div className="dochub-component-doc-list">
         {total > 0 && (
-          <ul className="dochub-doc-list__ul">
+          <ul className="dochub-component-doc-list__ul">
             {list.map((item) => {
               return (
-                <li className="dochub-doc-list__ul__li">
+                <li className="dochub-component-doc-list__ul__li">
                   <DocItem
                     key={item.path}
                     path={item.path}
                     originalLineNum={item.originalLineNum}
                     translatedLineNum={item.translatedLineNum}
                     consistentLineNum={item.consistentLineNum}
+                    isDelete={isDelete}
                     onDeleteDoc={() => {
                       getList({
                         forcePage: 0,
@@ -92,12 +110,12 @@ function DocList({ pathname }: { pathname: string }) {
           </ul>
         )}
         {total === 0 && (
-          <div className="dochub-doc-list__empty">
+          <div className="dochub-component-doc-list__empty">
             No results matched your search.
           </div>
         )}
         {total > pageSize && (
-          <div className="dochub-doc-list__pagination">
+          <div className="dochub-component-doc-list__pagination">
             <ReactPaginate
               className=""
               breakLabel="..."

@@ -7,6 +7,9 @@ const DocList = lazy(() => import("./pages/DocList"));
 const RelationPage = lazy(() => import("./pages/RelationPage"));
 const UserHomeOverview = lazy(() => import("./pages/UserHome/Overview"));
 const UserHomeDocuments = lazy(() => import("./pages/UserHome/Documents"));
+const UserHomeRecentlyDeleted = lazy(
+  () => import("./pages/UserHome/RecentlyDeleted")
+);
 
 // admin
 const AdminCollections = lazy(() => import("./pages/admin/CollectionsPage"));
@@ -46,6 +49,15 @@ const router = createBrowserRouter([
     id: "user",
     path: "/user",
     children: [
+      {
+        id: "user-home-recently-deleted",
+        path: ":login/recently-deleted",
+        element: (
+          <React.Suspense fallback={<>...</>}>
+            <UserHomeRecentlyDeleted></UserHomeRecentlyDeleted>
+          </React.Suspense>
+        ),
+      },
       {
         id: "user-home-documents",
         path: ":login/documents",

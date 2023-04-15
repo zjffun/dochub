@@ -1,5 +1,5 @@
 // @ts-ignore
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { createDoc } from "../api";
@@ -11,6 +11,7 @@ import {
 } from "../api/github";
 import Header from "../components/Header";
 import Loading from "../components/Loading";
+import useCurrentRef from "../hooks/useCurrentRef";
 import { useStoreContext } from "../store";
 import { IFormOption } from "../types";
 import { githubUrl } from "../utils/githubUrl";
@@ -185,10 +186,11 @@ function RelationList() {
     setValue("translatedRevDate", date);
   }
 
-  const globalRef = useRef<{
-    setValue?: typeof setValue;
-  }>({});
-  globalRef.current.setValue = setValue;
+  const currentRef = useCurrentRef<{
+    setValue: typeof setValue;
+  }>({
+    setValue,
+  });
 
   useEffect(() => {
     const options: IFormOption[] = [
@@ -205,7 +207,8 @@ function RelationList() {
     }
     setStartPathOptions(options);
 
-    globalRef.current?.setValue?.("startPath", options[0].value);
+    currentRef.current.setValue("startPath", options[0].value);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userInfo?.login, docPath]);
 
   return (

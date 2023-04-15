@@ -1,7 +1,11 @@
-.dochub-doc-paths {
-  font-weight: var(--md-sys-typescale-label-large-font-weight);
+.dochub {
+  &-component {
+    &-paths {
+      font-weight: var(--md-sys-typescale-label-large-font-weight);
 
-  &__separator {
-    margin: 0 0.25rem;
+      &__separator {
+        margin: 0 0.25rem;
+      }
+    }
   }
 }

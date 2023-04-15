@@ -12,11 +12,11 @@ const Loading: FC<ILoadingProps> = (props) => {
   return createPortal(
     <div
       className={classNames({
-        "dochub-page-loading": true,
-        "dochub-page-loading--show": props.loading,
+        "dochub-component-loading": true,
+        "dochub-component-loading--show": props.loading,
       })}
     >
-      <div className="dochub-page-loading__icon">
+      <div className="dochub-component-loading__icon">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 32 32"

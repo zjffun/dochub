@@ -11,12 +11,14 @@ function DocItem({
   originalLineNum,
   translatedLineNum,
   consistentLineNum,
+  isDelete,
   onDeleteDoc,
 }: {
   path: string;
   originalLineNum?: number;
   translatedLineNum?: number;
   consistentLineNum?: number;
+  isDelete?: boolean;
   onDeleteDoc?: () => void;
 }) {
   const { userInfo } = useStoreContext();
@@ -35,30 +37,43 @@ function DocItem({
   }
 
   function handleDeleteClick(path: string) {
-    const res = window.confirm(`Delete ${path} ?`);
+    let confirmTip = `Delete ${path} ?`;
+    let permanently = false;
+    let successTip = `Delete ${path} success`;
+
+    if (isDelete === true) {
+      confirmTip = `Permanently delete ${path} ?`;
+      permanently = true;
+      successTip = `Permanently delete ${path} success`;
+    }
+
+    const res = window.confirm(confirmTip);
     if (res) {
-      deleteDoc(path).then(() => {
-        toast.success(`Delete ${path} success`);
+      deleteDoc({
+        path,
+        permanently,
+      }).then(() => {
+        toast.success(successTip);
         onDeleteDoc?.();
       });
     }
   }
 
   return (
-    <section className="dochub-doc-item">
-      <h3 className="dochub-doc-item__title">
+    <section className="dochub-component-doc-item">
+      <h3 className="dochub-component-doc-item__title">
         <Link to={getTranslateLink(path)}>{getTitlePath(path)}</Link>
       </h3>
-      <p className="dochub-doc-item__path">{path}</p>
-      <div className="dochub-doc-item__footer">
+      <p className="dochub-component-doc-item__path">{path}</p>
+      <div className="dochub-component-doc-item__footer">
         <span
-          className="dochub-doc-item__footer__item"
+          className="dochub-component-doc-item__footer__item"
           title={`translated: ${translatedLineNum} / original: ${originalLineNum}`}
         >
           translated: {getPercent(translatedLineNum, originalLineNum)}%
         </span>
         <span
-          className="dochub-doc-item__footer__item"
+          className="dochub-component-doc-item__footer__item"
           title={`consistent: ${consistentLineNum} / original: ${originalLineNum}`}
         >
           consistent: {getPercent(consistentLineNum, originalLineNum)}%
@@ -69,7 +84,7 @@ function DocItem({
           }}
         ></div>
         <button
-          className="dochub-doc-item__footer__delete btn btn-small btn-danger"
+          className="dochub-component-doc-item__footer__delete btn btn-small btn-danger"
           onClick={() => handleDeleteClick(path)}
         >
           Delete

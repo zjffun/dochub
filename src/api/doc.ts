@@ -6,6 +6,7 @@ export class GetDocsParams {
   pageSize?: number = 20;
   path?: string = "/";
   depth?: number = 1;
+  isDelete?: boolean = false;
 
   constructor(params: GetDocsParams) {
     Object.assign(this, params);
@@ -28,10 +29,17 @@ export function createDoc(doc: IDoc) {
   return client.post<any, IDoc>("/api/doc", doc);
 }
 
-export function deleteDoc(path: string) {
-  return client.delete<any, { path: string }>("/api/doc", {
+export function deleteDoc({
+  path,
+  permanently,
+}: {
+  path: string;
+  permanently?: boolean;
+}) {
+  return client.delete<any, { path: string }>(`/api/doc`, {
     params: {
       path,
+      permanently,
     },
   });
 }

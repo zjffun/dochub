@@ -1,33 +1,37 @@
-.dochub-doc-item {
-  cursor: pointer;
+.dochub {
+  &-component {
+    &-doc-item {
+      cursor: pointer;
 
-  &:hover {
-    .dochub-doc-item__footer__delete {
-      display: inline-block;
-    }
-  }
+      &:hover {
+        .dochub-doc-item__footer__delete {
+          display: inline-block;
+        }
+      }
 
-  &__title {
-    font-size: var(--md-sys-typescale-title-large-font-size);
-    font-weight: var(--md-sys-typescale-title-large-font-weight);
-  }
+      &__title {
+        font-size: var(--md-sys-typescale-title-large-font-size);
+        font-weight: var(--md-sys-typescale-title-large-font-weight);
+      }
 
-  &__path {
-    font-size: var(--md-sys-typescale-body-small-font-size);
-  }
+      &__path {
+        font-size: var(--md-sys-typescale-body-small-font-size);
+      }
 
-  &__footer {
-    display: flex;
-    min-height: 1.5rem;
-    margin-top: 1rem;
+      &__footer {
+        display: flex;
+        min-height: 1.5rem;
+        margin-top: 1rem;
 
-    &__item {
-      margin-right: 1rem;
-    }
+        &__item {
+          margin-right: 1rem;
+        }
 
-    &__delete {
-      align-self: flex-start;
-      display: none;
+        &__delete {
+          align-self: flex-start;
+          display: none;
+        }
+      }
     }
   }
 }

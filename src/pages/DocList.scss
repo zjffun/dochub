@@ -1,58 +1,8 @@
-.dochub-doc-list {
-  max-width: 1012px;
-  padding: 1.5em 1em;
-  margin: 0 auto;
-
-  &__ul {
-    width: 100%;
-    padding: 0;
-    margin: 0;
-    border: 1px solid var(--md-sys-color-outline);
-    border-radius: 0.5rem;
-    list-style: none;
-    &__li {
-      padding: 1rem;
-      border-bottom: 1px solid var(--md-sys-color-outline);
-      &:last-child {
-        border-bottom: none;
-      }
-    }
-  }
-
-  &__empty {
-    padding-top: 3rem;
-    text-align: center;
-    font-size: var(--md-sys-typescale-title-large-font-size);
-  }
-
-  &__pagination {
-    margin-top: 1rem;
-    text-align: center;
-    // react-paginate style
-    > ul {
-      display: inline-flex;
-      li {
-        border-radius: 0.25rem;
-
-        a {
-          display: block;
-          padding: 0.5rem 1rem;
-        }
-
-        &.selected {
-          a {
-            color: var(--md-sys-color-on-primary-container);
-          }
-          background: var(--md-sys-color-primary-container);
-        }
-
-        &.disabled {
-          a {
-            color: var(--md-ref-palette-neutral-variant50);
-            cursor: default;
-            text-decoration: none;
-          }
-        }
+.dochub {
+  &-page {
+    &-doc-list {
+      &__nav {
+        border-bottom: 1px solid var(--md-sys-color-outline);
       }
     }
   }

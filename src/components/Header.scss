@@ -1,20 +1,22 @@
 .dochub {
-  &__header {
-    height: 48px;
-    display: flex;
-    align-items: center;
-    background: #24292f;
-    padding: 0 1rem;
+  &-component {
+    &-header {
+      height: 48px;
+      display: flex;
+      align-items: center;
+      background: #24292f;
+      padding: 0 1rem;
 
-    &__name,
-    &__name:hover,
-    &__name:active {
-      font-size: 1.8em;
-      color: #fff;
-      text-decoration: none;
-    }
+      &__name,
+      &__name:hover,
+      &__name:active {
+        font-size: 1.8em;
+        color: #fff;
+        text-decoration: none;
+      }
 
-    &__right {
+      &__right {
+      }
     }
   }
 }

@@ -4,7 +4,7 @@ import Paths from "./Paths";
 
 function DocHeader({ pathname }: { pathname: string }) {
   return (
-    <section className="dochub-doc-header">
+    <section className="dochub-component-doc-header">
       <Paths paths={pathname}></Paths>
       <div
         style={{

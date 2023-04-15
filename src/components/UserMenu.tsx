@@ -31,10 +31,13 @@ function UserMenu() {
   }, []);
 
   return (
-    <details className="dochub__user-menu" open={isOpeningMenu}>
-      <summary className="dochub__user-menu__summary" onClick={toggleMenu}>
+    <details className="dochub-component-user-menu" open={isOpeningMenu}>
+      <summary
+        className="dochub-component-user-menu__summary"
+        onClick={toggleMenu}
+      >
         <img
-          className="dochub__user-menu__summary__avatar"
+          className="dochub-component-user-menu__summary__avatar"
           src={userInfo?.avatarUrl}
           alt={userInfo?.name || ""}
           width={20}
@@ -42,14 +45,17 @@ function UserMenu() {
         />
         <span className="dropdown-caret"></span>
       </summary>
-      <ul className="dochub__user-menu__list surface">
-        <li className="dochub__user-menu__list__item dochub__user-menu__list__item--link">
+      <ul className="dochub-component-user-menu__list surface">
+        <li className="dochub-component-user-menu__list__item dochub-component-user-menu__list__item--link">
           <Link to={`/user/${userInfo?.login}`}>
             Signed in as <b>{userInfo?.name || ""}</b>
           </Link>
         </li>
-        <li className="dochub__user-menu__list__divider"></li>
-        <li className="dochub__user-menu__list__item" onClick={signOut}>
+        <li className="dochub-component-user-menu__list__divider"></li>
+        <li
+          className="dochub-component-user-menu__list__item"
+          onClick={signOut}
+        >
           Sign out
         </li>
       </ul>

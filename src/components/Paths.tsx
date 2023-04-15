@@ -13,13 +13,13 @@ function Header({ paths }: { paths: string }) {
   });
 
   return (
-    <div className="dochub-doc-paths">
+    <div className="dochub-component-paths">
       {showingPath.map(({ pathSegment, path }, i) => {
         return (
           <span key={path}>
             <Link to={path}>{pathSegment}</Link>
             {i === showingPath.length - 1 ? null : (
-              <span className="dochub-doc-paths__separator">/</span>
+              <span className="dochub-component-paths__separator">/</span>
             )}
           </span>
         );
