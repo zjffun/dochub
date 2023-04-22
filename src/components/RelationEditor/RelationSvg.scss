@@ -1,0 +1,36 @@
+$add: lightgreen;
+$remove: lightcoral;
+$change: mediumpurple;
+$relate: lightskyblue;
+$dirty: mediumvioletred;
+
+@mixin relationSvg {
+  rect,
+  path {
+    stroke: white;
+  }
+
+  .remove {
+    fill: $remove;
+  }
+
+  .add {
+    fill: $add;
+  }
+
+  .change {
+    fill: $change;
+  }
+
+  .relate {
+    fill: $relate;
+  }
+
+  .dirty {
+    fill: $dirty;
+  }
+
+  .temp {
+    fill: gray;
+  }
+}

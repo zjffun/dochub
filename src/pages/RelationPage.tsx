@@ -2,8 +2,6 @@ import classnames from "classnames";
 import { FC, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
-import { IViewerContents, IViewerRelation } from "relation2-core";
-import { IRelationEditorRef, RelationEditor } from "relation2-react";
 import {
   createRelations,
   deleteRelation,
@@ -17,6 +15,13 @@ import {
   getTranslatedOwnerAndRepo,
 } from "../api/github";
 import Loading from "../components/Loading";
+import RelationEditor, {
+  IMonacoDiffEditorRelationRef,
+} from "../components/RelationEditor";
+import {
+  IRelation,
+  RelationTypeEnum,
+} from "../components/RelationEditor/types";
 import UserMenu from "../components/UserMenu";
 import { useStoreContext } from "../store";
 import openSignInWindow from "../utils/openSignInWindow";
@@ -34,16 +39,19 @@ export interface IRelationViewerData {
   docObjectId: string;
   fromPath: string;
   toPath: string;
+  fromOriginalContent: string;
+  fromOriginalContentSha: string;
   fromModifiedContent: string;
   fromModifiedContentSha: string;
+  toOriginalContent: string;
+  toOriginalContentSha: string;
   toModifiedContent: string;
   toModifiedContentSha: string;
   translatedOwner: string;
   translatedRepo: string;
   translatedBranch: string;
   translatedRev: string;
-  viewerRelations: IViewerRelation[];
-  viewerContents: IViewerContents;
+  relations: IRelation[];
 }
 
 interface CreateModeProps {
@@ -142,25 +150,20 @@ function RelationPage() {
   const [updateRelationData, setUpdateRelationData] = useState<any>(null);
   const [currentUpdateCheckResultId, setCurrentUpdateCheckResultId] =
     useState("");
-  const [isSaving, setIsSaving] = useState(false);
 
   const [relationViewerData, setRelationViewerData] = useState<
     IRelationViewerData | undefined
   >();
 
-  const diffEditorRef = useRef<IRelationEditorRef & { current: any }>({
-    current: null,
-    relationsWithOriginalContent: [],
-  });
+  const diffEditorRef = useRef<IMonacoDiffEditorRelationRef>(null);
 
   const titleHref = `${pathname}${search}`;
 
   const showDialog = (id: string) => {
     setCurrentUpdateCheckResultId(id);
-    const relationWithOriginalContentInfo =
-      diffEditorRef.current.relationsWithOriginalContent.find(
-        (d: any) => d.id === id
-      );
+    const relationWithOriginalContentInfo = relations.find(
+      (d: any) => d.id === id
+    );
 
     if (!relationWithOriginalContentInfo) {
       setUpdateRelationData(null);
@@ -172,8 +175,7 @@ function RelationPage() {
 
   const getTranslatedContent = () => {
     // TODO: optimize
-    const editor =
-      diffEditorRef.current?.current?.diffEditorRef?.current?.[1]?.getModifiedEditor();
+    const editor = diffEditorRef.current?.toDiffEditor?.getModifiedEditor();
 
     const content = editor?.getValue();
 
@@ -182,6 +184,10 @@ function RelationPage() {
 
   const saveTranslate = async () => {
     const content = getTranslatedContent();
+
+    if (content === undefined) {
+      throw Error("content is undefined");
+    }
 
     return saveTranslatedContent({
       path: docPath,
@@ -385,6 +391,21 @@ function RelationPage() {
     return null;
   }
 
+  const {
+    fromOriginalContent,
+    toOriginalContent,
+    fromModifiedContent,
+    toModifiedContent,
+  } = relationViewerData;
+
+  const relations = relationViewerData.relations.map((d) => {
+    return {
+      ...d,
+      // TODO: calc type
+      type: RelationTypeEnum.relate,
+    };
+  });
+
   return (
     <div className="relation-view-page">
       <main className={"relation-overview"}>
@@ -445,12 +466,16 @@ function RelationPage() {
           })}
         >
           <RelationEditor
-            relationViewerData={relationViewerData}
+            ref={diffEditorRef}
+            fromOriginal={fromOriginalContent}
+            fromModified={fromModifiedContent}
+            toOriginal={toOriginalContent}
+            toModified={toModifiedContent}
+            relations={relations}
             options={options({
               showDialog,
               onDelete: handleDelete,
             })}
-            ref={diffEditorRef}
             onFromSave={(editor: { getValue: () => any }) => {
               const content = editor?.getValue();
             }}

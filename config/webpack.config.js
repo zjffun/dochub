@@ -748,6 +748,7 @@ module.exports = function (webpackEnv) {
             },
           },
         }),
+      // TODO: fix icon
       new MonacoWebpackPlugin({
         languages: ["markdown"],
         features: ["contextmenu"],
