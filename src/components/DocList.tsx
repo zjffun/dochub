@@ -94,7 +94,10 @@ function DocList({
           <ul className="dochub-component-doc-list__ul">
             {list.map((item) => {
               return (
-                <li className="dochub-component-doc-list__ul__li">
+                <li
+                  key={item.path}
+                  className="dochub-component-doc-list__ul__li"
+                >
                   <DocItem
                     key={item.path}
                     path={item.path}

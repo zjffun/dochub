@@ -6829,6 +6829,11 @@ lodash@^4.17.15, lodash@^4.17.20, lodash@^4.17.21, lodash@^4.7.0:
   resolved "https://registry.npmmirror.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
 
+loglevel@^1.8.1:
+  version "1.8.1"
+  resolved "https://registry.npmmirror.com/loglevel/-/loglevel-1.8.1.tgz#5c621f83d5b48c54ae93b6156353f555963377b4"
+  integrity sha512-tCRIJM51SHjAayKwC+QAg8hT8vg6z7GSgLJKGvzuPb1Wc+hLzqtuVLxp6/HzSPOozuK+8ErAhy7U/sVzw8Dgfg==
+
 loose-envify@^1.1.0, loose-envify@^1.4.0:
   version "1.4.0"
   resolved "https://registry.npmmirror.com/loose-envify/-/loose-envify-1.4.0.tgz#71ee51fa7be4caec1a63839f7e682d8132d30caf"
@@ -7239,10 +7244,10 @@ monaco-editor-webpack-plugin@^7.0.1:
   dependencies:
     loader-utils "^2.0.2"
 
-monaco-editor@^0.34.1:
-  version "0.34.1"
-  resolved "https://registry.npmmirror.com/monaco-editor/-/monaco-editor-0.34.1.tgz#1b75c4ad6bc4c1f9da656d740d98e0b850a22f87"
-  integrity sha512-FKc80TyiMaruhJKKPz5SpJPIjL+dflGvz4CpuThaPMc94AyN7SeC9HQ8hrvaxX7EyHdJcUY5i4D0gNyJj1vSZQ==
+monaco-editor@^0.37.1:
+  version "0.37.1"
+  resolved "https://registry.npmmirror.com/monaco-editor/-/monaco-editor-0.37.1.tgz#d6f5ffb593e019e74e19bf8a2bdef5a691876f4e"
+  integrity sha512-jLXEEYSbqMkT/FuJLBZAVWGuhIb4JNwHE9kPTorAVmsdZ4UzHAfgWxLsVtD7pLRFaOwYPhNG9nUCpmFL1t/dIg==
 
 mri@^1.1.0:
   version "1.2.0"
@@ -8654,10 +8659,10 @@ relateurl@^0.2.7:
   resolved "https://registry.npmmirror.com/relateurl/-/relateurl-0.2.7.tgz#54dbf377e51440aca90a4cd274600d3ff2d888a9"
   integrity sha512-G08Dxvm4iDN3MLM0EsP62EDV9IuhXPR6blNz6Utcp7zyV3tr4HVNINt6MpaRWbxoOHT3Q7YN2P+jaHX8vUbgog==
 
-relation2-core@^0.0.25:
-  version "0.0.25"
-  resolved "https://registry.npmmirror.com/relation2-core/-/relation2-core-0.0.25.tgz#cd2144071e134a9aef709287f122cf9be3cb58bf"
-  integrity sha512-CniTLm4C//dCfLA3Qj04jIMh/etid5GsrlDew7nfBv3DfymFndCQFYpz0uYB/4ZOC7uaMFCPiqfNOrOo4nB1Ew==
+relation2-core@^0.0.26:
+  version "0.0.26"
+  resolved "https://registry.npmmirror.com/relation2-core/-/relation2-core-0.0.26.tgz#be2f069aa10f61be8d1c3a7a0e9abbb617fad30b"
+  integrity sha512-VHG8VptWSEs7iwznCosMJ/cytL7RfbyjDMaZjhTCnPIOCRjrgZT8SFWaQgyXjb/5LCnxtFiO6+wwhyUhVvjyKg==
   dependencies:
     diff "^5.0.0"
     fs-extra "^10.1.0"
@@ -8669,13 +8674,14 @@ relation2-core@^0.0.25:
     split-split "^0.0.2"
     unified "^10.1.2"
 
-relation2-react@^0.0.25:
-  version "0.0.25"
-  resolved "https://registry.npmmirror.com/relation2-react/-/relation2-react-0.0.25.tgz#26161d7283402e7afbcc53b12c7b8c21c7b290b5"
-  integrity sha512-IKaZ26xuUqvtgriNpd4bBLeaoXdwfBPNrGusvuk0zArBp86p4CXN9lHzX1/vWMcJJzDWUOASWZg2OnxIWluEPA==
+relation2-react@^0.0.26:
+  version "0.0.26"
+  resolved "https://registry.npmmirror.com/relation2-react/-/relation2-react-0.0.26.tgz#916f34d9be2d5e136cd2042429898a86875c2557"
+  integrity sha512-HFiJ2/P60HAsdxKkyrLL8aVvaImHfpjXSmzQz0PJtg4VEpvYTlQS0MocxvKEqjgLq0VJ+pCeqKkW+6gVOoCZ+Q==
   dependencies:
     d3 "^7.8.2"
     lodash-es "^4.17.21"
+    loglevel "^1.8.1"
 
 remark-frontmatter@^4.0.1:
   version "4.0.1"

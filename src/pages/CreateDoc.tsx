@@ -55,9 +55,9 @@ function RelationList() {
       translatedContent: "",
     };
 
-    setLoading(true);
-
     try {
+      setLoading(true);
+
       // originalContent
       const originalContent = await getContents({
         owner: data.originalOwner,
@@ -107,16 +107,55 @@ function RelationList() {
 
   async function handleParseClick() {
     try {
-      await parseTranslatedUrl();
-    } catch (error) {
-      console.error(error);
-    }
+      setLoading(true);
 
-    try {
-      await parseOriginalUrl();
+      resetDocInfo();
+
+      try {
+        await parseTranslatedUrl();
+      } catch (error) {
+        console.error(error);
+      }
+
+      try {
+        await parseOriginalUrl();
+      } catch (error) {
+        console.error(error);
+      }
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
+  }
+
+  function resetDocInfo() {
+    setValue("startPath", startPathOptions[0].value);
+    setValue("path", "");
+    resetOriginal();
+    resetTranslated();
+  }
+
+  function resetOriginal() {
+    setValue("originalUrl", "");
+    setValue("originalOwner", "");
+    setValue("originalRepo", "");
+    setValue("originalBranch", "");
+    setValue("originalPath", "");
+    setValue("originalRev", "");
+    setValue("originalRevDate", "");
+    setValue("originalFromRev", "");
+    setValue("originalFromRevDate", "");
+  }
+
+  function resetTranslated() {
+    setValue("translatedUrl", "");
+    setValue("translatedOwner", "");
+    setValue("translatedRepo", "");
+    setValue("translatedBranch", "");
+    setValue("translatedPath", "");
+    setValue("translatedRev", "");
+    setValue("translatedRevDate", "");
   }
 
   async function parseOriginalUrl() {

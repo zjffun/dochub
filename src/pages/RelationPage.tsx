@@ -1,10 +1,15 @@
 import classnames from "classnames";
-import { useEffect, useRef, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import { IViewerContents, IViewerRelation } from "relation2-core";
 import { IRelationEditorRef, RelationEditor } from "relation2-react";
-import { getViewerData, saveTranslatedContent } from "../api";
+import {
+  createRelations,
+  deleteRelation,
+  getViewerData,
+  saveTranslatedContent,
+} from "../api";
 import {
   createCommit,
   createPr,
@@ -19,11 +24,20 @@ import pathInfo from "../utils/pathInfo";
 
 import "./RelationPage.scss";
 
+enum MODE {
+  VIEW = "view",
+  EDIT = "edit",
+  EDIT_RELATION = "editRelation",
+}
+
 export interface IRelationViewerData {
+  docObjectId: string;
   fromPath: string;
   toPath: string;
   fromModifiedContent: string;
+  fromModifiedContentSha: string;
   toModifiedContent: string;
+  toModifiedContentSha: string;
   translatedOwner: string;
   translatedRepo: string;
   translatedBranch: string;
@@ -32,17 +46,86 @@ export interface IRelationViewerData {
   viewerContents: IViewerContents;
 }
 
-const options = (showDialog: (id: string) => void) => (data: any) => {
-  const OptionsComponent = () => {
-    return (
-      <>
-        <button onClick={() => {}}>Delete</button>
-        <button onClick={() => showDialog(data.id)}>Update</button>
-      </>
-    );
+interface CreateModeProps {
+  onCreate?: (ranges: {
+    fromStartLine: number;
+    fromEndLine: number;
+    toStartLine: number;
+    toEndLine: number;
+  }) => void;
+}
+
+const options =
+  ({
+    onDelete,
+    showDialog,
+  }: {
+    onDelete: (id: string) => void;
+    showDialog: (id: string) => void;
+  }) =>
+  (data: any) => {
+    const OptionsComponent = () => {
+      return (
+        <>
+          <button onClick={() => onDelete(data.id)}>Delete</button>
+          <button onClick={() => showDialog(data.id)}>Update</button>
+        </>
+      );
+    };
+
+    return <OptionsComponent></OptionsComponent>;
   };
 
-  return <OptionsComponent></OptionsComponent>;
+const CreateMode: FC<CreateModeProps> = ({ onCreate }) => {
+  const [fromStartLine, setFromStartLine] = useState<number | undefined>();
+  const [fromEndLine, setFromEndLine] = useState<number | undefined>();
+  const [toStartLine, setToStartLine] = useState<number | undefined>();
+  const [toEndLine, setToEndLine] = useState<number | undefined>();
+
+  const submit = () => {
+    if (
+      fromStartLine === undefined ||
+      fromEndLine === undefined ||
+      toStartLine === undefined ||
+      toEndLine === undefined
+    ) {
+      throw Error("submit fail");
+    }
+    onCreate?.({
+      fromStartLine,
+      fromEndLine,
+      toStartLine,
+      toEndLine,
+    });
+  };
+
+  useEffect(() => {
+    const listener = (event: any) => {
+      setFromStartLine(event.detail.fromStartLine);
+      setFromEndLine(event.detail.fromEndLine);
+      setToStartLine(event.detail.toStartLine);
+      setToEndLine(event.detail.toEndLine);
+    };
+
+    // TODO: multiple diff editor
+    document.addEventListener("relationCreateRangeChange", listener);
+
+    return () => {
+      document.addEventListener("relationCreateRangeChange", listener);
+    };
+  }, []);
+
+  return (
+    <span>
+      {fromStartLine && fromEndLine && toStartLine && toEndLine && (
+        <span>
+          <button onClick={submit}>
+            [L{fromStartLine},{fromEndLine}-L{toStartLine},{toEndLine}] Create
+          </button>
+        </span>
+      )}
+    </span>
+  );
 };
 
 function RelationPage() {
@@ -53,7 +136,7 @@ function RelationPage() {
   const { userInfo } = useStoreContext();
 
   const [loading, setLoading] = useState(false);
-  const [showOptions, setShowOptions] = useState(false);
+  const [mode, setMode] = useState(MODE.EDIT);
   const [updateRelationDialogVisible, setUpdateRelationDialogVisible] =
     useState(false);
   const [updateRelationData, setUpdateRelationData] = useState<any>(null);
@@ -104,6 +187,14 @@ function RelationPage() {
       path: docPath,
       content,
     });
+  };
+
+  const handleEditRelationsClick = async () => {
+    setMode(MODE.EDIT_RELATION);
+  };
+
+  const handleEditContentClick = async () => {
+    setMode(MODE.EDIT);
   };
 
   const handleSave = async () => {
@@ -238,6 +329,52 @@ function RelationPage() {
       });
   };
 
+  const handleCreate = async ({
+    fromStartLine,
+    fromEndLine,
+    toStartLine,
+    toEndLine,
+  }: {
+    fromStartLine: number;
+    fromEndLine: number;
+    toStartLine: number;
+    toEndLine: number;
+  }) => {
+    if (!relationViewerData) {
+      return;
+    }
+
+    createRelations([
+      {
+        docObjectId: relationViewerData?.docObjectId,
+        fromRange: [fromStartLine, fromEndLine],
+        toRange: [toStartLine, toEndLine],
+        fromContentSha: relationViewerData?.fromModifiedContentSha,
+        toContentSha: relationViewerData?.toModifiedContentSha,
+        state: "",
+      },
+    ]).then(() => {
+      toast.success("Create relation successfully.");
+      fetchViewerData({
+        docPath: docPath,
+      });
+    });
+  };
+
+  const handleDelete = async (id: string) => {
+    const res = window.confirm(`Delete relation?`);
+    if (res) {
+      deleteRelation(id).then(() => {
+        toast.success("Delete relation successfully.");
+        fetchViewerData({
+          docPath: docPath,
+        });
+      });
+    }
+  };
+
+  const handleUpdateClick = async () => {};
+
   useEffect(() => {
     fetchViewerData({
       docPath: docPath,
@@ -268,15 +405,33 @@ function RelationPage() {
               </h2>
             </li>
             <li style={{ flex: "1 1 auto" }}></li>
-            {/* <li className="relation-overview__header__list__item">
-              <button onClick={() => {}}>Edit</button>
-            </li> */}
-            <li className="relation-overview__header__list__item">
-              <button onClick={handleSave}>Save</button>
-            </li>
-            <li className="relation-overview__header__list__item">
-              <button onClick={handleCreatePrClick}>Create PR</button>
-            </li>
+            {mode === MODE.EDIT && (
+              <li className="relation-overview__header__list__item">
+                <button onClick={handleSave}>Save</button>
+              </li>
+            )}
+            {mode !== MODE.EDIT_RELATION && (
+              <li className="relation-overview__header__list__item">
+                <button onClick={handleCreatePrClick}>Create PR</button>
+              </li>
+            )}
+            {mode !== MODE.EDIT_RELATION && (
+              <li className="relation-overview__header__list__item">
+                <button onClick={handleEditRelationsClick}>
+                  Edit Relations
+                </button>
+              </li>
+            )}
+            {mode === MODE.EDIT_RELATION && (
+              <>
+                <li className="relation-overview__header__list__item">
+                  <CreateMode onCreate={handleCreate}></CreateMode>
+                </li>
+                <li className="relation-overview__header__list__item">
+                  <button onClick={handleEditContentClick}>Edit Content</button>
+                </li>
+              </>
+            )}
             <li className="relation-overview__header__list__item">
               <UserMenu></UserMenu>
             </li>
@@ -285,17 +440,25 @@ function RelationPage() {
         <section
           className={classnames({
             "relation-overview__relations": true,
-            "relation-overview__relations--show-options": showOptions,
+            "relation-overview__relations--show-options":
+              mode === MODE.EDIT_RELATION,
           })}
         >
           <RelationEditor
             relationViewerData={relationViewerData}
-            options={options(showDialog)}
+            options={options({
+              showDialog,
+              onDelete: handleDelete,
+            })}
             ref={diffEditorRef}
             onFromSave={(editor: { getValue: () => any }) => {
               const content = editor?.getValue();
             }}
-            onToSave={handleSave}
+            onToSave={() => {
+              if (mode === MODE.EDIT) {
+                handleSave();
+              }
+            }}
           />
         </section>
       </main>
