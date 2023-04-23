@@ -94,7 +94,7 @@ async function getPathRev({
   };
 }
 
-async function getLastOriginalFromRev({
+async function getLastFromOriginalRev({
   owner,
   repo,
   branch,
@@ -180,38 +180,38 @@ async function getContents({
   return text;
 }
 
-async function getTranslatedOwnerAndRepo({
-  translatedOwner,
-  translatedRepo,
+async function getToOwnerAndRepo({
+  toOwner,
+  toRepo,
   owner,
 }: {
-  translatedOwner: string;
-  translatedRepo: string;
+  toOwner: string;
+  toRepo: string;
   owner: string;
 }) {
   if (owner === undefined) {
     throw Error("owner is not defined.");
   }
 
-  if (translatedOwner === undefined) {
-    throw Error("translatedOwner is not defined.");
+  if (toOwner === undefined) {
+    throw Error("toOwner is not defined.");
   }
 
-  if (translatedRepo === undefined) {
-    throw Error("translatedRepo is not defined.");
+  if (toRepo === undefined) {
+    throw Error("toRepo is not defined.");
   }
 
   const octokit = getOctokit();
 
   // If the owner is the same as the translated owner, then we don't need to fork.
-  if (owner === translatedOwner) {
+  if (owner === toOwner) {
     return {
-      owner: translatedOwner,
-      repo: translatedRepo,
+      owner: toOwner,
+      repo: toRepo,
     };
   }
 
-  let repo = translatedRepo;
+  let repo = toRepo;
   if (!repo.endsWith("-dochub")) {
     repo = `${repo}-dochub`;
   }
@@ -231,9 +231,10 @@ async function getTranslatedOwnerAndRepo({
       }
     );
   } catch (e) {
+    // @ts-ignore
     const forkRes = await octokit.rest.repos.createFork({
-      owner: translatedOwner,
-      repo: translatedRepo,
+      owner: toOwner,
+      repo: toRepo,
       name: repo,
     });
 
@@ -416,9 +417,9 @@ async function createPr({
 export {
   getBranchRev,
   getPathRev,
-  getLastOriginalFromRev,
+  getLastFromOriginalRev,
   getContents,
-  getTranslatedOwnerAndRepo,
+  getToOwnerAndRepo,
   createPrBranch,
   createCommit,
   createPr,

@@ -52,7 +52,7 @@ export function getViewerData({ path }: IGetViewerDataParam) {
   });
 }
 
-export function saveTranslatedContent({
+export function saveToModifiedContent({
   path,
   content,
 }: {
@@ -61,6 +61,6 @@ export function saveTranslatedContent({
 }) {
   return client.put<any, { path: string }>("/api/doc", {
     path,
-    translatedContent: content,
+    toModifiedContent: content,
   });
 }

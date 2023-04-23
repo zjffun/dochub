@@ -6,7 +6,7 @@ import { createDoc } from "../api";
 import {
   getBranchRev,
   getContents,
-  getLastOriginalFromRev,
+  getLastFromOriginalRev,
   getPathRev,
 } from "../api/github";
 import Header from "../components/Header";
@@ -39,60 +39,60 @@ function RelationList() {
   const handleFromSubmit = handleSubmit(async (data) => {
     const postData = {
       path: `${data.startPath}${data.path}`,
-      originalOwner: data.originalOwner,
-      originalRepo: data.originalRepo,
-      originalBranch: data.originalBranch,
-      originalPath: data.originalPath,
-      originalRev: data.originalRev,
-      originalContent: "",
-      originalFromRev: data.originalFromRev,
-      originalFromContent: "",
-      translatedOwner: data.translatedOwner,
-      translatedRepo: data.translatedRepo,
-      translatedBranch: data.translatedBranch,
-      translatedPath: data.translatedPath,
-      translatedRev: data.translatedRev,
-      translatedContent: "",
+      fromOwner: data.fromOwner,
+      fromRepo: data.fromRepo,
+      fromBranch: data.fromBranch,
+      fromPath: data.fromPath,
+      fromOriginalRev: data.fromOriginalRev,
+      fromModifiedRev: data.fromModifiedRev,
+      fromOriginalContent: "",
+      fromModifiedContent: "",
+      toOwner: data.toOwner,
+      toRepo: data.toRepo,
+      toBranch: data.toBranch,
+      toPath: data.toPath,
+      toOriginalRev: data.toOriginalRev,
+      toOriginalContent: "",
     };
 
     try {
       setLoading(true);
 
-      // originalContent
-      const originalContent = await getContents({
-        owner: data.originalOwner,
-        repo: data.originalRepo,
-        rev: data.originalRev,
-        path: data.originalPath,
+      // fromModifiedContent
+      const fromModifiedContent = await getContents({
+        owner: data.fromOwner,
+        repo: data.fromRepo,
+        rev: data.fromModifiedRev,
+        path: data.fromPath,
       });
-      if (!originalContent) {
-        throw new Error("originalContent is empty");
+      if (!fromModifiedContent) {
+        throw new Error("fromModifiedContent is empty");
       }
-      postData.originalContent = originalContent;
+      postData.fromModifiedContent = fromModifiedContent;
 
-      // originalFromContent
-      const originalFromContent = await getContents({
-        owner: data.originalOwner,
-        repo: data.originalRepo,
-        rev: data.originalFromRev,
-        path: data.originalPath,
+      // fromOriginalContent
+      const fromOriginalContent = await getContents({
+        owner: data.fromOwner,
+        repo: data.fromRepo,
+        rev: data.fromOriginalRev,
+        path: data.fromPath,
       });
-      if (!originalFromContent) {
-        throw new Error("originalFromContent is empty");
+      if (!fromOriginalContent) {
+        throw new Error("fromOriginalContent is empty");
       }
-      postData.originalFromContent = originalFromContent;
+      postData.fromOriginalContent = fromOriginalContent;
 
-      // translatedContent
-      const translatedContent = await getContents({
-        owner: data.translatedOwner,
-        repo: data.translatedRepo,
-        rev: data.translatedRev,
-        path: data.translatedPath,
+      // toOriginalContent
+      const toOriginalContent = await getContents({
+        owner: data.toOwner,
+        repo: data.toRepo,
+        rev: data.toOriginalRev,
+        path: data.toPath,
       });
-      if (!translatedContent) {
-        throw new Error("translatedContent is empty");
+      if (!toOriginalContent) {
+        throw new Error("toOriginalContent is empty");
       }
-      postData.translatedContent = translatedContent;
+      postData.toOriginalContent = toOriginalContent;
 
       // create doc
       const { path } = await createDoc(postData);
@@ -137,34 +137,32 @@ function RelationList() {
   }
 
   function resetOriginal() {
-    setValue("originalUrl", "");
-    setValue("originalOwner", "");
-    setValue("originalRepo", "");
-    setValue("originalBranch", "");
-    setValue("originalPath", "");
-    setValue("originalRev", "");
-    setValue("originalRevDate", "");
-    setValue("originalFromRev", "");
-    setValue("originalFromRevDate", "");
+    setValue("fromOwner", "");
+    setValue("fromRepo", "");
+    setValue("fromBranch", "");
+    setValue("fromPath", "");
+    setValue("fromModifiedRev", "");
+    setValue("fromModifiedRevDate", "");
+    setValue("fromOriginalRev", "");
+    setValue("fromOriginalRevDate", "");
   }
 
   function resetTranslated() {
-    setValue("translatedUrl", "");
-    setValue("translatedOwner", "");
-    setValue("translatedRepo", "");
-    setValue("translatedBranch", "");
-    setValue("translatedPath", "");
-    setValue("translatedRev", "");
-    setValue("translatedRevDate", "");
+    setValue("toOwner", "");
+    setValue("toRepo", "");
+    setValue("toBranch", "");
+    setValue("toPath", "");
+    setValue("toOriginalRev", "");
+    setValue("toOriginalRevDate", "");
   }
 
   async function parseOriginalUrl() {
-    const originalUrl = watch("originalUrl");
-    const parsedOriginalUrl = githubUrl(originalUrl);
-    setValue("originalOwner", parsedOriginalUrl.owner);
-    setValue("originalRepo", parsedOriginalUrl.repo);
-    setValue("originalBranch", parsedOriginalUrl.branch);
-    setValue("originalPath", parsedOriginalUrl.path);
+    const fromUrl = watch("fromUrl");
+    const parsedOriginalUrl = githubUrl(fromUrl);
+    setValue("fromOwner", parsedOriginalUrl.owner);
+    setValue("fromRepo", parsedOriginalUrl.repo);
+    setValue("fromBranch", parsedOriginalUrl.branch);
+    setValue("fromPath", parsedOriginalUrl.path);
 
     const { oid, date } = await getBranchRev({
       owner: parsedOriginalUrl.owner,
@@ -172,38 +170,38 @@ function RelationList() {
       branch: parsedOriginalUrl.branch,
     });
     if (!oid) {
-      throw new Error("originalRev is empty");
+      throw new Error("fromModifiedRev is empty");
     }
-    setValue("originalRev", oid);
+    setValue("fromModifiedRev", oid);
     if (!date) {
-      throw new Error("originalRevDate is empty");
+      throw new Error("fromModifiedRevDate is empty");
     }
-    setValue("originalRevDate", date);
+    setValue("fromModifiedRevDate", date);
 
-    const { oid: originalFromRev, date: originalFromRevDate } =
-      await getLastOriginalFromRev({
+    const { oid: fromOriginalRev, date: fromOriginalRevDate } =
+      await getLastFromOriginalRev({
         owner: parsedOriginalUrl.owner,
         repo: parsedOriginalUrl.repo,
         branch: parsedOriginalUrl.branch,
-        date: watch("translatedRevDate") || date,
+        date: watch("toOriginalRevDate") || date,
       });
-    if (!originalFromRev) {
-      throw new Error("originalFromRev is empty");
+    if (!fromOriginalRev) {
+      throw new Error("fromOriginalRev is empty");
     }
-    setValue("originalFromRev", originalFromRev);
-    if (!originalFromRevDate) {
-      throw new Error("originalFromRevDate is empty");
+    setValue("fromOriginalRev", fromOriginalRev);
+    if (!fromOriginalRevDate) {
+      throw new Error("fromOriginalRevDate is empty");
     }
-    setValue("originalFromRevDate", originalFromRevDate);
+    setValue("fromOriginalRevDate", fromOriginalRevDate);
   }
 
   async function parseTranslatedUrl() {
-    const translatedUrl = watch("translatedUrl");
-    const parsedTranslatedUrl = githubUrl(translatedUrl);
-    setValue("translatedOwner", parsedTranslatedUrl.owner);
-    setValue("translatedRepo", parsedTranslatedUrl.repo);
-    setValue("translatedBranch", parsedTranslatedUrl.branch);
-    setValue("translatedPath", parsedTranslatedUrl.path);
+    const toUrl = watch("toUrl");
+    const parsedTranslatedUrl = githubUrl(toUrl);
+    setValue("toOwner", parsedTranslatedUrl.owner);
+    setValue("toRepo", parsedTranslatedUrl.repo);
+    setValue("toBranch", parsedTranslatedUrl.branch);
+    setValue("toPath", parsedTranslatedUrl.path);
     setValue(
       "path",
       `${parsedTranslatedUrl.owner}/${parsedTranslatedUrl.repo}/${parsedTranslatedUrl.branch}/${parsedTranslatedUrl.path}`
@@ -216,13 +214,13 @@ function RelationList() {
       path: parsedTranslatedUrl.path,
     });
     if (!oid) {
-      throw new Error("translatedRev is empty");
+      throw new Error("toOriginalRev is empty");
     }
-    setValue("translatedRev", oid);
+    setValue("toOriginalRev", oid);
     if (!date) {
-      throw new Error("translatedRevDate is empty");
+      throw new Error("toOriginalRevDate is empty");
     }
-    setValue("translatedRevDate", date);
+    setValue("toOriginalRevDate", date);
   }
 
   const currentRef = useCurrentRef<{
@@ -269,7 +267,7 @@ function RelationList() {
                   GitHub Original URL
                 </span>
                 <input
-                  {...register("originalUrl")}
+                  {...register("fromUrl")}
                   className="input"
                   type="text"
                   style={{ width: "100%" }}
@@ -282,7 +280,7 @@ function RelationList() {
                   GitHub Translated URL
                 </span>
                 <input
-                  {...register("translatedUrl")}
+                  {...register("toUrl")}
                   className="input"
                   type="text"
                   style={{ width: "100%" }}
@@ -341,7 +339,7 @@ function RelationList() {
                       Owner
                     </span>
                     <input
-                      {...register("originalOwner")}
+                      {...register("fromOwner")}
                       className="input"
                       type="text"
                       style={{ width: "100%" }}
@@ -354,7 +352,7 @@ function RelationList() {
                       Repo
                     </span>
                     <input
-                      {...register("originalRepo")}
+                      {...register("fromRepo")}
                       className="input"
                       type="text"
                       style={{ width: "100%" }}
@@ -367,7 +365,7 @@ function RelationList() {
                       Branch
                     </span>
                     <input
-                      {...register("originalBranch")}
+                      {...register("fromBranch")}
                       className="input"
                       type="text"
                       style={{ width: "100%" }}
@@ -380,7 +378,7 @@ function RelationList() {
                       Path
                     </span>
                     <input
-                      {...register("originalPath")}
+                      {...register("fromPath")}
                       className="input"
                       type="text"
                       style={{ width: "100%" }}
@@ -393,12 +391,12 @@ function RelationList() {
                       Rev
                     </span>
                     <input
-                      {...register("originalRev")}
+                      {...register("fromModifiedRev")}
                       className="input"
                       type="text"
                       style={{ width: "100%" }}
                     />
-                    <p>{watch("originalRevDate")}</p>
+                    <p>{watch("fromModifiedRevDate")}</p>
                   </label>
                 </div>
                 <div className="dochub-create-doc-form__item">
@@ -407,12 +405,12 @@ function RelationList() {
                       From Rev
                     </span>
                     <input
-                      {...register("originalFromRev")}
+                      {...register("fromOriginalRev")}
                       className="input"
                       type="text"
                       style={{ width: "100%" }}
                     />
-                    <p>{watch("originalFromRevDate")}</p>
+                    <p>{watch("fromOriginalRevDate")}</p>
                   </label>
                 </div>
               </details>
@@ -430,7 +428,7 @@ function RelationList() {
                       Owner
                     </span>
                     <input
-                      {...register("translatedOwner")}
+                      {...register("toOwner")}
                       className="input"
                       type="text"
                       style={{ width: "100%" }}
@@ -443,7 +441,7 @@ function RelationList() {
                       Repo
                     </span>
                     <input
-                      {...register("translatedRepo")}
+                      {...register("toRepo")}
                       className="input"
                       type="text"
                       style={{ width: "100%" }}
@@ -456,7 +454,7 @@ function RelationList() {
                       Branch
                     </span>
                     <input
-                      {...register("translatedBranch")}
+                      {...register("toBranch")}
                       className="input"
                       type="text"
                       style={{ width: "100%" }}
@@ -469,7 +467,7 @@ function RelationList() {
                       Path
                     </span>
                     <input
-                      {...register("translatedPath")}
+                      {...register("toPath")}
                       className="input"
                       type="text"
                       style={{ width: "100%" }}
@@ -482,12 +480,12 @@ function RelationList() {
                       Rev
                     </span>
                     <input
-                      {...register("translatedRev")}
+                      {...register("toOriginalRev")}
                       className="input"
                       type="text"
                       style={{ width: "100%" }}
                     />
-                    <p>{watch("translatedRevDate")}</p>
+                    <p>{watch("toOriginalRevDate")}</p>
                   </label>
                 </div>
               </details>

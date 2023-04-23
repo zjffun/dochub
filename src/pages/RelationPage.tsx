@@ -6,13 +6,13 @@ import {
   createRelations,
   deleteRelation,
   getViewerData,
-  saveTranslatedContent,
+  saveToModifiedContent,
 } from "../api";
 import {
   createCommit,
   createPr,
   createPrBranch,
-  getTranslatedOwnerAndRepo,
+  getToOwnerAndRepo,
 } from "../api/github";
 import Loading from "../components/Loading";
 import RelationEditor, {
@@ -47,10 +47,10 @@ export interface IRelationViewerData {
   toOriginalContentSha: string;
   toModifiedContent: string;
   toModifiedContentSha: string;
-  translatedOwner: string;
-  translatedRepo: string;
-  translatedBranch: string;
-  translatedRev: string;
+  toOwner: string;
+  toRepo: string;
+  toBranch: string;
+  toOriginalRev: string;
   relations: IRelation[];
 }
 
@@ -189,7 +189,7 @@ function RelationPage() {
       throw Error("content is undefined");
     }
 
-    return saveTranslatedContent({
+    return saveToModifiedContent({
       path: docPath,
       content,
     });
@@ -244,27 +244,27 @@ function RelationPage() {
         return;
       }
 
-      const translatedOwner = relationViewerData?.translatedOwner;
-      const translatedRepo = relationViewerData?.translatedRepo;
-      const translatedBranch = relationViewerData?.translatedBranch;
-      const translatedRev = relationViewerData?.translatedRev;
+      const toOwner = relationViewerData?.toOwner;
+      const toRepo = relationViewerData?.toRepo;
+      const toBranch = relationViewerData?.toBranch;
+      const toOriginalRev = relationViewerData?.toOriginalRev;
       const toPath = relationViewerData?.toPath;
       const toModifiedContent = getTranslatedContent();
 
-      if (translatedOwner === undefined) {
-        throw new Error("translatedOwner is not defined");
+      if (toOwner === undefined) {
+        throw new Error("toOwner is not defined");
       }
 
-      if (translatedRepo === undefined) {
-        throw new Error("translatedRepo is not defined");
+      if (toRepo === undefined) {
+        throw new Error("toRepo is not defined");
       }
 
-      if (translatedBranch === undefined) {
-        throw new Error("translatedBranch is not defined");
+      if (toBranch === undefined) {
+        throw new Error("toBranch is not defined");
       }
 
-      if (translatedRev === undefined) {
-        throw new Error("translatedRev is not defined");
+      if (toOriginalRev === undefined) {
+        throw new Error("toOriginalRev is not defined");
       }
 
       if (toPath === undefined) {
@@ -277,16 +277,16 @@ function RelationPage() {
 
       await saveTranslate();
 
-      const { owner, repo } = await getTranslatedOwnerAndRepo({
-        translatedOwner,
-        translatedRepo,
+      const { owner, repo } = await getToOwnerAndRepo({
+        toOwner,
+        toRepo,
         owner: userInfo.login,
       });
 
       const { branch, sha } = await createPrBranch({
         owner,
         repo,
-        rev: translatedRev,
+        rev: toOriginalRev,
       });
 
       const { oid, headline } = await createCommit({
@@ -299,11 +299,11 @@ function RelationPage() {
       });
 
       const { url } = await createPr({
-        owner: translatedOwner,
-        repo: translatedRepo,
+        owner: toOwner,
+        repo: toRepo,
         head: `${owner}:${branch}`,
         head_repo: repo,
-        base: translatedBranch,
+        base: toBranch,
         title: headline,
         draft: true,
       });
@@ -355,8 +355,6 @@ function RelationPage() {
         docObjectId: relationViewerData?.docObjectId,
         fromRange: [fromStartLine, fromEndLine],
         toRange: [toStartLine, toEndLine],
-        fromContentSha: relationViewerData?.fromModifiedContentSha,
-        toContentSha: relationViewerData?.toModifiedContentSha,
         state: "",
       },
     ]).then(() => {
