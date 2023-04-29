@@ -138,7 +138,7 @@ async function getLastFromOriginalRev({
   };
 }
 
-async function getContents({
+async function getContent({
   owner,
   repo,
   rev,
@@ -231,7 +231,6 @@ async function getToOwnerAndRepo({
       }
     );
   } catch (e) {
-    // @ts-ignore
     const forkRes = await octokit.rest.repos.createFork({
       owner: toOwner,
       repo: toRepo,
@@ -411,16 +410,63 @@ async function createPr({
 
   return {
     url: res.data.html_url,
+    pullNumber: res.data.number,
   };
+}
+
+async function getPr({
+  owner,
+  repo,
+  pullNumber,
+}: {
+  owner: string;
+  repo: string;
+  pullNumber: number;
+}) {
+  const octokit = getOctokit();
+
+  const res = await octokit.rest.pulls.get({
+    owner,
+    repo,
+    pull_number: pullNumber,
+  });
+
+  return {
+    rev: res.data.head.sha,
+    branch: res.data.head.ref,
+    closed: res.data.state === "closed",
+    merged: res.data.merged,
+  };
+}
+
+async function closePr({
+  owner,
+  repo,
+  pullNumber,
+}: {
+  owner: string;
+  repo: string;
+  pullNumber: number;
+}) {
+  const octokit = getOctokit();
+
+  const res = await octokit.rest.pulls.update({
+    owner,
+    repo,
+    pull_number: pullNumber,
+    state: "closed",
+  });
 }
 
 export {
   getBranchRev,
   getPathRev,
   getLastFromOriginalRev,
-  getContents,
+  getContent,
   getToOwnerAndRepo,
   createPrBranch,
   createCommit,
   createPr,
+  getPr,
+  closePr,
 };

@@ -5,7 +5,7 @@ import { useNavigate } from "react-router";
 import { createDoc } from "../api";
 import {
   getBranchRev,
-  getContents,
+  getContent,
   getLastFromOriginalRev,
   getPathRev,
 } from "../api/github";
@@ -59,7 +59,7 @@ function RelationList() {
       setLoading(true);
 
       // fromModifiedContent
-      const fromModifiedContent = await getContents({
+      const fromModifiedContent = await getContent({
         owner: data.fromOwner,
         repo: data.fromRepo,
         rev: data.fromModifiedRev,
@@ -71,7 +71,7 @@ function RelationList() {
       postData.fromModifiedContent = fromModifiedContent;
 
       // fromOriginalContent
-      const fromOriginalContent = await getContents({
+      const fromOriginalContent = await getContent({
         owner: data.fromOwner,
         repo: data.fromRepo,
         rev: data.fromOriginalRev,
@@ -83,7 +83,7 @@ function RelationList() {
       postData.fromOriginalContent = fromOriginalContent;
 
       // toOriginalContent
-      const toOriginalContent = await getContents({
+      const toOriginalContent = await getContent({
         owner: data.toOwner,
         repo: data.toRepo,
         rev: data.toOriginalRev,

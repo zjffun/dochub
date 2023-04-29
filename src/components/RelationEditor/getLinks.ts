@@ -1,5 +1,5 @@
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
-import { ILink, IRelation } from "./types";
+import { ILink, IRelation, RelationTypeEnum } from "./types";
 
 const getLinks = ({
   fromEditor,
@@ -83,7 +83,7 @@ const getLinks = ({
         [toRight, toLine2TopSubScrollTop],
         [toLeft, toLine2TopSubScrollTop],
       ],
-      type,
+      type: type || RelationTypeEnum.unknown,
       id,
     });
   });
