@@ -43,7 +43,7 @@ async function getBranchRev({
   );
 
   return {
-    oid: res.repository.ref.target.oid,
+    rev: res.repository.ref.target.oid,
     date: res.repository.ref.target.committedDate,
   };
 }
@@ -94,7 +94,7 @@ async function getPathRev({
   };
 }
 
-async function getLastOriginalFromRev({
+async function getLastFromOriginalRev({
   owner,
   repo,
   branch,
@@ -138,7 +138,7 @@ async function getLastOriginalFromRev({
   };
 }
 
-async function getContents({
+async function getContent({
   owner,
   repo,
   rev,
@@ -180,38 +180,38 @@ async function getContents({
   return text;
 }
 
-async function getTranslatedOwnerAndRepo({
-  translatedOwner,
-  translatedRepo,
+async function getToOwnerAndRepo({
+  toOwner,
+  toRepo,
   owner,
 }: {
-  translatedOwner: string;
-  translatedRepo: string;
+  toOwner: string;
+  toRepo: string;
   owner: string;
 }) {
   if (owner === undefined) {
     throw Error("owner is not defined.");
   }
 
-  if (translatedOwner === undefined) {
-    throw Error("translatedOwner is not defined.");
+  if (toOwner === undefined) {
+    throw Error("toOwner is not defined.");
   }
 
-  if (translatedRepo === undefined) {
-    throw Error("translatedRepo is not defined.");
+  if (toRepo === undefined) {
+    throw Error("toRepo is not defined.");
   }
 
   const octokit = getOctokit();
 
   // If the owner is the same as the translated owner, then we don't need to fork.
-  if (owner === translatedOwner) {
+  if (owner === toOwner) {
     return {
-      owner: translatedOwner,
-      repo: translatedRepo,
+      owner: toOwner,
+      repo: toRepo,
     };
   }
 
-  let repo = translatedRepo;
+  let repo = toRepo;
   if (!repo.endsWith("-dochub")) {
     repo = `${repo}-dochub`;
   }
@@ -232,8 +232,8 @@ async function getTranslatedOwnerAndRepo({
     );
   } catch (e) {
     const forkRes = await octokit.rest.repos.createFork({
-      owner: translatedOwner,
-      repo: translatedRepo,
+      owner: toOwner,
+      repo: toRepo,
       name: repo,
     });
 
@@ -410,16 +410,95 @@ async function createPr({
 
   return {
     url: res.data.html_url,
+    pullNumber: res.data.number,
   };
+}
+
+async function getPr({
+  owner,
+  repo,
+  pullNumber,
+}: {
+  owner: string;
+  repo: string;
+  pullNumber: number;
+}) {
+  const octokit = getOctokit();
+
+  const res = await octokit.rest.pulls.get({
+    owner,
+    repo,
+    pull_number: pullNumber,
+  });
+
+  return {
+    rev: res.data.head.sha,
+    branch: res.data.head.ref,
+    closed: res.data.state === "closed",
+    merged: res.data.merged,
+  };
+}
+
+async function closePr({
+  owner,
+  repo,
+  pullNumber,
+}: {
+  owner: string;
+  repo: string;
+  pullNumber: number;
+}) {
+  const octokit = getOctokit();
+
+  const res = await octokit.rest.pulls.update({
+    owner,
+    repo,
+    pull_number: pullNumber,
+    state: "closed",
+  });
+}
+
+async function getBranchRevAndContent({
+  owner,
+  repo,
+  branch,
+  path,
+}: {
+  owner: string;
+  repo: string;
+  branch: string;
+  path: string;
+}) {
+  const { rev } = await getBranchRev({
+    owner,
+    repo,
+    branch,
+  });
+
+  if (!rev) {
+    throw new Error("rev is not defined.");
+  }
+
+  const content = await getContent({
+    owner: owner,
+    repo: repo,
+    rev,
+    path: path,
+  });
+
+  return { rev, content };
 }
 
 export {
   getBranchRev,
   getPathRev,
-  getLastOriginalFromRev,
-  getContents,
-  getTranslatedOwnerAndRepo,
+  getLastFromOriginalRev,
+  getContent,
+  getToOwnerAndRepo,
   createPrBranch,
   createCommit,
   createPr,
+  getPr,
+  closePr,
+  getBranchRevAndContent,
 };

@@ -1,17 +1,18 @@
 export type IRelation = {
-  id?: string;
+  id: string;
   fromRange: [number, number];
   toRange: [number, number];
-  type: RelationTypeEnum;
+  type?: RelationTypeEnum;
 };
 
 export enum RelationTypeEnum {
-  add = 'add',
-  remove = 'remove',
-  change = 'change',
-  relate = 'relate',
-  dirty = 'dirty',
-  temp = 'temp',
+  add = "add",
+  remove = "remove",
+  change = "change",
+  relate = "relate",
+  dirty = "dirty",
+  temp = "temp",
+  unknown = "unknown",
 }
 
 export type IScrollTopMap = [

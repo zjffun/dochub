@@ -1,25 +1,29 @@
 export interface IDoc {
-  readonly path: string;
-  readonly name?: string;
-  readonly desc?: string;
-  readonly lang?: string;
-  readonly logoUrl?: string;
-  readonly docUrl?: string;
-  readonly originalLineNum?: number;
-  readonly translatedLineNum?: number;
-  readonly consistentLineNum?: number;
-  readonly originalOwner?: string;
-  readonly originalRepo?: string;
-  readonly originalBranch?: string;
-  readonly originalPath?: string;
-  readonly originalRev?: string;
-  readonly originalContent?: string;
-  readonly translatedOwner?: string;
-  readonly translatedRepo?: string;
-  readonly translatedBranch?: string;
-  readonly translatedPath?: string;
-  readonly translatedRev?: string;
-  readonly translatedContent?: string;
+  path: string;
+  name?: string;
+  desc?: string;
+  lang?: string;
+  logoUrl?: string;
+  docUrl?: string;
+  originalLineNum?: number;
+  translatedLineNum?: number;
+  consistentLineNum?: number;
+  fromOwner?: string;
+  fromRepo?: string;
+  fromBranch?: string;
+  fromPath?: string;
+  fromOriginalRev?: string;
+  fromOriginalContent?: string;
+  fromModifiedRev?: string;
+  fromModifiedContent?: string;
+  toOwner?: string;
+  toRepo?: string;
+  toBranch?: string;
+  toPath?: string;
+  toOriginalRev?: string;
+  toOriginalContent?: string;
+  toModifiedRev?: string;
+  toModifiedContent?: string;
 }
 
 export interface IFormOption {

@@ -1,3 +1,5 @@
+import { IRelation } from "../components/RelationEditor/types";
+import { IRelationViewerData } from "../pages/TranslateDoc";
 import { IDoc } from "../types";
 import client from "./client";
 
@@ -45,22 +47,49 @@ export function deleteDoc({
 }
 
 export function getViewerData({ path }: IGetViewerDataParam) {
-  return client.get<any, any[]>("/api/doc/viewer-data", {
+  return client.get<any, IRelationViewerData>("/api/doc/viewer-data", {
     params: {
       path,
     },
   });
 }
 
-export function saveTranslatedContent({
+export function updateDoc({
   path,
-  content,
+  fromOriginalContentSha,
+  fromOriginalRev,
+  fromModifiedContent,
+  fromModifiedRev,
+  toOriginalContentSha,
+  toOriginalRev,
+  toModifiedContent,
+  toModifiedRev,
+  relations,
+  pullNumber,
 }: {
   path: string;
-  content: string;
+  fromOriginalContentSha?: string;
+  fromOriginalRev?: string;
+  fromModifiedContent?: string;
+  fromModifiedRev?: string;
+  toOriginalContentSha?: string;
+  toOriginalRev?: string;
+  toModifiedContent?: string;
+  toModifiedRev?: string;
+  relations?: IRelation[];
+  pullNumber?: number;
 }) {
-  return client.put<any, { path: string }>("/api/doc", {
+  return client.put<any, any>("/api/doc", {
     path,
-    translatedContent: content,
+    fromOriginalContentSha,
+    fromOriginalRev,
+    fromModifiedContent,
+    fromModifiedRev,
+    toOriginalContentSha,
+    toOriginalRev,
+    toModifiedContent,
+    toModifiedRev,
+    relations,
+    pullNumber,
   });
 }

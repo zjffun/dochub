@@ -21,9 +21,7 @@ export interface IMonacoDiffEditorRelationProps {
 }
 
 export interface IMonacoDiffEditorRelationRef {
-  fromDiffEditor: monaco.editor.IStandaloneDiffEditor | null;
-  toDiffEditor: monaco.editor.IStandaloneDiffEditor | null;
-  monacoRelationView: any;
+  getToModifiedContent(): string | undefined;
 }
 
 const MonacoDiffEditorRelation = forwardRef<
@@ -59,11 +57,13 @@ const MonacoDiffEditorRelation = forwardRef<
     useImperativeHandle(
       ref,
       () => ({
-        fromDiffEditor: fromDiffEditorRef.current,
-        toDiffEditor: toDiffEditorRef.current,
-        monacoRelationView: monacoRelationViewRef.current,
+        getToModifiedContent() {
+          const editor = toDiffEditorRef.current?.getModifiedEditor();
+          const content = editor?.getValue();
+          return content;
+        },
       }),
-      [fromDiffEditorRef, toDiffEditorRef, monacoRelationViewRef]
+      []
     );
 
     useEffect(() => {

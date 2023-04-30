@@ -4,9 +4,7 @@ export function createRelations(
   relations: {
     docObjectId: string;
     fromRange: [number, number];
-    fromContentSha: string;
     toRange: [number, number];
-    toContentSha: string;
     state: string;
   }[]
 ) {

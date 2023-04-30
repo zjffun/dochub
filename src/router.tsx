@@ -4,7 +4,7 @@ import TopDocList from "./pages/TopDocList";
 
 const CreateDoc = lazy(() => import("./pages/CreateDoc"));
 const DocList = lazy(() => import("./pages/DocList"));
-const RelationPage = lazy(() => import("./pages/RelationPage"));
+const TranslateDoc = lazy(() => import("./pages/TranslateDoc"));
 const UserHomeOverview = lazy(() => import("./pages/UserHome/Overview"));
 const UserHomeDocuments = lazy(() => import("./pages/UserHome/Documents"));
 const UserHomeRecentlyDeleted = lazy(
@@ -92,7 +92,7 @@ const router = createBrowserRouter([
     path: "/preview/*",
     element: (
       <React.Suspense fallback={<>...</>}>
-        <RelationPage></RelationPage>
+        <TranslateDoc></TranslateDoc>
       </React.Suspense>
     ),
   },
@@ -101,7 +101,7 @@ const router = createBrowserRouter([
     path: "/translate/*",
     element: (
       <React.Suspense fallback={<>...</>}>
-        <RelationPage></RelationPage>
+        <TranslateDoc></TranslateDoc>
       </React.Suspense>
     ),
   },
