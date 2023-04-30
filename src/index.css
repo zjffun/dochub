@@ -2,16 +2,37 @@
   box-sizing: border-box;
 }
 
+/* start fix monaco codicon */
+@font-face {
+  font-family: "codicon";
+  font-display: block;
+  src: url(./assets/codicon.ttf) format("truetype");
+}
+
+.codicon[class*="codicon-"] {
+  font: normal normal normal 16px/1 codicon;
+  display: inline-block;
+  text-decoration: none;
+  text-rendering: auto;
+  text-align: center;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  user-select: none;
+  -webkit-user-select: none;
+}
+/* end fix monaco codicon */
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }

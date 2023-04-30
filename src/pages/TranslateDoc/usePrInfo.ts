@@ -19,7 +19,12 @@ function usePrInfo({
   const [prContent, setPrContent] = useState<string>();
 
   useEffect(() => {
-    if (pullNumber === undefined || owner === undefined || repo === undefined) {
+    if (
+      pullNumber === undefined ||
+      pullNumber === 0 ||
+      owner === undefined ||
+      repo === undefined
+    ) {
       setPrState(PR_STATE.NONE);
       setPrBranch(undefined);
       setPrRev(undefined);

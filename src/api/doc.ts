@@ -54,56 +54,42 @@ export function getViewerData({ path }: IGetViewerDataParam) {
   });
 }
 
-export function saveToModifiedContent({
+export function updateDoc({
   path,
-  content,
-  rev,
-}: {
-  path: string;
-  content: string;
-  rev?: string;
-}) {
-  return client.put<any, { path: string }>("/api/doc", {
-    path,
-    toModifiedContent: content,
-    toModifiedRev: rev,
-  });
-}
-
-export function savePullNumber({
-  path,
+  fromOriginalContentSha,
+  fromOriginalRev,
+  fromModifiedContent,
+  fromModifiedRev,
+  toOriginalContentSha,
+  toOriginalRev,
+  toModifiedContent,
+  toModifiedRev,
+  relations,
   pullNumber,
 }: {
   path: string;
-  pullNumber: number;
+  fromOriginalContentSha?: string;
+  fromOriginalRev?: string;
+  fromModifiedContent?: string;
+  fromModifiedRev?: string;
+  toOriginalContentSha?: string;
+  toOriginalRev?: string;
+  toModifiedContent?: string;
+  toModifiedRev?: string;
+  relations?: IRelation[];
+  pullNumber?: number;
 }) {
   return client.put<any, any>("/api/doc", {
     path,
-    pullNumber,
-  });
-}
-
-export function updateTranslate({
-  path,
-  fromModifiedContentSha,
-  fromModifiedRev,
-  toModifiedContentSha,
-  toModifiedRev,
-  relations,
-}: {
-  path: string;
-  fromModifiedContentSha: string;
-  fromModifiedRev: string;
-  toModifiedContentSha: string;
-  toModifiedRev: string;
-  relations: IRelation[];
-}) {
-  return client.put<any, any>("/api/doc", {
-    path,
-    fromModifiedContentSha,
+    fromOriginalContentSha,
+    fromOriginalRev,
+    fromModifiedContent,
     fromModifiedRev,
-    toModifiedContentSha,
+    toOriginalContentSha,
+    toOriginalRev,
+    toModifiedContent,
     toModifiedRev,
     relations,
+    pullNumber,
   });
 }

@@ -4,6 +4,7 @@
     &__img {
       overflow: hidden;
       border-radius: 50%;
+      border: 1px solid var(--md-sys-color-outline);
     }
   }
   &__name {

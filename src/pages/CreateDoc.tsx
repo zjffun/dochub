@@ -14,6 +14,7 @@ import Loading from "../components/Loading";
 import useCurrentRef from "../hooks/useCurrentRef";
 import { useStoreContext } from "../store";
 import { IFormOption } from "../types";
+import formatTime from "../utils/fromatTime";
 import { githubUrl } from "../utils/githubUrl";
 import pathInfo from "../utils/pathInfo";
 
@@ -164,15 +165,15 @@ function RelationList() {
     setValue("fromBranch", parsedOriginalUrl.branch);
     setValue("fromPath", parsedOriginalUrl.path);
 
-    const { oid, date } = await getBranchRev({
+    const { rev: fromModifiedRev, date } = await getBranchRev({
       owner: parsedOriginalUrl.owner,
       repo: parsedOriginalUrl.repo,
       branch: parsedOriginalUrl.branch,
     });
-    if (!oid) {
+    if (!fromModifiedRev) {
       throw new Error("fromModifiedRev is empty");
     }
-    setValue("fromModifiedRev", oid);
+    setValue("fromModifiedRev", fromModifiedRev);
     if (!date) {
       throw new Error("fromModifiedRevDate is empty");
     }
@@ -396,7 +397,7 @@ function RelationList() {
                       type="text"
                       style={{ width: "100%" }}
                     />
-                    <p>{watch("fromModifiedRevDate")}</p>
+                    <p>{formatTime(watch("fromModifiedRevDate"))}</p>
                   </label>
                 </div>
                 <div className="dochub-create-doc-form__item">
@@ -410,7 +411,7 @@ function RelationList() {
                       type="text"
                       style={{ width: "100%" }}
                     />
-                    <p>{watch("fromOriginalRevDate")}</p>
+                    <p>{formatTime(watch("fromOriginalRevDate"))}</p>
                   </label>
                 </div>
               </details>
@@ -485,7 +486,7 @@ function RelationList() {
                       type="text"
                       style={{ width: "100%" }}
                     />
-                    <p>{watch("toOriginalRevDate")}</p>
+                    <p>{formatTime(watch("toOriginalRevDate"))}</p>
                   </label>
                 </div>
               </details>

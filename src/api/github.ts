@@ -43,7 +43,7 @@ async function getBranchRev({
   );
 
   return {
-    oid: res.repository.ref.target.oid,
+    rev: res.repository.ref.target.oid,
     date: res.repository.ref.target.committedDate,
   };
 }
@@ -458,6 +458,37 @@ async function closePr({
   });
 }
 
+async function getBranchRevAndContent({
+  owner,
+  repo,
+  branch,
+  path,
+}: {
+  owner: string;
+  repo: string;
+  branch: string;
+  path: string;
+}) {
+  const { rev } = await getBranchRev({
+    owner,
+    repo,
+    branch,
+  });
+
+  if (!rev) {
+    throw new Error("rev is not defined.");
+  }
+
+  const content = await getContent({
+    owner: owner,
+    repo: repo,
+    rev,
+    path: path,
+  });
+
+  return { rev, content };
+}
+
 export {
   getBranchRev,
   getPathRev,
@@ -469,4 +500,5 @@ export {
   createPr,
   getPr,
   closePr,
+  getBranchRevAndContent,
 };

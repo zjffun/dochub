@@ -193,10 +193,24 @@ export default class RelationSvg {
   private onDidChangeCursorSelection() {
     const fromSelection = this.fromEditor.getSelection();
     const toSelection = this.toEditor.getSelection();
-    const fromStartLine = fromSelection!.getStartPosition().lineNumber;
-    const fromEndLine = fromSelection!.getEndPosition().lineNumber;
-    const toStartLine = toSelection!.getStartPosition().lineNumber;
-    const toEndLine = toSelection!.getEndPosition().lineNumber;
+
+    const fromModifiedStart = fromSelection!.getStartPosition().lineNumber;
+    const fromModifiedEnd = fromSelection!.getEndPosition().lineNumber;
+    const toModifiedStart = toSelection!.getStartPosition().lineNumber;
+    const toModifiedEnd = toSelection!.getEndPosition().lineNumber;
+
+    const fromStartLine =
+      this.fromEditor!.getDiffLineInformationForModified(fromModifiedStart)
+        ?.equivalentLineNumber || 0;
+    const fromEndLine =
+      this.fromEditor!.getDiffLineInformationForModified(fromModifiedEnd)
+        ?.equivalentLineNumber || 0;
+    const toStartLine =
+      this.toEditor!.getDiffLineInformationForModified(toModifiedStart)
+        ?.equivalentLineNumber || 0;
+    const toEndLine =
+      this.toEditor!.getDiffLineInformationForModified(toModifiedEnd)
+        ?.equivalentLineNumber || 0;
 
     document.dispatchEvent(
       new CustomEvent("relationCreateRangeChange", {
