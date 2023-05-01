@@ -1,3 +1,12 @@
+import { RelationTypeEnum } from "./components/RelationEditor/types";
+
+export type IRelation = {
+  id?: string;
+  fromRange: [number, number];
+  toRange: [number, number];
+  type?: RelationTypeEnum;
+};
+
 export interface IDoc {
   path: string;
   name?: string;
@@ -24,6 +33,7 @@ export interface IDoc {
   toOriginalContent?: string;
   toModifiedRev?: string;
   toModifiedContent?: string;
+  relations?: IRelation[];
 }
 
 export interface IFormOption {

@@ -13,8 +13,9 @@ import Header from "../components/Header";
 import Loading from "../components/Loading";
 import useCurrentRef from "../hooks/useCurrentRef";
 import { useStoreContext } from "../store";
-import { IFormOption } from "../types";
+import { IDoc, IFormOption } from "../types";
 import formatTime from "../utils/fromatTime";
+import getRelations from "../utils/generateRelations/mdx/getRelations";
 import { githubUrl } from "../utils/githubUrl";
 import pathInfo from "../utils/pathInfo";
 
@@ -38,7 +39,7 @@ function RelationList() {
   const [loading, setLoading] = useState(false);
 
   const handleFromSubmit = handleSubmit(async (data) => {
-    const postData = {
+    const postData: IDoc = {
       path: `${data.startPath}${data.path}`,
       fromOwner: data.fromOwner,
       fromRepo: data.fromRepo,
@@ -54,6 +55,7 @@ function RelationList() {
       toPath: data.toPath,
       toOriginalRev: data.toOriginalRev,
       toOriginalContent: "",
+      relations: [],
     };
 
     try {
@@ -94,6 +96,14 @@ function RelationList() {
         throw new Error("toOriginalContent is empty");
       }
       postData.toOriginalContent = toOriginalContent;
+
+      // relations
+      const relations = await getRelations(
+        fromOriginalContent,
+        toOriginalContent
+      );
+
+      postData.relations = relations;
 
       // create doc
       const { path } = await createDoc(postData);

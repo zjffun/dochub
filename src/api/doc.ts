@@ -1,6 +1,5 @@
-import { IRelation } from "../components/RelationEditor/types";
-import { IRelationViewerData } from "../pages/TranslateDoc";
-import { IDoc } from "../types";
+import { ITranslateDocData } from "../pages/TranslateDoc";
+import { IDoc, IRelation } from "../types";
 import client from "./client";
 
 export class GetDocsParams {
@@ -47,7 +46,7 @@ export function deleteDoc({
 }
 
 export function getViewerData({ path }: IGetViewerDataParam) {
-  return client.get<any, IRelationViewerData>("/api/doc/viewer-data", {
+  return client.get<any, ITranslateDocData>("/api/doc/viewer-data", {
     params: {
       path,
     },
@@ -60,10 +59,12 @@ export function updateDoc({
   fromOriginalRev,
   fromModifiedContent,
   fromModifiedRev,
+  toOriginalContent,
   toOriginalContentSha,
   toOriginalRev,
   toModifiedContent,
   toModifiedRev,
+  toEditingContent,
   relations,
   pullNumber,
 }: {
@@ -72,10 +73,12 @@ export function updateDoc({
   fromOriginalRev?: string;
   fromModifiedContent?: string;
   fromModifiedRev?: string;
+  toOriginalContent?: string;
   toOriginalContentSha?: string;
   toOriginalRev?: string;
   toModifiedContent?: string;
   toModifiedRev?: string;
+  toEditingContent?: string;
   relations?: IRelation[];
   pullNumber?: number;
 }) {
@@ -85,10 +88,12 @@ export function updateDoc({
     fromOriginalRev,
     fromModifiedContent,
     fromModifiedRev,
+    toOriginalContent,
     toOriginalContentSha,
     toOriginalRev,
     toModifiedContent,
     toModifiedRev,
+    toEditingContent,
     relations,
     pullNumber,
   });

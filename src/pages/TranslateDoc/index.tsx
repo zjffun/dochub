@@ -4,7 +4,7 @@ import { FC, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import {
-  createRelations,
+  createRelation,
   deleteRelation,
   getViewerData,
   updateDoc,
@@ -31,6 +31,7 @@ import {
 } from "../../components/RelationEditor/types";
 import UserMenu from "../../components/UserMenu";
 import { useStoreContext } from "../../store";
+import getRelations from "../../utils/generateRelations/mdx/getRelations";
 import openSignInWindow from "../../utils/openSignInWindow";
 import pathInfo from "../../utils/pathInfo";
 import ToastedError from "../../utils/ToastedError";
@@ -40,32 +41,34 @@ import usePrInfo from "./usePrInfo";
 import "./index.scss";
 
 enum MODE {
-  VIEW = "view",
   EDIT = "edit",
   EDIT_RELATION = "editRelation",
 }
 
-export interface IRelationViewerData {
-  docObjectId: string;
+export interface ITranslateDocData {
+  id: string;
   fromPath: string;
   toPath: string;
   fromOwner: string;
   fromRepo: string;
   fromBranch: string;
+  fromOriginalRev: string;
   fromModifiedRev: string;
   fromOriginalContent: string;
   fromOriginalContentSha: string;
   fromModifiedContent: string;
   fromModifiedContentSha: string;
+  toOriginalRev: string;
   toModifiedRev: string;
   toOriginalContent: string;
   toOriginalContentSha: string;
   toModifiedContent: string;
   toModifiedContentSha: string;
+  toEditingContent: string;
+  toEditingContentSha: string;
   toOwner: string;
   toRepo: string;
   toBranch: string;
-  toOriginalRev: string;
   pullNumber: number;
   relations: IRelation[];
 }
@@ -160,17 +163,19 @@ function RelationPage() {
     IViewerRelationWithModifiedRange[]
   >([]);
 
-  const [relationViewerData, setRelationViewerData] = useState<
-    IRelationViewerData | undefined
+  const [translateDocData, setTranslateDocData] = useState<
+    ITranslateDocData | undefined
   >();
 
-  const [needUpdateContents, setNeedUpdateContents] = useState(false);
+  const [canUpdateFromModifiedRev, setCanUpdateFromModifiedRev] =
+    useState(false);
+  const [canUpdateToModifiedRev, setCanUpdateToModifiedRev] = useState(false);
 
   const { prState, prRev, prBranch, prContent } = usePrInfo({
-    owner: relationViewerData?.toOwner,
-    repo: relationViewerData?.toRepo,
-    path: relationViewerData?.toPath,
-    pullNumber: relationViewerData?.pullNumber,
+    owner: translateDocData?.toOwner,
+    repo: translateDocData?.toRepo,
+    path: translateDocData?.toPath,
+    pullNumber: translateDocData?.pullNumber,
   });
 
   const diffEditorRef = useRef<IMonacoDiffEditorRelationRef>(null);
@@ -178,9 +183,21 @@ function RelationPage() {
   const titleHref = `${pathname}${search}`;
 
   const needSyncContent =
-    relationViewerData?.toModifiedRev !== prRev ||
-    (prContent !== undefined &&
-      prContent !== relationViewerData?.toModifiedContent);
+    prContent !== undefined && prContent !== translateDocData?.toEditingContent;
+
+  const needUpdateOriginal =
+    translateDocData &&
+    (translateDocData.toOriginalRev !== translateDocData.toModifiedRev ||
+      translateDocData.fromOriginalRev !== translateDocData.fromModifiedRev);
+
+  const updateTranslateDocData = (newData: any) => {
+    setTranslateDocData((prev) => {
+      return {
+        ...prev,
+        ...newData,
+      };
+    });
+  };
 
   const beforeEvent = () => {
     if (loading) {
@@ -215,13 +232,12 @@ function RelationPage() {
     return content;
   };
 
-  const saveTranslate = async () => {
+  const saveToEditingContent = async () => {
     const content = getTranslatedContent();
 
     return updateDoc({
       path: docPath,
-      toModifiedContent: content,
-      toModifiedRev: "",
+      toEditingContent: content,
     });
   };
 
@@ -233,12 +249,12 @@ function RelationPage() {
     setMode(MODE.EDIT);
   };
 
-  const handleSave = async () => {
+  const handleSaveContent = async () => {
     try {
       beforeEvent();
 
       // TODO: optimize
-      await saveTranslate().then(({ path }) => {
+      await saveToEditingContent().then(({ path }) => {
         toast.success("Translated content saved.");
 
         if (path !== docPath) {
@@ -258,14 +274,14 @@ function RelationPage() {
     try {
       beforeEvent();
 
-      const toOwner = get(relationViewerData, "toOwner");
-      const toRepo = get(relationViewerData, "toRepo");
-      const toBranch = get(relationViewerData, "toBranch");
-      const toOriginalRev = get(relationViewerData, "toOriginalRev");
-      const toPath = get(relationViewerData, "toPath");
+      const toOwner = get(translateDocData, "toOwner");
+      const toRepo = get(translateDocData, "toRepo");
+      const toBranch = get(translateDocData, "toBranch");
+      const toOriginalRev = get(translateDocData, "toOriginalRev");
+      const toPath = get(translateDocData, "toPath");
       const toModifiedContent = getTranslatedContent();
 
-      await saveTranslate();
+      await saveToEditingContent();
 
       const { owner, repo } = await getToOwnerAndRepo({
         toOwner,
@@ -328,9 +344,9 @@ function RelationPage() {
         path: docPath,
       });
 
-      setRelationViewerData(data);
+      setTranslateDocData(data);
     } catch (error) {
-      setRelationViewerData(undefined);
+      setTranslateDocData(undefined);
     }
   };
 
@@ -348,19 +364,16 @@ function RelationPage() {
     try {
       beforeEvent();
 
-      const docObjectId = get(relationViewerData, "docObjectId");
+      const docId = get(translateDocData, "id");
 
-      await createRelations([
-        {
-          docObjectId,
-          fromRange: [fromStartLine, fromEndLine],
-          toRange: [toStartLine, toEndLine],
-          state: "",
-        },
-      ]);
+      const docRes = await createRelation({
+        docId,
+        fromRange: [fromStartLine, fromEndLine],
+        toRange: [toStartLine, toEndLine],
+      });
 
-      await fetchViewerData({
-        docPath: docPath,
+      updateTranslateDocData({
+        relations: docRes.relations,
       });
 
       toast.success("Create relation successfully.");
@@ -372,27 +385,14 @@ function RelationPage() {
     }
   };
 
-  const handleUpdateContentsClick = async () => {
+  const handleUpdateTranslatedContentClick = async () => {
     try {
       beforeEvent();
 
-      const fromOwner = get(relationViewerData, "fromOwner");
-      const fromRepo = get(relationViewerData, "fromRepo");
-      const fromBranch = get(relationViewerData, "fromBranch");
-      const fromPath = get(relationViewerData, "fromPath");
-
-      const toOwner = get(relationViewerData, "toOwner");
-      const toRepo = get(relationViewerData, "toRepo");
-      const toBranch = get(relationViewerData, "toBranch");
-      const toPath = get(relationViewerData, "toPath");
-
-      const { rev: fromModifiedRev, content: fromModifiedContent } =
-        await getBranchRevAndContent({
-          owner: fromOwner,
-          repo: fromRepo,
-          branch: fromBranch,
-          path: fromPath,
-        });
+      const toOwner = get(translateDocData, "toOwner");
+      const toRepo = get(translateDocData, "toRepo");
+      const toBranch = get(translateDocData, "toBranch");
+      const toPath = get(translateDocData, "toPath");
 
       const { rev: toModifiedRev, content: toModifiedContent } =
         await getBranchRevAndContent({
@@ -402,37 +402,80 @@ function RelationPage() {
           path: toPath,
         });
 
-      await updateDoc({
+      const docRes = await updateDoc({
         path: docPath,
-        fromModifiedRev,
-        fromModifiedContent,
         toModifiedRev,
         toModifiedContent,
       });
 
-      await fetchViewerData({
-        docPath,
+      updateTranslateDocData({
+        toModifiedContent,
+        toModifiedRev: docRes.toModifiedRev,
+        toModifiedContentSha: docRes.toModifiedContentSha,
       });
 
-      toast.success("Update contents successfully.");
+      toast.success("Update translated content successfully.");
     } catch (error) {
       console.error(error);
-      toast.error("Failed to update contents.");
+      toast.error("Failed to update translated content.");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleUpdateOriginalContentClick = async () => {
+    try {
+      beforeEvent();
+
+      const fromOwner = get(translateDocData, "fromOwner");
+      const fromRepo = get(translateDocData, "fromRepo");
+      const fromBranch = get(translateDocData, "fromBranch");
+      const fromPath = get(translateDocData, "fromPath");
+
+      const { rev: fromModifiedRev, content: fromModifiedContent } =
+        await getBranchRevAndContent({
+          owner: fromOwner,
+          repo: fromRepo,
+          branch: fromBranch,
+          path: fromPath,
+        });
+
+      const docRes = await updateDoc({
+        path: docPath,
+        fromModifiedRev,
+        fromModifiedContent,
+      });
+
+      updateTranslateDocData({
+        fromModifiedContent,
+        fromModifiedRev: docRes.fromModifiedRev,
+        fromModifiedContentSha: docRes.fromModifiedContentSha,
+      });
+
+      toast.success("Update original content successfully.");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update original content.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (relationId: string) => {
     const res = window.confirm(`Delete relation?`);
     if (res) {
       try {
-        setLoading(true);
+        beforeEvent();
 
-        await deleteRelation(id);
+        const docId = get(translateDocData, "id");
 
-        await fetchViewerData({
-          docPath: docPath,
+        const docRes = await deleteRelation({
+          docId,
+          id: relationId,
+        });
+
+        updateTranslateDocData({
+          relations: docRes.relations,
         });
 
         toast.success("Delete relation successfully.");
@@ -453,13 +496,13 @@ function RelationPage() {
         throw ToastedError("prBranch or prRev is undefined.");
       }
 
-      const toOwner = get(relationViewerData, "toOwner");
-      const toRepo = get(relationViewerData, "toRepo");
-      const toPath = get(relationViewerData, "toPath");
+      const toOwner = get(translateDocData, "toOwner");
+      const toRepo = get(translateDocData, "toRepo");
+      const toPath = get(translateDocData, "toPath");
 
       const toModifiedContent = getTranslatedContent();
 
-      await saveTranslate();
+      await saveToEditingContent();
 
       await createCommit({
         owner: toOwner,
@@ -483,9 +526,9 @@ function RelationPage() {
     try {
       beforeEvent();
 
-      const toOwner = get(relationViewerData, "toOwner");
-      const toRepo = get(relationViewerData, "toRepo");
-      const pullNumber = get(relationViewerData, "pullNumber");
+      const toOwner = get(translateDocData, "toOwner");
+      const toRepo = get(translateDocData, "toRepo");
+      const pullNumber = get(translateDocData, "pullNumber");
 
       await closePr({
         owner: toOwner,
@@ -505,38 +548,126 @@ function RelationPage() {
   const handleUpdateTranslateClick = async () => {
     try {
       beforeEvent();
-
-      const fromOriginalContentSha = get(
-        relationViewerData,
+      const newFromOriginalContent = get(
+        translateDocData,
+        "fromModifiedContent"
+      );
+      const newFromOriginalContentSha = get(
+        translateDocData,
         "fromModifiedContentSha"
       );
-      const fromOriginalRev = get(relationViewerData, "fromModifiedRev");
-      const toOriginalContentSha = get(
-        relationViewerData,
+      const newFromOriginalRev = get(translateDocData, "fromModifiedRev");
+      const newToOriginalContent = get(translateDocData, "toModifiedContent");
+      const newToOriginalContentSha = get(
+        translateDocData,
         "toModifiedContentSha"
       );
-      const toOriginalRev = get(relationViewerData, "toModifiedRev");
+      const newToOriginalRev = get(translateDocData, "toModifiedRev");
 
       const newRelations = relations.map((d) => {
         return {
           id: d.id,
           fromRange: d.fromModifiedRange,
           toRange: d.toModifiedRange,
-          type: d.type,
         };
       });
 
-      await updateDoc({
+      const docRes = await updateDoc({
         path: docPath,
-        fromOriginalContentSha,
-        fromOriginalRev,
-        toOriginalContentSha,
-        toOriginalRev,
+        fromOriginalContentSha: newFromOriginalContentSha,
+        fromOriginalRev: newFromOriginalRev,
+        toOriginalContentSha: newToOriginalContentSha,
+        toOriginalRev: newToOriginalRev,
+        relations: newRelations,
+      });
+
+      updateTranslateDocData({
+        fromOriginalContent: newFromOriginalContent,
+        toOriginalContent: newToOriginalContent,
+        fromOriginalContentSha: docRes.fromOriginalContentSha,
+        fromOriginalRev: docRes.fromOriginalRev,
+        toOriginalContentSha: docRes.toOriginalContentSha,
+        toOriginalRev: docRes.toOriginalRev,
+        relations: docRes.relations,
+      });
+
+      toast.success("Update translate successfully.");
+    } catch (error) {
+      toast.error("Failed to update translate.");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdateTranslateByMergedPrClick = async () => {
+    try {
+      beforeEvent();
+
+      if (prContent === undefined) {
+        throw ToastedError("prContent is undefined.");
+      }
+
+      // from
+      const fromOriginalContent = get(translateDocData, "fromOriginalContent");
+      const newFromOriginalContent = get(
+        translateDocData,
+        "fromModifiedContent"
+      );
+      const newFromOriginalContentSha = get(
+        translateDocData,
+        "fromModifiedContentSha"
+      );
+      const newFromOriginalRev = get(translateDocData, "fromModifiedRev");
+
+      // to
+      const toOriginalContent = get(translateDocData, "toOriginalContent");
+      const newToOriginalContent = prContent;
+      const newToOriginalRev = prRev;
+
+      const relations = get(translateDocData, "relations");
+
+      const relationsWithModifiedRange = await getRelationsWithModifiedRange({
+        fromOriginalContent: fromOriginalContent,
+        fromModifiedContent: newFromOriginalContent,
+        toOriginalContent: toOriginalContent,
+        toModifiedContent: newToOriginalContent,
+        relations,
+      });
+
+      const newRelations = relationsWithModifiedRange.map((d) => {
+        return {
+          id: d.id,
+          fromRange: d.fromModifiedRange,
+          toRange: d.toModifiedRange,
+        };
+      });
+
+      const docRes = await updateDoc({
+        path: docPath,
+        fromOriginalContentSha: newFromOriginalContentSha,
+        fromOriginalRev: newFromOriginalRev,
+        // TODO: optimize toOriginalContent and toModifiedContent
+        toOriginalContent: newToOriginalContent,
+        toOriginalRev: newToOriginalRev,
+        toModifiedContent: newToOriginalContent,
+        toModifiedRev: newToOriginalRev,
         relations: newRelations,
         pullNumber: 0,
       });
 
-      await fetchViewerData({ docPath });
+      updateTranslateDocData({
+        fromOriginalContent: newFromOriginalContent,
+        toOriginalContent: newToOriginalContent,
+        fromOriginalContentSha: docRes.fromOriginalContentSha,
+        fromOriginalRev: docRes.fromOriginalRev,
+        toOriginalContentSha: docRes.toOriginalContentSha,
+        toOriginalRev: docRes.toOriginalRev,
+        toModifiedContentSha: docRes.toModifiedContentSha,
+        toModifiedRev: docRes.toModifiedRev,
+        relations: docRes.relations,
+        pullNumber: docRes.pullNumber,
+      });
 
       toast.success("Update translate successfully.");
     } catch (error) {
@@ -558,30 +689,54 @@ function RelationPage() {
 
     try {
       beforeEvent();
-      const res = window.confirm(`Sync translated content from pull request?`);
+      const res = window.confirm(
+        `Sync translated content from pull request #${translateDocData?.pullNumber}?`
+      );
       if (res) {
-        await updateDoc({
+        const docRes = await updateDoc({
           path: docPath,
-          toModifiedContent: prContent,
-          toModifiedRev: prRev,
+          toEditingContent: prContent,
         });
 
-        setRelationViewerData((data) => {
-          let result = data;
-          if (data) {
-            result = {
-              ...data,
-              toModifiedRev: prRev,
-              toModifiedContent: prContent,
-            };
-          }
-          return result;
+        updateTranslateDocData({
+          toEditingContent: prContent,
+          toEditingContentSha: docRes.toEditingContentSha,
         });
 
         toast.success("Translated content saved.");
       }
     } catch (error) {
       toast.error("Failed to save translated content.");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRegenerateRelationsClick = async () => {
+    try {
+      beforeEvent();
+
+      const fromOriginalContent = get(translateDocData, "fromOriginalContent");
+      const toOriginalContent = get(translateDocData, "toOriginalContent");
+
+      const newRelations = await getRelations(
+        fromOriginalContent,
+        toOriginalContent
+      );
+
+      const docRes = await updateDoc({
+        path: docPath,
+        relations: newRelations,
+      });
+
+      updateTranslateDocData({
+        relations: docRes.relations,
+      });
+
+      toast.success("Regenerate relations successfully.");
+    } catch (error) {
+      toast.error("Failed to regenerate relations.");
       console.error(error);
     } finally {
       setLoading(false);
@@ -596,17 +751,18 @@ function RelationPage() {
 
   useEffect(() => {
     (async () => {
-      if (!relationViewerData) {
+      if (!translateDocData) {
         setRelations([]);
         return;
       }
+
       try {
         const relations = await getRelationsWithModifiedRange({
-          fromOriginalContent: relationViewerData.fromOriginalContent,
-          toOriginalContent: relationViewerData.toOriginalContent,
-          fromModifiedContent: relationViewerData.fromModifiedContent,
-          toModifiedContent: relationViewerData.toModifiedContent,
-          relations: relationViewerData.relations,
+          fromOriginalContent: translateDocData.fromOriginalContent,
+          toOriginalContent: translateDocData.toOriginalContent,
+          fromModifiedContent: translateDocData.fromModifiedContent,
+          toModifiedContent: translateDocData.toModifiedContent,
+          relations: translateDocData.relations,
         });
 
         relations.forEach((d) => {
@@ -619,57 +775,83 @@ function RelationPage() {
         console.error(error);
       }
     })();
-  }, [relationViewerData]);
+  }, [translateDocData]);
 
   useEffect(() => {
     if (
-      !toPrStates.includes(prState) ||
-      !relationViewerData ||
-      !relationViewerData.fromModifiedRev ||
-      !relationViewerData.toModifiedRev
+      ![PR_STATE.NONE, PR_STATE.OPEN, PR_STATE.CLOSED].includes(prState) ||
+      !translateDocData
     ) {
-      setNeedUpdateContents(false);
+      setCanUpdateFromModifiedRev(false);
       return;
     }
 
+    // TODO: abort last request
     (async () => {
       const { rev: latestFromModifiedRev } = await getBranchRev({
-        owner: relationViewerData.fromOwner,
-        repo: relationViewerData.fromRepo,
-        branch: relationViewerData.fromBranch,
+        owner: translateDocData.fromOwner,
+        repo: translateDocData.fromRepo,
+        branch: translateDocData.fromBranch,
       });
 
-      const { rev: latestToModifiedRev } = await getBranchRev({
-        owner: relationViewerData.toOwner,
-        repo: relationViewerData.toRepo,
-        branch: relationViewerData.toBranch,
-      });
-
-      if (
-        latestFromModifiedRev !== relationViewerData.fromModifiedRev ||
-        latestToModifiedRev !== relationViewerData.toModifiedRev
-      ) {
-        setNeedUpdateContents(true);
+      if (latestFromModifiedRev !== translateDocData.fromModifiedRev) {
+        setCanUpdateFromModifiedRev(true);
       } else {
-        setNeedUpdateContents(false);
+        setCanUpdateFromModifiedRev(false);
       }
     })();
-  }, [prState, relationViewerData]);
+  }, [prState, translateDocData]);
 
-  if (!relationViewerData) {
+  useEffect(() => {
+    if (
+      ![PR_STATE.NONE, PR_STATE.CLOSED].includes(prState) ||
+      !translateDocData
+    ) {
+      setCanUpdateToModifiedRev(false);
+      return;
+    }
+
+    // TODO: abort last request
+    (async () => {
+      const { rev: latestToModifiedRev } = await getBranchRev({
+        owner: translateDocData.toOwner,
+        repo: translateDocData.toRepo,
+        branch: translateDocData.toBranch,
+      });
+
+      if (latestToModifiedRev !== translateDocData.toModifiedRev) {
+        setCanUpdateToModifiedRev(true);
+      } else {
+        setCanUpdateToModifiedRev(false);
+      }
+    })();
+  }, [prState, translateDocData]);
+
+  if (!translateDocData) {
     return null;
   }
 
-  const {
-    fromOriginalContent,
-    toOriginalContent,
-    fromModifiedContent,
-    toModifiedContent,
-  } = relationViewerData;
+  const { fromOriginalContent, toOriginalContent, fromModifiedContent } =
+    translateDocData;
+
+  let editorToModifiedContent = "";
+  if (translateDocData.toEditingContentSha) {
+    editorToModifiedContent = translateDocData.toEditingContent || "";
+  } else {
+    editorToModifiedContent = translateDocData.toModifiedContent || "";
+  }
 
   const SyncContentButton = (
     <li className="relation-overview__header__list__item">
-      <button onClick={handleSyncContentClick}>Sync Content</button>
+      <button onClick={handleSyncContentClick}>
+        Sync Content From PR(#{translateDocData.pullNumber})
+      </button>
+    </li>
+  );
+
+  const UpdateTranslateButton = (
+    <li className="relation-overview__header__list__item">
+      <button onClick={handleUpdateTranslateClick}>Update Translate</button>
     </li>
   );
 
@@ -695,70 +877,80 @@ function RelationPage() {
             <li style={{ flex: "1 1 0" }}></li>
 
             {mode === MODE.EDIT && (
-              <li className="relation-overview__header__list__item">
-                <button onClick={handleSave}>Save</button>
-              </li>
-            )}
-
-            {mode !== MODE.EDIT_RELATION && (
               <>
+                <li className="relation-overview__header__list__item">
+                  <button onClick={handleSaveContent}>Save</button>
+                </li>
                 {toPrStates.includes(prState) && (
                   <>
                     <li className="relation-overview__header__list__item">
                       <button onClick={handleCreatePrClick}>Create PR</button>
                     </li>
-                    {needUpdateContents && (
-                      <li className="relation-overview__header__list__item">
-                        <button onClick={handleUpdateContentsClick}>
-                          Update Contents
-                        </button>
-                      </li>
-                    )}
+
+                    {needUpdateOriginal && UpdateTranslateButton}
                   </>
                 )}
                 {prState === PR_STATE.OPEN && (
                   <>
                     <li className="relation-overview__header__list__item">
-                      <button onClick={handleUpdatePrClick}>Update PR</button>
+                      <button onClick={handleUpdatePrClick}>
+                        Update PR(#{translateDocData.pullNumber})
+                      </button>
                     </li>
                     <li className="relation-overview__header__list__item">
-                      <button onClick={handleClosePrClick}>Close PR</button>
+                      <button onClick={handleClosePrClick}>
+                        Close PR(#{translateDocData.pullNumber})
+                      </button>
                     </li>
                     {needSyncContent && SyncContentButton}
                   </>
                 )}
                 {prState === PR_STATE.MERGED && (
-                  <>
-                    {needSyncContent && SyncContentButton}
-                    {!needSyncContent && (
-                      <li className="relation-overview__header__list__item">
-                        <button onClick={handleUpdateTranslateClick}>
-                          Update Translate
-                        </button>
-                      </li>
-                    )}
-                  </>
+                  <li className="relation-overview__header__list__item">
+                    <button onClick={handleUpdateTranslateByMergedPrClick}>
+                      Update Translate By Merged PR(#
+                      {translateDocData.pullNumber})
+                    </button>
+                  </li>
                 )}
+                {canUpdateFromModifiedRev && (
+                  <li className="relation-overview__header__list__item">
+                    <button onClick={handleUpdateOriginalContentClick}>
+                      Update Original Content
+                    </button>
+                  </li>
+                )}
+                {canUpdateToModifiedRev && (
+                  <li className="relation-overview__header__list__item">
+                    <button onClick={handleUpdateTranslatedContentClick}>
+                      Update Translated Content
+                    </button>
+                  </li>
+                )}
+                <li className="relation-overview__header__list__item">
+                  <button onClick={handleEditRelationsClick}>
+                    Edit Relations
+                  </button>
+                </li>
               </>
             )}
 
-            {mode !== MODE.EDIT_RELATION && (
-              <li className="relation-overview__header__list__item">
-                <button onClick={handleEditRelationsClick}>
-                  Edit Relations
-                </button>
-              </li>
-            )}
             {mode === MODE.EDIT_RELATION && (
               <>
                 <li className="relation-overview__header__list__item">
                   <CreateMode onCreate={handleCreate}></CreateMode>
                 </li>
                 <li className="relation-overview__header__list__item">
+                  <button onClick={handleRegenerateRelationsClick}>
+                    Regenerate Relations
+                  </button>
+                </li>
+                <li className="relation-overview__header__list__item">
                   <button onClick={handleEditContentClick}>Edit Content</button>
                 </li>
               </>
             )}
+
             <li className="relation-overview__header__list__item">
               <UserMenu></UserMenu>
             </li>
@@ -773,10 +965,10 @@ function RelationPage() {
         >
           <RelationEditor
             ref={diffEditorRef}
-            fromOriginal={fromOriginalContent}
-            fromModified={fromModifiedContent}
-            toOriginal={toOriginalContent}
-            toModified={toModifiedContent}
+            fromOriginal={fromOriginalContent || ""}
+            fromModified={fromModifiedContent || ""}
+            toOriginal={toOriginalContent || ""}
+            toModified={editorToModifiedContent}
             relations={relations}
             options={options({
               onDelete: handleDelete,
@@ -786,7 +978,7 @@ function RelationPage() {
             }}
             onToSave={() => {
               if (mode === MODE.EDIT) {
-                handleSave();
+                handleSaveContent();
               }
             }}
           />

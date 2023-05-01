@@ -91,6 +91,8 @@ export default class RelationSvg {
       toEditor: this.toOriginalEditor,
       relations: this.relations,
     });
+
+    this.renderLinks();
   }
 
   public scrollToRelation(id: string) {
@@ -333,8 +335,10 @@ export default class RelationSvg {
           return group;
         },
         (update) => {
-          // console.log('update', update);
-          update.select("path").attr("d", rangeLinkHorizontalGen);
+          update
+            .select("path")
+            .attr("class", (link: any) => `${link.type}`)
+            .attr("d", rangeLinkHorizontalGen);
 
           update
             .select(".relation-link__options")
@@ -344,7 +348,6 @@ export default class RelationSvg {
           return update;
         },
         (exit) => {
-          // console.log('exit', exit);
           return exit.remove();
         }
       );

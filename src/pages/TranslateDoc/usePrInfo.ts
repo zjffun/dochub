@@ -13,25 +13,26 @@ function usePrInfo({
   path?: string;
   pullNumber?: number;
 }) {
-  const [prState, setPrState] = useState<PR_STATE>(PR_STATE.NONE);
+  const [prState, setPrState] = useState<PR_STATE>(PR_STATE.UNKNOWN);
   const [prBranch, setPrBranch] = useState<string>();
   const [prRev, setPrRev] = useState<string>();
   const [prContent, setPrContent] = useState<string>();
 
   useEffect(() => {
-    if (
-      pullNumber === undefined ||
-      pullNumber === 0 ||
-      owner === undefined ||
-      repo === undefined
-    ) {
+    if (owner === undefined || repo === undefined) {
+      setPrState(PR_STATE.UNKNOWN);
+      setPrBranch(undefined);
+      setPrRev(undefined);
+      return;
+    }
+
+    if (pullNumber === undefined || pullNumber === 0) {
       setPrState(PR_STATE.NONE);
       setPrBranch(undefined);
       setPrRev(undefined);
       return;
     }
 
-    setPrState(PR_STATE.FETCHING);
     getPr({
       owner,
       repo,
@@ -50,7 +51,7 @@ function usePrInfo({
       })
       .catch((error) => {
         console.error(error);
-        setPrState(PR_STATE.NONE);
+        setPrState(PR_STATE.UNKNOWN);
         setPrBranch(undefined);
         setPrRev(undefined);
       });

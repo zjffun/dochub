@@ -1,9 +1,4 @@
-export type IRelation = {
-  id: string;
-  fromRange: [number, number];
-  toRange: [number, number];
-  type?: RelationTypeEnum;
-};
+export type { IRelation } from "../../types.d";
 
 export enum RelationTypeEnum {
   add = "add",

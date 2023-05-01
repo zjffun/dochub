@@ -432,7 +432,7 @@ async function getPr({
   });
 
   return {
-    rev: res.data.head.sha,
+    rev: res.data.merge_commit_sha || res.data.head.sha,
     branch: res.data.head.ref,
     closed: res.data.state === "closed",
     merged: res.data.merged,
