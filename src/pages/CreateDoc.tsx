@@ -13,7 +13,7 @@ import Header from "../components/Header";
 import Loading from "../components/Loading";
 import useCurrentRef from "../hooks/useCurrentRef";
 import { useStoreContext } from "../store";
-import { IDoc, IFormOption } from "../types";
+import { IDoc, IFormOption, IRelation } from "../types";
 import formatTime from "../utils/fromatTime";
 import getRelations from "../utils/generateRelations/mdx/getRelations";
 import { githubUrl } from "../utils/githubUrl";
@@ -98,10 +98,10 @@ function RelationList() {
       postData.toOriginalContent = toOriginalContent;
 
       // relations
-      const relations = await getRelations(
-        fromOriginalContent,
-        toOriginalContent
-      );
+      let relations: IRelation[] = [];
+      if (watch("autoGenerateRelations") === true) {
+        relations = await getRelations(fromOriginalContent, toOriginalContent);
+      }
 
       postData.relations = relations;
 
@@ -132,6 +132,15 @@ function RelationList() {
         await parseOriginalUrl();
       } catch (error) {
         console.error(error);
+      }
+
+      const fromPath: string = watch("fromPath");
+      const toPath: string = watch("toPath");
+
+      if (fromPath.endsWith(".md") && toPath.endsWith(".md")) {
+        setValue("autoGenerateRelations", true);
+      } else {
+        setValue("autoGenerateRelations", false);
       }
     } catch (error) {
       console.error(error);
@@ -334,6 +343,22 @@ function RelationList() {
                   />
                 </span>
                 <p>{errors.path && <span>This field is required</span>}</p>
+              </label>
+            </div>
+            <div className="dochub-create-doc-form__item">
+              <span className="dochub-create-doc-form__item__label">
+                Relations
+              </span>
+              <label>
+                <span className="dochub-create-doc-form-relations">
+                  <input
+                    {...register("autoGenerateRelations")}
+                    className="dochub-create-doc-form-relations__input"
+                    type="checkbox"
+                    style={{ flex: "1 1 auto" }}
+                  />{" "}
+                  Auto Generate Relations
+                </span>
               </label>
             </div>
           </div>

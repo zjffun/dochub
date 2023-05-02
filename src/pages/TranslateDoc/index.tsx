@@ -185,7 +185,8 @@ function RelationPage() {
   const needSyncContent =
     prContent !== undefined && prContent !== translateDocData?.toEditingContent;
 
-  const needUpdateOriginal =
+  const canUpdateOriginal =
+    [PR_STATE.NONE, PR_STATE.CLOSED].includes(prState) &&
     translateDocData &&
     (translateDocData.toOriginalRev !== translateDocData.toModifiedRev ||
       translateDocData.fromOriginalRev !== translateDocData.fromModifiedRev);
@@ -389,6 +390,11 @@ function RelationPage() {
     try {
       beforeEvent();
 
+      const res = window.confirm(`Update translated content?`);
+      if (!res) {
+        return;
+      }
+
       const toOwner = get(translateDocData, "toOwner");
       const toRepo = get(translateDocData, "toRepo");
       const toBranch = get(translateDocData, "toBranch");
@@ -402,16 +408,20 @@ function RelationPage() {
           path: toPath,
         });
 
+      // TODO: optimize toModifiedContent toEditingContent
       const docRes = await updateDoc({
         path: docPath,
         toModifiedRev,
         toModifiedContent,
+        toEditingContent: toModifiedContent,
       });
 
       updateTranslateDocData({
         toModifiedContent,
+        toEditingContent: toModifiedContent,
         toModifiedRev: docRes.toModifiedRev,
         toModifiedContentSha: docRes.toModifiedContentSha,
+        toEditingContentSha: docRes.toEditingContentSha,
       });
 
       toast.success("Update translated content successfully.");
@@ -462,29 +472,31 @@ function RelationPage() {
   };
 
   const handleDelete = async (relationId: string) => {
-    const res = window.confirm(`Delete relation?`);
-    if (res) {
-      try {
-        beforeEvent();
+    try {
+      beforeEvent();
 
-        const docId = get(translateDocData, "id");
-
-        const docRes = await deleteRelation({
-          docId,
-          id: relationId,
-        });
-
-        updateTranslateDocData({
-          relations: docRes.relations,
-        });
-
-        toast.success("Delete relation successfully.");
-      } catch (error) {
-        console.error(error);
-        toast.error("Failed to delete relation.");
-      } finally {
-        setLoading(false);
+      const res = window.confirm(`Delete relation?`);
+      if (!res) {
+        return;
       }
+
+      const docId = get(translateDocData, "id");
+
+      const docRes = await deleteRelation({
+        docId,
+        id: relationId,
+      });
+
+      updateTranslateDocData({
+        relations: docRes.relations,
+      });
+
+      toast.success("Delete relation successfully.");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to delete relation.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -548,6 +560,12 @@ function RelationPage() {
   const handleUpdateTranslateClick = async () => {
     try {
       beforeEvent();
+
+      const res = window.confirm(`Update base contents and relations?`);
+      if (!res) {
+        return;
+      }
+
       const newFromOriginalContent = get(
         translateDocData,
         "fromModifiedContent"
@@ -689,22 +707,25 @@ function RelationPage() {
 
     try {
       beforeEvent();
+
       const res = window.confirm(
         `Sync translated content from pull request #${translateDocData?.pullNumber}?`
       );
-      if (res) {
-        const docRes = await updateDoc({
-          path: docPath,
-          toEditingContent: prContent,
-        });
-
-        updateTranslateDocData({
-          toEditingContent: prContent,
-          toEditingContentSha: docRes.toEditingContentSha,
-        });
-
-        toast.success("Translated content saved.");
+      if (!res) {
+        return;
       }
+
+      const docRes = await updateDoc({
+        path: docPath,
+        toEditingContent: prContent,
+      });
+
+      updateTranslateDocData({
+        toEditingContent: prContent,
+        toEditingContentSha: docRes.toEditingContentSha,
+      });
+
+      toast.success("Translated content saved.");
     } catch (error) {
       toast.error("Failed to save translated content.");
       console.error(error);
@@ -716,6 +737,13 @@ function RelationPage() {
   const handleRegenerateRelationsClick = async () => {
     try {
       beforeEvent();
+
+      const res = window.confirm(
+        `Remove all relations and regenerate from base contents?`
+      );
+      if (!res) {
+        return;
+      }
 
       const fromOriginalContent = get(translateDocData, "fromOriginalContent");
       const toOriginalContent = get(translateDocData, "toOriginalContent");
@@ -835,7 +863,7 @@ function RelationPage() {
     translateDocData;
 
   let editorToModifiedContent = "";
-  if (translateDocData.toEditingContentSha) {
+  if (mode === MODE.EDIT && translateDocData.toEditingContentSha) {
     editorToModifiedContent = translateDocData.toEditingContent || "";
   } else {
     editorToModifiedContent = translateDocData.toModifiedContent || "";
@@ -886,8 +914,6 @@ function RelationPage() {
                     <li className="relation-overview__header__list__item">
                       <button onClick={handleCreatePrClick}>Create PR</button>
                     </li>
-
-                    {needUpdateOriginal && UpdateTranslateButton}
                   </>
                 )}
                 {prState === PR_STATE.OPEN && (
@@ -937,6 +963,7 @@ function RelationPage() {
 
             {mode === MODE.EDIT_RELATION && (
               <>
+                {canUpdateOriginal && UpdateTranslateButton}
                 <li className="relation-overview__header__list__item">
                   <CreateMode onCreate={handleCreate}></CreateMode>
                 </li>
@@ -970,12 +997,11 @@ function RelationPage() {
             toOriginal={toOriginalContent || ""}
             toModified={editorToModifiedContent}
             relations={relations}
+            fromReadOnly={true}
+            toReadOnly={mode === MODE.EDIT_RELATION}
             options={options({
               onDelete: handleDelete,
             })}
-            onFromSave={(editor: { getValue: () => any }) => {
-              const content = editor?.getValue();
-            }}
             onToSave={() => {
               if (mode === MODE.EDIT) {
                 handleSaveContent();

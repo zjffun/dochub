@@ -15,8 +15,9 @@ export interface IMonacoDiffEditorRelationProps {
   toModified: string;
   relations: IRelation[];
   currentId?: string;
+  fromReadOnly?: boolean;
+  toReadOnly?: boolean;
   options?: FC<any>;
-  onFromSave?: (editor: monaco.editor.ICodeEditor) => void;
   onToSave?: (editor: monaco.editor.ICodeEditor) => void;
 }
 
@@ -36,8 +37,9 @@ const MonacoDiffEditorRelation = forwardRef<
       toModified,
       relations,
       currentId,
+      fromReadOnly,
+      toReadOnly,
       options,
-      onFromSave,
       onToSave,
     },
     ref
@@ -52,7 +54,7 @@ const MonacoDiffEditorRelation = forwardRef<
       null
     );
 
-    const monacoRelationViewRef = useRef<any>(null);
+    const monacoRelationViewRef = useRef<RelationSvg | null>(null);
 
     useImperativeHandle(
       ref,
@@ -125,8 +127,22 @@ const MonacoDiffEditorRelation = forwardRef<
     }, []);
 
     useEffect(() => {
-      // TODO: implement
-    }, [onFromSave]);
+      if (!fromDiffEditorRef.current) {
+        return;
+      }
+      fromDiffEditorRef.current.updateOptions({
+        readOnly: fromReadOnly,
+      });
+    }, [fromReadOnly]);
+
+    useEffect(() => {
+      if (!toDiffEditorRef.current) {
+        return;
+      }
+      toDiffEditorRef.current.updateOptions({
+        readOnly: toReadOnly,
+      });
+    }, [toReadOnly]);
 
     useEffect(() => {
       if (toDiffEditorRef.current) {
@@ -146,13 +162,12 @@ const MonacoDiffEditorRelation = forwardRef<
 
     useEffect(() => {
       if (monacoRelationViewRef.current) {
-        // TODO: implement
-        // monacoRelationView.current.setOptions(options);
+        monacoRelationViewRef.current.options = options;
       }
     }, [options]);
 
     useEffect(() => {
-      if (currentId) {
+      if (currentId && monacoRelationViewRef.current) {
         monacoRelationViewRef.current.scrollToRelation(currentId);
       }
     }, [currentId]);
@@ -171,7 +186,9 @@ const MonacoDiffEditorRelation = forwardRef<
           toModified
         );
 
-        monacoRelationViewRef.current.setRelations(relations);
+        if (monacoRelationViewRef.current) {
+          monacoRelationViewRef.current.setRelations(relations);
+        }
       })();
     }, [fromOriginal, fromModified, toOriginal, toModified, relations]);
 

@@ -1,6 +1,5 @@
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 
-// TODO: set model value
 const setModelToDiffEditor = async (
   diffEditor: monaco.editor.IStandaloneDiffEditor | null,
   original: string,
@@ -10,10 +9,8 @@ const setModelToDiffEditor = async (
     return false;
   }
 
-  diffEditor.setModel({
-    original: monaco.editor.createModel(original, "markdown"),
-    modified: monaco.editor.createModel(modified, "markdown"),
-  });
+  diffEditor.getOriginalEditor().setValue(original);
+  diffEditor.getModifiedEditor().setValue(modified);
 
   // wait for diff ready
   return new Promise((res) => {

@@ -748,7 +748,7 @@ module.exports = function (webpackEnv) {
             },
           },
         }),
-      // TODO: fix icon
+      // TODO: use CDN
       new MonacoWebpackPlugin({
         languages: ["markdown"],
         features: ["contextmenu"],

@@ -2,6 +2,13 @@
   "name": "my-app",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "start": "node scripts/start.js",
+    "build": "node scripts/build.js",
+    "test": "node scripts/test.js",
+    "analyze": "source-map-explorer 'build/static/js/*.js'",
+    "ci-build": "CI=true node scripts/build.js"
+  },
   "dependencies": {
     "@babel/core": "^7.16.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.3",
@@ -80,11 +87,12 @@
     "webpack-manifest-plugin": "^4.0.2",
     "workbox-webpack-plugin": "^6.4.1"
   },
-  "scripts": {
-    "start": "node scripts/start.js",
-    "build": "node scripts/build.js",
-    "test": "node scripts/test.js",
-    "ci-build": "CI=true node scripts/build.js"
+  "devDependencies": {
+    "@types/d3": "^7.4.0",
+    "@types/lodash-es": "^4.17.7",
+    "monaco-editor-webpack-plugin": "^7.0.1",
+    "sass": "^1.57.1",
+    "source-map-explorer": "^2.5.3"
   },
   "eslintConfig": {
     "extends": [
@@ -112,12 +120,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "@types/d3": "^7.4.0",
-    "@types/lodash-es": "^4.17.7",
-    "monaco-editor-webpack-plugin": "^7.0.1",
-    "sass": "^1.57.1"
   },
   "jest": {
     "roots": [
