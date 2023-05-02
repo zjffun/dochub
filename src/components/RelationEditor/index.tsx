@@ -44,6 +44,7 @@ const MonacoDiffEditorRelation = forwardRef<
     },
     ref
   ) => {
+    const relationElRef = useRef<HTMLDivElement>(null);
     const fromDiffEditorElRef = useRef<HTMLDivElement>(null);
     const toDiffEditorElRef = useRef<HTMLDivElement>(null);
     const relationSvgElRef = useRef<SVGSVGElement>(null);
@@ -83,10 +84,20 @@ const MonacoDiffEditorRelation = forwardRef<
         }
       }, 500);
 
-      window.addEventListener("resize", resize);
+      const resizeObserver = new ResizeObserver((entries) => {
+        resize();
+      });
+
+      const relationEl = relationElRef.current;
+
+      if (relationEl) {
+        resizeObserver.observe(relationEl);
+      }
 
       return () => {
-        window.removeEventListener("resize", resize);
+        if (relationEl) {
+          resizeObserver.unobserve(relationEl);
+        }
       };
     }, []);
 
@@ -193,7 +204,7 @@ const MonacoDiffEditorRelation = forwardRef<
     }, [fromOriginal, fromModified, toOriginal, toModified, relations]);
 
     return (
-      <div className="MonacoDiffEditorRelation">
+      <div className="MonacoDiffEditorRelation" ref={relationElRef}>
         <div className="MonacoDiffEditorRelation__EditorList">
           <div
             className="MonacoDiffEditorRelation__EditorList__Item"

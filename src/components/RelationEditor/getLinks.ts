@@ -52,7 +52,10 @@ const getLinks = ({
 
     const toLineTopStart = toEditor.getTopForLineNumber(toRange[0]);
     if (toRange[1] !== null) {
-      toLineTopEnd = toEditor.getBottomForLineNumber(toRange[1]);
+      toLineTopEnd = Math.max(
+        toEditor.getBottomForLineNumber(toRange[1]),
+        toEditor.getTopForLineNumber(toRange[1] + 1)
+      );
     } else {
       toLineTopEnd = toLineTopStart;
     }

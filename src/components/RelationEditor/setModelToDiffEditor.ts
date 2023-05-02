@@ -9,8 +9,10 @@ const setModelToDiffEditor = async (
     return false;
   }
 
-  diffEditor.getOriginalEditor().setValue(original);
-  diffEditor.getModifiedEditor().setValue(modified);
+  diffEditor.setModel({
+    original: monaco.editor.createModel(original, "markdown"),
+    modified: monaco.editor.createModel(modified, "markdown"),
+  });
 
   // wait for diff ready
   return new Promise((res) => {
