@@ -429,6 +429,9 @@ async function getPr({
     owner,
     repo,
     pull_number: pullNumber,
+    headers: {
+      "If-None-Match": "",
+    },
   });
 
   return {

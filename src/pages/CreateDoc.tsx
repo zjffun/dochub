@@ -21,7 +21,7 @@ import pathInfo from "../utils/pathInfo";
 
 import "./CreateDoc.scss";
 
-function RelationList() {
+function CreateDoc() {
   const { docPath } = pathInfo();
   const { userInfo } = useStoreContext();
   const navigate = useNavigate();
@@ -539,4 +539,4 @@ function RelationList() {
   );
 }
 
-export default RelationList;
+export default CreateDoc;

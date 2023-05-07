@@ -3,6 +3,7 @@ import openSignInWindow from "../utils/openSignInWindow";
 import UserMenu from "./UserMenu";
 
 import "./Header.scss";
+import CreateMenu from "./CreateMenu";
 
 function Header() {
   const { userInfo } = useStoreContext();
@@ -15,7 +16,10 @@ function Header() {
       <div style={{ flex: "1 1 auto" }}></div>
       <section className="dochub-component-header__right">
         {userInfo ? (
-          <UserMenu></UserMenu>
+          <>
+            <CreateMenu></CreateMenu>
+            <UserMenu></UserMenu>
+          </>
         ) : (
           <button className="btn" onClick={openSignInWindow}>
             Sign in

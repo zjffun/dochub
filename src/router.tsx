@@ -4,6 +4,7 @@ import Loading from "./components/Loading";
 import TopDocList from "./pages/TopDocList";
 
 const CreateDoc = lazy(() => import("./pages/CreateDoc"));
+const CreateProject = lazy(() => import("./pages/CreateProject"));
 const DocList = lazy(() => import("./pages/DocList"));
 const TranslateDoc = lazy(() => import("./pages/TranslateDoc"));
 const UserHomeOverview = lazy(() => import("./pages/UserHome/Overview"));
@@ -85,6 +86,15 @@ const router = createBrowserRouter([
     element: (
       <React.Suspense fallback={<Loading loading={true}></Loading>}>
         <CreateDoc></CreateDoc>
+      </React.Suspense>
+    ),
+  },
+  {
+    id: "new-project",
+    path: "/new-project",
+    element: (
+      <React.Suspense fallback={<Loading loading={true}></Loading>}>
+        <CreateProject></CreateProject>
       </React.Suspense>
     ),
   },

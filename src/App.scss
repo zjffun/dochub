@@ -112,8 +112,8 @@ a:active {
   display: flex;
   &__item {
     position: relative;
-    padding: 0.25rem;
-    margin: 0.5rem;
+    padding: 0.5rem;
+    margin: 0 0.5rem;
     border-bottom: 2px solid transparent;
     cursor: pointer;
 
@@ -126,7 +126,7 @@ a:active {
       &::after {
         position: absolute;
         left: 0;
-        bottom: -0.5rem;
+        bottom: 0;
         width: 100%;
         height: 2px;
         background: var(--md-sys-color-on-surface);
@@ -134,4 +134,8 @@ a:active {
       }
     }
   }
+}
+
+.dochub-icon {
+  fill: currentColor;
 }

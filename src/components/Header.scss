@@ -1,3 +1,5 @@
+$header-color: #fff;
+
 .dochub {
   &-component {
     &-header {
@@ -6,16 +8,20 @@
       align-items: center;
       background: #24292f;
       padding: 0 1rem;
+      color: $header-color;
 
       &__name,
       &__name:hover,
       &__name:active {
         font-size: 1.8em;
-        color: #fff;
+        color: $header-color;
         text-decoration: none;
       }
 
       &__right {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
       }
     }
   }
