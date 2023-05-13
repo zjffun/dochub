@@ -8,7 +8,7 @@ function RecentlyDeleted() {
   const params = useParams();
 
   const login = params.login;
-  const pathname = `/${login}`;
+  const docPath = `/${login}`;
 
   if (!login) {
     return null;
@@ -17,7 +17,7 @@ function RecentlyDeleted() {
   return (
     <CommonContainer login={login} type="recently-deleted">
       <div className="dochub-user-home-documents">
-        <DocList pathname={pathname} isDelete={true}></DocList>
+        <DocList docPath={docPath} isDelete={true}></DocList>
       </div>
     </CommonContainer>
   );

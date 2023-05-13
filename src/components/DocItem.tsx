@@ -7,21 +7,21 @@ import { getPercent } from "../utils/progress";
 import "./DocItem.scss";
 
 function DocItem({
-  path,
+  docPath,
   originalLineNum,
   translatedLineNum,
   consistentLineNum,
   isDelete,
   onDeleteDoc,
 }: {
-  path: string;
+  docPath: string;
   originalLineNum?: number;
   translatedLineNum?: number;
   consistentLineNum?: number;
   isDelete?: boolean;
   onDeleteDoc?: () => void;
 }) {
-  const { userInfo } = useStoreContext();
+  const { userInfo, hasWritePermission } = useStoreContext();
 
   function getTranslateLink(path: string) {
     if (userInfo?.login) {
@@ -62,9 +62,9 @@ function DocItem({
   return (
     <section className="dochub-component-doc-item">
       <h3 className="dochub-component-doc-item__title">
-        <Link to={getTranslateLink(path)}>{getTitlePath(path)}</Link>
+        <Link to={getTranslateLink(docPath)}>{getTitlePath(docPath)}</Link>
       </h3>
-      <p className="dochub-component-doc-item__path">{path}</p>
+      <p className="dochub-component-doc-item__path">{docPath}</p>
       <div className="dochub-component-doc-item__footer">
         <span
           className="dochub-component-doc-item__footer__item"
@@ -83,12 +83,14 @@ function DocItem({
             flex: "1 1 auto",
           }}
         ></div>
-        <button
-          className="dochub-component-doc-item__footer__delete btn btn-small btn-danger"
-          onClick={() => handleDeleteClick(path)}
-        >
-          Delete
-        </button>
+        {hasWritePermission && (
+          <button
+            className="dochub-component-doc-item__footer__delete btn btn-small btn-danger"
+            onClick={() => handleDeleteClick(docPath)}
+          >
+            Delete
+          </button>
+        )}
       </div>
     </section>
   );

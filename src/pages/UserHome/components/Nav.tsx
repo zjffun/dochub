@@ -14,13 +14,15 @@ interface Item {
 
 function Nav({ type, login }: { type: string; login: string }) {
   const navigate = useNavigate();
-  const { userInfo } = useStoreContext();
+  const { hasWritePermission } = useStoreContext();
 
   const [items, setItems] = useState<Item[]>([
     {
+      // TODO: implement
       name: "Overview",
       path: `/user/${login}`,
       type: "overview",
+      hidden: true,
     },
     {
       name: "Documents",
@@ -36,7 +38,7 @@ function Nav({ type, login }: { type: string; login: string }) {
   ]);
 
   useEffect(() => {
-    if (userInfo?.login === login) {
+    if (hasWritePermission) {
       setItems((items) => {
         return items.map((d) => {
           if (d.type === "recently-deleted") {
@@ -50,7 +52,7 @@ function Nav({ type, login }: { type: string; login: string }) {
         });
       });
     }
-  }, [userInfo?.login, login]);
+  }, [hasWritePermission]);
 
   return (
     <ul className="nav">

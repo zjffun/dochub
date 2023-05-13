@@ -31,14 +31,17 @@ function TopDocList() {
               item.originalLineNum
             );
             return (
-              <li className="dochub-top-doc-list__ul__li" key={item.name}>
+              <li
+                className="dochub-top-doc-list__ul__li surface"
+                key={item.name}
+              >
                 <div
                   className="dochub-top-doc-list__ul__li__bg"
                   style={{
                     backgroundImage: `url(${item.logoUrl})`,
                   }}
                 >
-                  <div className="dochub-project-card surface on-surface-text">
+                  <div className="dochub-project-card on-surface-text">
                     <a className="dochub-project-card__link" href={item.docUrl}>
                       <span style={{ visibility: "hidden" }}>{item.name}</span>
                     </a>

@@ -13,10 +13,6 @@ const UserHomeRecentlyDeleted = lazy(
   () => import("./pages/UserHome/RecentlyDeleted")
 );
 
-// admin
-const AdminCollections = lazy(() => import("./pages/admin/CollectionsPage"));
-const AdminLogin = lazy(() => import("./pages/admin/LoginPage"));
-
 const router = createBrowserRouter([
   {
     id: "home",
@@ -26,26 +22,7 @@ const router = createBrowserRouter([
   {
     id: "admin",
     path: "/admin",
-    children: [
-      {
-        id: "admin-login",
-        path: "login",
-        element: (
-          <React.Suspense fallback={<Loading loading={true}></Loading>}>
-            <AdminLogin></AdminLogin>
-          </React.Suspense>
-        ),
-      },
-      {
-        id: "admin-collection",
-        path: "collection",
-        element: (
-          <React.Suspense fallback={<Loading loading={true}></Loading>}>
-            <AdminCollections></AdminCollections>
-          </React.Suspense>
-        ),
-      },
-    ],
+    children: [],
   },
   {
     id: "user",
@@ -74,7 +51,9 @@ const router = createBrowserRouter([
         path: ":login",
         element: (
           <React.Suspense fallback={<Loading loading={true}></Loading>}>
-            <UserHomeOverview></UserHomeOverview>
+            {/* TODO: implement overview */}
+            {/* <UserHomeOverview></UserHomeOverview> */}
+            <UserHomeDocuments></UserHomeDocuments>
           </React.Suspense>
         ),
       },

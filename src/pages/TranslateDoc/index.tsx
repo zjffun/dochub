@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import {
   createRelation,
   deleteRelation,
+  forkDoc,
   getViewerData,
   updateDoc,
 } from "../../api";
@@ -30,6 +31,7 @@ import {
   RelationTypeEnum,
 } from "../../components/RelationEditor/types";
 import UserMenu from "../../components/UserMenu";
+import usePermissions from "../../hooks/usePermissions";
 import { useStoreContext } from "../../store";
 import getRelations from "../../utils/generateRelations/mdx/getRelations";
 import openSignInWindow from "../../utils/openSignInWindow";
@@ -171,11 +173,14 @@ function RelationPage() {
     useState(false);
   const [canUpdateToModifiedRev, setCanUpdateToModifiedRev] = useState(false);
 
+  const { hasWritePermission } = usePermissions(docPath);
+
   const { prState, prRev, prBranch, prContent } = usePrInfo({
     owner: translateDocData?.toOwner,
     repo: translateDocData?.toRepo,
     path: translateDocData?.toPath,
-    pullNumber: translateDocData?.pullNumber,
+    // If hasn't write permission, set pullNumber to undefined to prevent get PR info.
+    pullNumber: hasWritePermission ? translateDocData?.pullNumber : undefined,
   });
 
   const diffEditorRef = useRef<IMonacoDiffEditorRelationRef>(null);
@@ -248,6 +253,31 @@ function RelationPage() {
 
   const handleEditContentClick = async () => {
     setMode(MODE.EDIT);
+  };
+
+  const handleForkClick = async () => {
+    try {
+      beforeEvent();
+
+      const forkedDocId = get(translateDocData, "id");
+
+      await forkDoc({
+        path: `/${userInfo!.login}${docPath}`,
+        forkedDocId,
+      }).then(({ path }) => {
+        toast.success("Fork document successfully.");
+
+        if (path !== docPath) {
+          const to = `/${type}${path}${search}`;
+          navigate(to);
+        }
+      });
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to fork document.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSaveContent = async () => {
@@ -677,6 +707,7 @@ function RelationPage() {
       updateTranslateDocData({
         fromOriginalContent: newFromOriginalContent,
         toOriginalContent: newToOriginalContent,
+        toModifiedContent: newToOriginalContent,
         fromOriginalContentSha: docRes.fromOriginalContentSha,
         fromOriginalRev: docRes.fromOriginalRev,
         toOriginalContentSha: docRes.toOriginalContentSha,
@@ -807,10 +838,12 @@ function RelationPage() {
 
   useEffect(() => {
     if (
-      ![PR_STATE.NONE, PR_STATE.OPEN, PR_STATE.CLOSED].includes(prState) ||
+      !hasWritePermission ||
+      ![PR_STATE.NONE, PR_STATE.CLOSED].includes(prState) ||
       !translateDocData
     ) {
       setCanUpdateFromModifiedRev(false);
+      setCanUpdateToModifiedRev(false);
       return;
     }
 
@@ -828,16 +861,6 @@ function RelationPage() {
         setCanUpdateFromModifiedRev(false);
       }
     })();
-  }, [prState, translateDocData]);
-
-  useEffect(() => {
-    if (
-      ![PR_STATE.NONE, PR_STATE.CLOSED].includes(prState) ||
-      !translateDocData
-    ) {
-      setCanUpdateToModifiedRev(false);
-      return;
-    }
 
     // TODO: abort last request
     (async () => {
@@ -853,7 +876,7 @@ function RelationPage() {
         setCanUpdateToModifiedRev(false);
       }
     })();
-  }, [prState, translateDocData]);
+  }, [prState, translateDocData, hasWritePermission]);
 
   if (!translateDocData) {
     return null;
@@ -906,62 +929,73 @@ function RelationPage() {
 
             {mode === MODE.EDIT && (
               <>
-                <li className="relation-overview__header__list__item">
-                  <button onClick={handleSaveContent}>Save</button>
-                </li>
-                {toPrStates.includes(prState) && (
+                {!hasWritePermission && (
+                  <li className="relation-overview__header__list__item">
+                    <button onClick={handleForkClick}>Fork</button>
+                  </li>
+                )}
+                {hasWritePermission && (
                   <>
                     <li className="relation-overview__header__list__item">
-                      <button onClick={handleCreatePrClick}>Create PR</button>
+                      <button onClick={handleSaveContent}>Save</button>
+                    </li>
+                    {toPrStates.includes(prState) && (
+                      <>
+                        <li className="relation-overview__header__list__item">
+                          <button onClick={handleCreatePrClick}>
+                            Create PR
+                          </button>
+                        </li>
+                      </>
+                    )}
+                    {prState === PR_STATE.OPEN && (
+                      <>
+                        <li className="relation-overview__header__list__item">
+                          <button onClick={handleUpdatePrClick}>
+                            Update PR(#{translateDocData.pullNumber})
+                          </button>
+                        </li>
+                        <li className="relation-overview__header__list__item">
+                          <button onClick={handleClosePrClick}>
+                            Close PR(#{translateDocData.pullNumber})
+                          </button>
+                        </li>
+                        {needSyncContent && SyncContentButton}
+                      </>
+                    )}
+                    {prState === PR_STATE.MERGED && (
+                      <li className="relation-overview__header__list__item">
+                        <button onClick={handleUpdateTranslateByMergedPrClick}>
+                          Update Translate By Merged PR(#
+                          {translateDocData.pullNumber})
+                        </button>
+                      </li>
+                    )}
+                    {canUpdateFromModifiedRev && (
+                      <li className="relation-overview__header__list__item">
+                        <button onClick={handleUpdateOriginalContentClick}>
+                          Update Original Content
+                        </button>
+                      </li>
+                    )}
+                    {canUpdateToModifiedRev && (
+                      <li className="relation-overview__header__list__item">
+                        <button onClick={handleUpdateTranslatedContentClick}>
+                          Update Translated Content
+                        </button>
+                      </li>
+                    )}
+                    <li className="relation-overview__header__list__item">
+                      <button onClick={handleEditRelationsClick}>
+                        Edit Relations
+                      </button>
                     </li>
                   </>
                 )}
-                {prState === PR_STATE.OPEN && (
-                  <>
-                    <li className="relation-overview__header__list__item">
-                      <button onClick={handleUpdatePrClick}>
-                        Update PR(#{translateDocData.pullNumber})
-                      </button>
-                    </li>
-                    <li className="relation-overview__header__list__item">
-                      <button onClick={handleClosePrClick}>
-                        Close PR(#{translateDocData.pullNumber})
-                      </button>
-                    </li>
-                    {needSyncContent && SyncContentButton}
-                  </>
-                )}
-                {prState === PR_STATE.MERGED && (
-                  <li className="relation-overview__header__list__item">
-                    <button onClick={handleUpdateTranslateByMergedPrClick}>
-                      Update Translate By Merged PR(#
-                      {translateDocData.pullNumber})
-                    </button>
-                  </li>
-                )}
-                {canUpdateFromModifiedRev && (
-                  <li className="relation-overview__header__list__item">
-                    <button onClick={handleUpdateOriginalContentClick}>
-                      Update Original Content
-                    </button>
-                  </li>
-                )}
-                {canUpdateToModifiedRev && (
-                  <li className="relation-overview__header__list__item">
-                    <button onClick={handleUpdateTranslatedContentClick}>
-                      Update Translated Content
-                    </button>
-                  </li>
-                )}
-                <li className="relation-overview__header__list__item">
-                  <button onClick={handleEditRelationsClick}>
-                    Edit Relations
-                  </button>
-                </li>
               </>
             )}
 
-            {mode === MODE.EDIT_RELATION && (
+            {hasWritePermission && mode === MODE.EDIT_RELATION && (
               <>
                 {canUpdateOriginal && UpdateTranslateButton}
                 <li className="relation-overview__header__list__item">
@@ -998,12 +1032,12 @@ function RelationPage() {
             toModified={editorToModifiedContent}
             relations={relations}
             fromReadOnly={true}
-            toReadOnly={mode === MODE.EDIT_RELATION}
+            toReadOnly={!hasWritePermission || mode === MODE.EDIT_RELATION}
             options={options({
               onDelete: handleDelete,
             })}
             onToSave={() => {
-              if (mode === MODE.EDIT) {
+              if (hasWritePermission && mode === MODE.EDIT) {
                 handleSaveContent();
               }
             }}

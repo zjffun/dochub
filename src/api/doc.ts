@@ -1,3 +1,4 @@
+import { apiPrefix } from "../config";
 import { ITranslateDocData } from "../pages/TranslateDoc";
 import { IDoc, IRelation } from "../types";
 import client from "./client";
@@ -21,13 +22,24 @@ export interface IGetViewerDataParam {
 export function getDocs(params: GetDocsParams = {}) {
   const getDocsParams = new GetDocsParams(params);
 
-  return client.get<any, { total: number; list: IDoc[] }>("/api/docs", {
-    params: getDocsParams,
-  });
+  return client.get<any, { total: number; list: IDoc[] }>(
+    `${apiPrefix}/v1/docs`,
+    {
+      params: getDocsParams,
+    }
+  );
 }
 
 export function createDoc(doc: IDoc) {
-  return client.post<any, IDoc>("/api/doc", doc);
+  return client.post<any, IDoc>(`${apiPrefix}/v1/doc`, doc);
+}
+
+export function forkDoc(
+  doc: IDoc & {
+    forkedDocId: string;
+  }
+) {
+  return client.post<any, IDoc>(`${apiPrefix}/v1/fork-doc`, doc);
 }
 
 export function deleteDoc({
@@ -37,8 +49,8 @@ export function deleteDoc({
   path: string;
   permanently?: boolean;
 }) {
-  return client.delete<any, { path: string }>(`/api/doc`, {
-    params: {
+  return client.delete<any, { path: string }>(`${apiPrefix}/v1/doc`, {
+    data: {
       path,
       permanently,
     },
@@ -46,7 +58,7 @@ export function deleteDoc({
 }
 
 export function getViewerData({ path }: IGetViewerDataParam) {
-  return client.get<any, ITranslateDocData>("/api/doc/viewer-data", {
+  return client.get<any, ITranslateDocData>(`${apiPrefix}/v1/doc`, {
     params: {
       path,
     },
@@ -82,7 +94,7 @@ export function updateDoc({
   relations?: IRelation[];
   pullNumber?: number;
 }) {
-  return client.put<any, any>("/api/doc", {
+  return client.put<any, any>(`${apiPrefix}/v1/doc`, {
     path,
     fromOriginalContentSha,
     fromOriginalRev,

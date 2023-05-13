@@ -1,3 +1,5 @@
+export const apiPrefix = "/api";
+
 export let signInUrl = "https://dochub.zjffun.com/api/auth/github";
 
 if (process.env.NODE_ENV === "development") {

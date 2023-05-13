@@ -9,7 +9,7 @@ function UserHome() {
   const params = useParams();
 
   const login = params.login;
-  const pathname = `/${login}`;
+  const docPath = `/${login}`;
 
   if (!login) {
     return null;
@@ -18,8 +18,8 @@ function UserHome() {
   return (
     <CommonContainer login={login} type="documents">
       <div className="dochub-user-home-documents">
-        <DocHeader pathname={pathname}></DocHeader>
-        <DocList pathname={pathname}></DocList>
+        <DocHeader docPath={docPath}></DocHeader>
+        <DocList docPath={docPath}></DocList>
       </div>
     </CommonContainer>
   );

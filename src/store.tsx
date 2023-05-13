@@ -5,13 +5,18 @@ import { IUserInfo } from "./types";
 export const StoreContext = React.createContext<{
   userInfo: IUserInfo | null;
   setUserInfo: React.Dispatch<React.SetStateAction<IUserInfo | null>>;
+  hasWritePermission: boolean;
+  setHasWritePermission: React.Dispatch<React.SetStateAction<boolean>>;
 }>({
   userInfo: null,
   setUserInfo: () => {},
+  hasWritePermission: false,
+  setHasWritePermission: () => {},
 });
 
 const Store: FC<{ children: any }> = ({ children }) => {
   const [userInfo, setUserInfo] = React.useState<IUserInfo | null>(null);
+  const [hasWritePermission, setHasWritePermission] = React.useState(false);
 
   const stateRef = React.useRef({
     setUserInfo: setUserInfo,
@@ -22,6 +27,8 @@ const Store: FC<{ children: any }> = ({ children }) => {
   const store = {
     userInfo,
     setUserInfo,
+    hasWritePermission,
+    setHasWritePermission,
   };
 
   useEffect(() => {

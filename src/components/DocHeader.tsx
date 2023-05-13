@@ -1,19 +1,25 @@
 import { Link } from "react-router-dom";
-import "./DocHeader.scss";
+import { useStoreContext } from "../store";
 import Paths from "./Paths";
 
-function DocHeader({ pathname }: { pathname: string }) {
+import "./DocHeader.scss";
+
+function DocHeader({ docPath }: { docPath: string }) {
+  const { hasWritePermission } = useStoreContext();
+
   return (
     <section className="dochub-component-doc-header">
-      <Paths paths={pathname}></Paths>
+      <Paths paths={docPath}></Paths>
       <div
         style={{
           flex: "1 1 auto",
         }}
       ></div>
-      <Link className="btn btn-primary" to={`/new${pathname}`}>
-        Add doc
-      </Link>
+      {hasWritePermission && (
+        <Link className="btn btn-primary" to={`/new${docPath}`}>
+          Add doc
+        </Link>
+      )}
     </section>
   );
 }

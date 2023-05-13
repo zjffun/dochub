@@ -1,4 +1,5 @@
 import axios from "axios";
+import { apiPrefix } from "../config";
 import { IUserInfo } from "../types";
 import client, {
   requestInterceptor,
@@ -6,7 +7,7 @@ import client, {
 } from "./client";
 
 export function getUser() {
-  return client.get<any, IUserInfo>("/api/user");
+  return client.get<any, IUserInfo>(`${apiPrefix}/v1/current-user`);
 }
 
 export function getUserMute() {
@@ -15,9 +16,26 @@ export function getUserMute() {
   instance.interceptors.request.use(requestInterceptor);
   instance.interceptors.response.use(responseInterceptorFulfilled);
 
-  return instance.get<any, IUserInfo>("/api/user");
+  return instance.get<any, IUserInfo>(`${apiPrefix}/v1/current-user`);
 }
 
 export function getUserByLogin(login: string) {
-  return client.get<any, IUserInfo>(`/api/user/${login}`);
+  return client.get<any, IUserInfo>(`${apiPrefix}/v1/user`, {
+    params: {
+      login,
+    },
+  });
+}
+
+export function getCurrentUserPermissions({ path }: { path: string }) {
+  const instance = axios.create();
+
+  instance.interceptors.request.use(requestInterceptor);
+  instance.interceptors.response.use(responseInterceptorFulfilled);
+
+  return instance.get<any, any>(`${apiPrefix}/v1/current-user/permissions`, {
+    params: {
+      path,
+    },
+  });
 }

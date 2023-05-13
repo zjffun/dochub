@@ -11,10 +11,10 @@ import "./DocList.scss";
 const pageSize = 20;
 
 function DocList({
-  pathname,
+  docPath,
   isDelete,
 }: {
-  pathname: string;
+  docPath: string;
   isDelete?: boolean;
 }) {
   const [list, setList] = useState<IDoc[]>([]);
@@ -25,23 +25,23 @@ function DocList({
   function handlePageClick({ selected }: { selected: number }) {
     getList({
       forcePage: selected,
-      pathname,
+      docPath: docPath,
     });
   }
 
   function getList({
     forcePage,
-    pathname,
+    docPath,
   }: {
     forcePage: number;
-    pathname: string;
+    docPath: string;
   }) {
     setLoading(true);
 
     getDocs({
       page: forcePage + 1,
       pageSize,
-      path: pathname,
+      path: docPath,
       depth: 999,
       isDelete,
     })
@@ -73,19 +73,19 @@ function DocList({
 
   const currentRef = useCurrentRef<{
     getList: typeof getList;
-    pathname: typeof pathname;
+    docPath: typeof docPath;
   }>({
     getList,
-    pathname,
+    docPath: docPath,
   });
 
   useEffect(() => {
     currentRef.current.getList({
       forcePage: 0,
-      pathname,
+      docPath: docPath,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname, isDelete]);
+  }, [docPath, isDelete]);
 
   return (
     <>
@@ -100,7 +100,7 @@ function DocList({
                 >
                   <DocItem
                     key={item.path}
-                    path={item.path}
+                    docPath={item.path}
                     originalLineNum={item.originalLineNum}
                     translatedLineNum={item.translatedLineNum}
                     consistentLineNum={item.consistentLineNum}
@@ -108,7 +108,7 @@ function DocList({
                     onDeleteDoc={() => {
                       getList({
                         forcePage: 0,
-                        pathname,
+                        docPath: docPath,
                       });
                     }}
                   ></DocItem>

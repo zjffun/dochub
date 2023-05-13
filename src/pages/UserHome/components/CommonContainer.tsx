@@ -1,5 +1,7 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import Header from "../../../components/Header";
+import usePermissions from "../../../hooks/usePermissions";
+import { useStoreContext } from "../../../store";
 import Nav from "./Nav";
 import Profile from "./Profile";
 
@@ -10,6 +12,15 @@ const CommonContainer: FC<{
   login: string;
   children: React.ReactNode;
 }> = ({ type, login, children }) => {
+  const docPath = `/${login}`;
+
+  const { setHasWritePermission } = useStoreContext();
+  const { hasWritePermission } = usePermissions(docPath);
+
+  useEffect(() => {
+    setHasWritePermission(hasWritePermission);
+  }, [setHasWritePermission, hasWritePermission]);
+
   return (
     <>
       <Header></Header>
