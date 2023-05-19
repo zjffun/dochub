@@ -1,0 +1,35 @@
+.dochub-batch-create-doc {
+  max-width: 900px;
+  padding: 1.5em 0.9em;
+  margin: 0 auto;
+  &-title {
+    font-size: var(--md-sys-typescale-headline-medium-font-size);
+    margin-bottom: 1rem;
+  }
+
+  &-form {
+    &-subtitle {
+      margin-bottom: 0.5rem;
+    }
+
+    &-container {
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    &__item {
+      margin-bottom: 0.5rem;
+      &__label {
+        display: block;
+        margin-bottom: 0.25rem;
+        font-style: var(--md-sys-typescale-label-large-font-family-style);
+        font-weight: var(--md-sys-typescale-label-large-font-weight);
+        font-size: var(--md-sys-typescale-label-large-font-size);
+        letter-spacing: var(--md-sys-typescale-label-large-tracking);
+        line-height: var(--md-sys-typescale-label-large-height);
+        text-transform: var(--md-sys-typescale-label-large-text-transform);
+        text-decoration: var(--md-sys-typescale-label-large-text-decoration);
+      }
+    }
+  }
+}

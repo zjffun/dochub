@@ -35,7 +35,7 @@ import usePermissions from "../../hooks/usePermissions";
 import { useStoreContext } from "../../store";
 import getRelations from "../../utils/generateRelations/mdx/getRelations";
 import openSignInWindow from "../../utils/openSignInWindow";
-import pathInfo from "../../utils/pathInfo";
+import usePathInfo from "../../utils/pathInfo";
 import ToastedError from "../../utils/ToastedError";
 import PR_STATE from "./prState";
 import usePrInfo from "./usePrInfo";
@@ -154,7 +154,7 @@ const CreateMode: FC<CreateModeProps> = ({ onCreate }) => {
 
 function RelationPage() {
   const search = window.location.search;
-  const { pathname, type, docPath } = pathInfo();
+  const { pathname, type, docPath } = usePathInfo();
 
   const navigate = useNavigate();
   const { userInfo } = useStoreContext();
