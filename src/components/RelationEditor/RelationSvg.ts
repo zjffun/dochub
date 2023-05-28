@@ -1,13 +1,13 @@
 import { select, selection } from "d3-selection";
 import { linkHorizontal } from "d3-shape";
 import { throttle } from "lodash-es";
-import { log } from "loglevel";
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import { createElement, FC } from "react";
 import { createRoot } from "react-dom/client";
 import { IRelation, IScrollTopMap } from "./types";
 import getLeftMiddleRightScrollTopMaps from "./getLeftMiddleRightScrollTopMaps";
 import getLinks from "./getLinks";
+import logger from "../../utils/logger";
 
 (selection.prototype as any).rc = function (reactComponent: any) {
   if (!reactComponent) {
@@ -250,7 +250,7 @@ export default class RelationSvg {
       return false;
     });
 
-    log("RelationSvg.ts:onMouseWheel", {
+    logger.debug("RelationSvg.ts:onMouseWheel", {
       "event.deltaY": event.deltaY,
       "this.middleTop": this.middleTop,
       current,

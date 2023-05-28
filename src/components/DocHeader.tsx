@@ -16,9 +16,20 @@ function DocHeader({ docPath }: { docPath: string }) {
         }}
       ></div>
       {hasWritePermission && (
-        <Link className="btn btn-primary" to={`/new${docPath}`}>
-          Add doc
-        </Link>
+        <>
+          <Link
+            className="btn btn-primary"
+            style={{
+              marginRight: "0.5rem",
+            }}
+            to={`/new/doc${docPath}`}
+          >
+            Add doc
+          </Link>
+          <Link className="btn btn-primary" to={`/new/doc/batch${docPath}`}>
+            Batch add doc
+          </Link>
+        </>
       )}
     </section>
   );

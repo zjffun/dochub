@@ -1,7 +1,21 @@
-export default function pathInfo() {
-  const pathname = window.location.pathname;
-  const type = pathname.split("/")[1];
-  const docPath = pathname.replace(new RegExp(`^/${type}`), "");
+import { useMemo } from "react";
+import logger from "./logger";
 
-  return { pathname, type, docPath };
+export default function usePathInfo({ typeLength = 1 } = {}) {
+  const pathname = window.location.pathname;
+
+  const pathInfo = useMemo(() => {
+    const paths = pathname.split("/");
+
+    const type = paths.slice(1, typeLength + 1).join("/");
+    const docPath = `/${paths.slice(typeLength + 1).join("/")}`;
+
+    const pathInfo = { pathname, type, docPath };
+
+    logger.debug("usePathInfo result", pathInfo);
+
+    return pathInfo;
+  }, [pathname, typeLength]);
+
+  return pathInfo;
 }

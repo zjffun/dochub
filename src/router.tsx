@@ -4,6 +4,7 @@ import Loading from "./components/Loading";
 import TopDocList from "./pages/TopDocList";
 
 const CreateDoc = lazy(() => import("./pages/CreateDoc"));
+const BatchCreateDocs = lazy(() => import("./pages/BatchCreateDocs"));
 const CreateProject = lazy(() => import("./pages/CreateProject"));
 const DocList = lazy(() => import("./pages/DocList"));
 const TranslateDoc = lazy(() => import("./pages/TranslateDoc"));
@@ -61,21 +62,42 @@ const router = createBrowserRouter([
   },
   {
     id: "new",
-    path: "/new/*",
-    element: (
-      <React.Suspense fallback={<Loading loading={true}></Loading>}>
-        <CreateDoc></CreateDoc>
-      </React.Suspense>
-    ),
-  },
-  {
-    id: "new-project",
-    path: "/new-project",
-    element: (
-      <React.Suspense fallback={<Loading loading={true}></Loading>}>
-        <CreateProject></CreateProject>
-      </React.Suspense>
-    ),
+    path: "/new",
+    children: [
+      {
+        id: "new-project",
+        path: "project",
+        element: (
+          <React.Suspense fallback={<Loading loading={true}></Loading>}>
+            <CreateProject></CreateProject>
+          </React.Suspense>
+        ),
+      },
+      {
+        id: "new-doc",
+        path: "doc",
+        children: [
+          {
+            id: "new-doc-batch-wildcard",
+            path: "batch/*",
+            element: (
+              <React.Suspense fallback={<Loading loading={true}></Loading>}>
+                <BatchCreateDocs typeLength={3}></BatchCreateDocs>
+              </React.Suspense>
+            ),
+          },
+          {
+            id: "new-doc-wildcard",
+            path: "*",
+            element: (
+              <React.Suspense fallback={<Loading loading={true}></Loading>}>
+                <CreateDoc typeLength={2}></CreateDoc>
+              </React.Suspense>
+            ),
+          },
+        ],
+      },
+    ],
   },
   {
     id: "preview",

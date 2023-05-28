@@ -36,6 +36,13 @@ export interface IDoc {
   relations?: IRelation[];
 }
 
+export interface IBatchCreateDocs extends IDoc {
+  fromGlobs: string;
+  toGlobs: string;
+  fromLang: string;
+  toLang: string;
+}
+
 export interface IFormOption {
   label: string;
   value: string;

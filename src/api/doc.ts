@@ -1,6 +1,6 @@
 import { apiPrefix } from "../config";
 import { ITranslateDocData } from "../pages/TranslateDoc";
-import { IDoc, IRelation } from "../types";
+import { IBatchCreateDocs, IDoc, IRelation } from "../types";
 import client from "./client";
 
 export class GetDocsParams {
@@ -32,6 +32,10 @@ export function getDocs(params: GetDocsParams = {}) {
 
 export function createDoc(doc: IDoc) {
   return client.post<any, IDoc>(`${apiPrefix}/v1/doc`, doc);
+}
+
+export function batchCreateDocs(doc: IBatchCreateDocs) {
+  return client.post<any, IDoc>(`${apiPrefix}/v1/docs`, doc);
 }
 
 export function forkDoc(

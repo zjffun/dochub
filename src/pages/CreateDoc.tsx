@@ -17,12 +17,15 @@ import { IDoc, IFormOption, IRelation } from "../types";
 import formatTime from "../utils/fromatTime";
 import getRelations from "../utils/generateRelations/mdx/getRelations";
 import { githubUrl } from "../utils/githubUrl";
-import pathInfo from "../utils/pathInfo";
+import usePathInfo from "../utils/pathInfo";
 
 import "./CreateDoc.scss";
 
-function CreateDoc() {
-  const { docPath } = pathInfo();
+function CreateDoc({ typeLength }: { typeLength: number }) {
+  const { docPath } = usePathInfo({
+    typeLength,
+  });
+
   const { userInfo } = useStoreContext();
   const navigate = useNavigate();
 
