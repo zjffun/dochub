@@ -53,11 +53,13 @@ function CreateDoc({ typeLength }: { typeLength: number }) {
       fromBranch,
       fromPath,
       fromGlobs: data.fromGlobs,
+      fromLang: data.fromLang,
       toOwner,
       toRepo,
       toBranch,
       toPath,
       toGlobs: data.toGlobs,
+      toLang: data.toLang,
     };
 
     try {
@@ -150,6 +152,34 @@ function CreateDoc({ typeLength }: { typeLength: number }) {
                   style={{ width: "100%" }}
                 />
                 <p>{errors.toGlobs && <span>This field is required</span>}</p>
+              </label>
+            </div>
+            <div className="dochub-batch-create-doc-form__item">
+              <label>
+                <span className="dochub-batch-create-doc-form__item__label">
+                  GitHub Original Language
+                </span>
+                <input
+                  {...register("fromLang", {
+                    value: "en",
+                  })}
+                  className="input"
+                  type="text"
+                  style={{ width: "100%" }}
+                />
+              </label>
+            </div>
+            <div className="dochub-batch-create-doc-form__item">
+              <label>
+                <span className="dochub-batch-create-doc-form__item__label">
+                  GitHub Translated Language
+                </span>
+                <input
+                  {...register("toLang", { value: "zh-CN" })}
+                  className="input"
+                  type="text"
+                  style={{ width: "100%" }}
+                />
               </label>
             </div>
           </section>
