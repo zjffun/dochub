@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getDocs } from "../api";
+import { getProjects } from "../api";
 import Header from "../components/Header";
 import { IDoc } from "../types";
 import { getPercent } from "../utils/progress";
@@ -11,7 +11,7 @@ function TopDocList() {
   const [list, setList] = useState<IDoc[]>([]);
 
   useEffect(() => {
-    getDocs().then((data) => {
+    getProjects().then((data) => {
       setList(data.list);
     });
   }, []);
@@ -24,11 +24,11 @@ function TopDocList() {
           {list.map((item) => {
             const translated = getPercent(
               item.translatedLineNum,
-              item.originalLineNum
+              item.totalLineNum
             );
             const consistent = getPercent(
               item.consistentLineNum,
-              item.originalLineNum
+              item.totalLineNum
             );
             return (
               <li

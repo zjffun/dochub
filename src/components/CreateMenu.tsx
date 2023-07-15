@@ -46,7 +46,7 @@ function CreateMenu() {
       </summary>
       <ul className="dochub-component-create-menu__list surface">
         <li className="dochub-component-create-menu__list__item dochub-component-create-menu__list__item--link">
-          <Link to={`/new/doc${userInfo?.login}`}>New doc</Link>
+          <Link to={`/new/doc/${userInfo?.login}`}>New doc</Link>
         </li>
         <li className="dochub-component-create-menu__list__item dochub-component-create-menu__list__item--link">
           <Link to={`/new/project`}>New project</Link>

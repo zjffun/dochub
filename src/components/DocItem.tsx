@@ -8,14 +8,14 @@ import "./DocItem.scss";
 
 function DocItem({
   docPath,
-  originalLineNum,
+  totalLineNum,
   translatedLineNum,
   consistentLineNum,
   isDelete,
   onDeleteDoc,
 }: {
   docPath: string;
-  originalLineNum?: number;
+  totalLineNum?: number;
   translatedLineNum?: number;
   consistentLineNum?: number;
   isDelete?: boolean;
@@ -68,15 +68,15 @@ function DocItem({
       <div className="dochub-component-doc-item__footer">
         <span
           className="dochub-component-doc-item__footer__item"
-          title={`translated: ${translatedLineNum} / original: ${originalLineNum}`}
+          title={`translated: ${translatedLineNum} / total: ${totalLineNum}`}
         >
-          translated: {getPercent(translatedLineNum, originalLineNum)}%
+          translated: {getPercent(translatedLineNum, totalLineNum)}%
         </span>
         <span
           className="dochub-component-doc-item__footer__item"
-          title={`consistent: ${consistentLineNum} / original: ${originalLineNum}`}
+          title={`consistent: ${consistentLineNum} / total: ${totalLineNum}`}
         >
-          consistent: {getPercent(consistentLineNum, originalLineNum)}%
+          consistent: {getPercent(consistentLineNum, totalLineNum)}%
         </span>
         <div
           style={{

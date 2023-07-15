@@ -101,7 +101,7 @@ function DocList({
                   <DocItem
                     key={item.path}
                     docPath={item.path}
-                    originalLineNum={item.originalLineNum}
+                    totalLineNum={item.totalLineNum}
                     translatedLineNum={item.translatedLineNum}
                     consistentLineNum={item.consistentLineNum}
                     isDelete={isDelete}

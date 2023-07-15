@@ -14,7 +14,7 @@ export interface IDoc {
   lang?: string;
   logoUrl?: string;
   docUrl?: string;
-  originalLineNum?: number;
+  totalLineNum?: number;
   translatedLineNum?: number;
   consistentLineNum?: number;
   fromOwner?: string;

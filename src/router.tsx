@@ -13,6 +13,7 @@ const UserHomeDocuments = lazy(() => import("./pages/UserHome/Documents"));
 const UserHomeRecentlyDeleted = lazy(
   () => import("./pages/UserHome/RecentlyDeleted")
 );
+const GlobalAdminHome = lazy(() => import("./pages/GlobalAdmin/Home"));
 
 const router = createBrowserRouter([
   {
@@ -117,6 +118,17 @@ const router = createBrowserRouter([
       </React.Suspense>
     ),
   },
+
+  {
+    id: "global-admin",
+    path: "/global-admin",
+    element: (
+      <React.Suspense fallback={<Loading loading={true}></Loading>}>
+        <GlobalAdminHome></GlobalAdminHome>
+      </React.Suspense>
+    ),
+  },
+
   {
     id: "doc",
     path: "/*",
