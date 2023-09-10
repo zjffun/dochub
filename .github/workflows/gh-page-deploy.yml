@@ -53,8 +53,6 @@ jobs:
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
       - name: Build
         run: ${{ steps.detect-package-manager.outputs.manager }} run build
-      - name: CNAME
-        run: echo dochub.zjffun.com > ./build/CNAME
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:

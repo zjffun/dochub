@@ -1,7 +1,7 @@
-export const apiPrefix = "/api";
-
-export let signInUrl = `https://dochub.zjffun.com${apiPrefix}/auth/github`;
+export let apiPrefix = "https://dochub-server.zjffun.com/api";
 
 if (process.env.NODE_ENV === "development") {
-  signInUrl = `http://127.0.0.1:3001${apiPrefix}/auth/github`;
+  apiPrefix = "http://127.0.0.1:3001/api";
 }
+
+export const signInUrl = `${apiPrefix}/auth/github`;
