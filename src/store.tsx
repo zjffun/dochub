@@ -40,6 +40,10 @@ const Store: FC<{ children: any }> = ({ children }) => {
   useEffect(() => {
     const handleMessage = (e: MessageEvent) => {
       if (e.data.type === "signInSuccess") {
+        // TODO: fix vulnerable
+        localStorage.setItem("access_token", e.data.access_token);
+        localStorage.setItem("github_token", e.data.github_token);
+
         getUser().then((user) => {
           stateRef.current.setUserInfo(user);
         });
