@@ -7,7 +7,8 @@
     "build": "node scripts/build.js",
     "test": "node scripts/test.js",
     "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "ci-build": "CI=true node scripts/build.js"
+    "ci-build": "CI=true node scripts/build.js",
+    "fix-registry": "replace-lockfile-registry --registry https://registry.npmjs.org/"
   },
   "dependencies": {
     "@babel/core": "^7.16.0",
@@ -92,6 +93,7 @@
     "@types/d3": "^7.4.0",
     "@types/lodash-es": "^4.17.7",
     "monaco-editor-webpack-plugin": "^7.0.1",
+    "replace-lockfile-registry": "^0.0.1",
     "sass": "^1.57.1",
     "source-map-explorer": "^2.5.3"
   },
