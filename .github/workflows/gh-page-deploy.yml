@@ -53,8 +53,8 @@ jobs:
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
       - name: Build
         run: ${{ steps.detect-package-manager.outputs.manager }} run build
-      - name: CNAME
-        run: echo dochub.zjffun.com > ./build/CNAME
+      - name: Fix SPA 404 
+        run: cp ./build/index.html ./build/404.html
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
