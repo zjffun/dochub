@@ -620,13 +620,20 @@ function RelationPage() {
       const toRepo = get(translateDocData, "toRepo");
       const toPath = get(translateDocData, "toPath");
 
+      const { owner, repo } = await getToOwnerAndRepo({
+        toOwner,
+        toRepo,
+        // beforeEvent checked
+        owner: userInfo!.login,
+      });
+
       const toModifiedContent = getTranslatedContent();
 
       await saveToEditingContent();
 
       await createCommit({
-        owner: toOwner,
-        repo: toRepo,
+        owner,
+        repo,
         branch: prBranch,
         sha: prRev,
         path: toPath,
