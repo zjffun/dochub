@@ -152,6 +152,57 @@ const CreateMode: FC<CreateModeProps> = ({ onCreate }) => {
   );
 };
 
+/**
+ * temp fix: https://github.com/orgs/community/discussions/68932#discussioncomment-7176832
+ * first try to create PR branch from toOriginalRev
+ * if failed, try to create PR branch from toBranch
+ */
+async function tempFixCreatePrBranch({
+  owner,
+  repo,
+  toOriginalRev,
+  toBranch,
+}: {
+  owner: string;
+  repo: string;
+  toOriginalRev: string;
+  toBranch: string;
+}) {
+  try {
+    const { branch, sha } = await createPrBranch({
+      owner,
+      repo,
+      rev: toOriginalRev,
+    });
+
+    return { branch, sha };
+  } catch (error) {
+    const confirmTip = `Create branch from ${toOriginalRev} failed, did you want to create branch from ${toBranch}?`;
+    const res = window.confirm(confirmTip);
+
+    if (!res) {
+      return;
+    }
+
+    const { rev } = await getBranchRev({
+      owner,
+      repo,
+      branch: toBranch,
+    });
+
+    const { branch, sha } = await createPrBranch({
+      owner,
+      repo,
+      rev,
+    });
+
+    return {
+      branch,
+      sha,
+    };
+  }
+}
+
 function RelationPage() {
   const search = window.location.search;
   const { pathname, type, docPath } = usePathInfo();
@@ -321,11 +372,18 @@ function RelationPage() {
         owner: userInfo!.login,
       });
 
-      const { branch, sha } = await createPrBranch({
+      const createPrBranchResult = await tempFixCreatePrBranch({
         owner,
         repo,
-        rev: toOriginalRev,
+        toOriginalRev,
+        toBranch,
       });
+
+      if (!createPrBranchResult) {
+        return;
+      }
+
+      const { branch, sha } = createPrBranchResult;
 
       const { oid, headline } = await createCommit({
         owner,
