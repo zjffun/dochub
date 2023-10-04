@@ -86,6 +86,25 @@ interface CreateModeProps {
 
 const toPrStates = [PR_STATE.NONE, PR_STATE.CLOSED];
 
+const infoKey = [
+  "fromPath",
+  "toPath",
+
+  "fromOwner",
+  "fromRepo",
+  "fromBranch",
+  "fromOriginalRev",
+  "fromModifiedRev",
+
+  "toOwner",
+  "toRepo",
+  "toBranch",
+  "toOriginalRev",
+  "toModifiedRev",
+
+  "pullNumber",
+];
+
 const options =
   ({ onDelete }: { onDelete: (id: string) => void }) =>
   (data: any) => {
@@ -211,6 +230,7 @@ function RelationPage() {
   const { userInfo } = useStoreContext();
 
   const [loading, setLoading] = useState(false);
+  const [openingInfo, setOpeningInfo] = useState(false);
   const [mode, setMode] = useState(MODE.EDIT);
   const [relations, setRelations] = useState<
     IViewerRelationWithModifiedRange[]
@@ -982,6 +1002,30 @@ function RelationPage() {
                   {docPath}
                 </a>
               </h2>
+            </li>
+            <li className="relation-overview__header__list__item">
+              <button onClick={() => setOpeningInfo(true)}>info</button>
+              <dialog
+                open={openingInfo}
+                className="relation-overview__info-dialog"
+              >
+                <dl>
+                  {infoKey.map((key, i) => {
+                    return (
+                      <>
+                        <dt key={i}>{key}</dt>
+                        <dd key={i}>
+                          {(translateDocData as any)?.[key] ?? ""}
+                        </dd>
+                      </>
+                    );
+                  })}
+                </dl>
+
+                <form method="dialog">
+                  <button onClick={() => setOpeningInfo(false)}>OK</button>
+                </form>
+              </dialog>
             </li>
             <li style={{ flex: "1 1 0" }}></li>
 

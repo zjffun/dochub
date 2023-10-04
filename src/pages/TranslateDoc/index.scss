@@ -1,3 +1,5 @@
+@import "../../styles/variables.scss";
+
 .relation-overview {
   height: 100vh;
   display: flex;
@@ -16,6 +18,19 @@
       &__item {
         margin: 0 0.25rem;
         display: var(--block-operation-display);
+      }
+    }
+  }
+  &__info-dialog {
+    z-index: $info-dialog-z-index;
+    dl {
+      dt {
+        &::after {
+          content: ":";
+        }
+      }
+      dd {
+        margin-bottom: 0.25rem;
       }
     }
   }
