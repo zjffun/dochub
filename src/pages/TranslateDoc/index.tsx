@@ -1,3 +1,5 @@
+/* eslint-disable react/jsx-no-target-blank */
+
 import classnames from "classnames";
 import { default as _get } from "lodash-es/get";
 import { FC, useEffect, useRef, useState } from "react";
@@ -41,6 +43,10 @@ import PR_STATE from "./prState";
 import usePrInfo from "./usePrInfo";
 
 import "./index.scss";
+import createGithubBlobUrl, {
+  createGithubPullUrl,
+} from "../../utils/githubUrl";
+import { create } from "domain";
 
 enum MODE {
   EDIT = "edit",
@@ -266,6 +272,33 @@ function RelationPage() {
     translateDocData &&
     (translateDocData.toOriginalRev !== translateDocData.toModifiedRev ||
       translateDocData.fromOriginalRev !== translateDocData.fromModifiedRev);
+
+  const fromOriginalUrl = createGithubBlobUrl({
+    owner: translateDocData?.fromOwner,
+    repo: translateDocData?.fromRepo,
+    rev: translateDocData?.fromOriginalRev,
+    path: translateDocData?.fromPath,
+  });
+
+  const fromModifiedUrl = createGithubBlobUrl({
+    owner: translateDocData?.fromOwner,
+    repo: translateDocData?.fromRepo,
+    rev: translateDocData?.fromModifiedRev,
+    path: translateDocData?.fromPath,
+  });
+
+  const toOriginalUrl = createGithubBlobUrl({
+    owner: translateDocData?.toOwner,
+    repo: translateDocData?.toRepo,
+    rev: translateDocData?.toOriginalRev,
+    path: translateDocData?.toPath,
+  });
+
+  const prUrl = createGithubPullUrl({
+    owner: translateDocData?.toOwner,
+    repo: translateDocData?.toRepo,
+    pullNumber: translateDocData?.pullNumber,
+  });
 
   const updateTranslateDocData = (newData: any) => {
     setTranslateDocData((prev) => {
@@ -1017,16 +1050,46 @@ function RelationPage() {
                 className="relation-overview__info-dialog"
               >
                 <dl>
-                  {infoKey.map((key, i) => {
-                    return (
-                      <>
-                        <dt key={i}>{key}</dt>
-                        <dd key={i}>
-                          {(translateDocData as any)?.[key] ?? ""}
-                        </dd>
-                      </>
-                    );
-                  })}
+                  <dt>Form Original</dt>
+                  <dd>
+                    {fromOriginalUrl ? (
+                      <a href={fromOriginalUrl} target="_blank">
+                        {fromOriginalUrl}
+                      </a>
+                    ) : (
+                      "-"
+                    )}
+                  </dd>
+                  <dt>Form Modified</dt>
+                  <dd>
+                    {fromModifiedUrl ? (
+                      <a href={fromModifiedUrl} target="_blank">
+                        {fromModifiedUrl}
+                      </a>
+                    ) : (
+                      "-"
+                    )}
+                  </dd>
+                  <dt>To Original</dt>
+                  <dd>
+                    {toOriginalUrl ? (
+                      <a href={toOriginalUrl} target="_blank">
+                        {toOriginalUrl}
+                      </a>
+                    ) : (
+                      "-"
+                    )}
+                  </dd>
+                  <dt>Pull Request</dt>
+                  <dd>
+                    {prUrl ? (
+                      <a href={prUrl} target="_blank">
+                        {prUrl}
+                      </a>
+                    ) : (
+                      "-"
+                    )}
+                  </dd>
                 </dl>
 
                 <form method="dialog">
