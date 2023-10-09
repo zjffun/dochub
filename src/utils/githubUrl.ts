@@ -46,7 +46,7 @@ export function createGithubPullUrl({
   repo?: string;
   pullNumber?: string | number;
 }) {
-  if (!owner || !repo || pullNumber !== undefined) {
+  if (!owner || !repo || pullNumber === undefined) {
     return "";
   }
 
