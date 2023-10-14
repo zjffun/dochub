@@ -89,12 +89,22 @@ function CreateDoc({ typeLength }: { typeLength: number }) {
       postData.fromOriginalContent = fromOriginalContent;
 
       // toOriginalContent
-      const toOriginalContent = await getContent({
-        owner: data.toOwner,
-        repo: data.toRepo,
-        rev: data.toOriginalRev,
-        path: data.toPath,
-      });
+      let toOriginalContent = "";
+      try {
+        toOriginalContent = await getContent({
+          owner: data.toOwner,
+          repo: data.toRepo,
+          rev: data.toOriginalRev,
+          path: data.toPath,
+        });
+      } catch (error) {
+        console.warn(
+          "Can't get toOriginalContent from GitHub, set toOriginalContent to fromModifiedContent",
+          error
+        );
+        toOriginalContent = fromModifiedContent;
+      }
+
       if (!toOriginalContent) {
         throw new Error("toOriginalContent is empty");
       }
