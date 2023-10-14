@@ -267,6 +267,9 @@ function RelationPage() {
   const needSyncContent =
     prContent !== undefined && prContent !== translateDocData?.toEditingContent;
 
+  const newFileMode =
+    translateDocData !== undefined && !translateDocData?.toOriginalRev;
+
   const canUpdateOriginal =
     [PR_STATE.NONE, PR_STATE.CLOSED].includes(prState) &&
     translateDocData &&
@@ -345,10 +348,49 @@ function RelationPage() {
   const saveToEditingContent = async () => {
     const content = getTranslatedContent();
 
-    return updateDoc({
+    if (newFileMode) {
+      const result = await updateDoc({
+        path: docPath,
+        toOriginalContent: content,
+        toEditingContent: content,
+      });
+
+      updateTranslateDocData({
+        toOriginalContent: content,
+        toEditingContent: content,
+        toOriginalContentSha: result.toOriginalContentSha,
+        toEditingContentSha: result.toEditingContentSha,
+      });
+
+      const saveResult = {
+        toOriginalContent: content,
+        toEditingContent: content,
+        ...result,
+      };
+
+      return saveResult;
+    }
+
+    const result = await updateDoc({
       path: docPath,
       toEditingContent: content,
     });
+
+    updateTranslateDocData({
+      toEditingContent: content,
+      toEditingContentSha: result.toEditingContentSha,
+    });
+
+    const saveResult = { toEditingContent: content, ...result };
+
+    return saveResult;
+  };
+
+  const navigateToCurrentPath = ({ path }: { path: string }) => {
+    if (path !== docPath) {
+      const to = `/${type}${path}${search}`;
+      navigate(to);
+    }
   };
 
   const handleEditRelationsClick = async () => {
@@ -371,10 +413,7 @@ function RelationPage() {
       }).then(({ path }) => {
         toast.success("Fork document successfully.");
 
-        if (path !== docPath) {
-          const to = `/${type}${path}${search}`;
-          navigate(to);
-        }
+        navigateToCurrentPath({ path });
       });
     } catch (error) {
       console.error(error);
@@ -388,14 +427,10 @@ function RelationPage() {
     try {
       beforeEvent();
 
-      // TODO: optimize
       await saveToEditingContent().then(({ path }) => {
         toast.success("Translated content saved.");
 
-        if (path !== docPath) {
-          const to = `/${type}${path}${search}`;
-          navigate(to);
-        }
+        navigateToCurrentPath({ path });
       });
     } catch (error) {
       console.error(error);
@@ -459,6 +494,10 @@ function RelationPage() {
 
       await updateDoc({
         path: docPath,
+        pullNumber,
+      });
+
+      updateTranslateDocData({
         pullNumber,
       });
 
