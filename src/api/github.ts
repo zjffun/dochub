@@ -434,9 +434,14 @@ async function getPr({
     },
   });
 
+  // https://docs.github.com/en/rest/pulls/pulls?apiVersion=2022-11-28#get-a-pull-request
+  let rev = res.data.head.sha;
+  if (res.data.merged && res.data.merge_commit_sha) {
+    rev = res.data.merge_commit_sha;
+  }
+
   return {
-    // https://docs.github.com/en/rest/pulls/pulls?apiVersion=2022-11-28#get-a-pull-request
-    rev: res.data.merged ? res.data.merge_commit_sha : res.data.head.sha,
+    rev,
     branch: res.data.head.ref,
     closed: res.data.state === "closed",
     merged: res.data.merged,
