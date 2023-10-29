@@ -1,0 +1,111 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`getRelations base 1`] = `
+Array [
+  Object {
+    "fromRange": Array [
+      1,
+      3,
+    ],
+    "toRange": Array [
+      1,
+      4,
+    ],
+  },
+  Object {
+    "fromRange": Array [
+      5,
+      7,
+    ],
+    "toRange": Array [
+      6,
+      8,
+    ],
+  },
+]
+`;
+
+exports[`getRelations frontmatter 1`] = `
+Array [
+  Object {
+    "fromRange": Array [
+      1,
+      3,
+    ],
+    "toRange": Array [
+      1,
+      3,
+    ],
+  },
+  Object {
+    "fromRange": Array [
+      5,
+      7,
+    ],
+    "toRange": Array [
+      5,
+      8,
+    ],
+  },
+  Object {
+    "fromRange": Array [
+      9,
+      11,
+    ],
+    "toRange": Array [
+      10,
+      12,
+    ],
+  },
+]
+`;
+
+exports[`getRelations frontmatter only in from content 1`] = `
+Array [
+  Object {
+    "fromRange": Array [
+      5,
+      7,
+    ],
+    "toRange": Array [
+      1,
+      4,
+    ],
+  },
+  Object {
+    "fromRange": Array [
+      9,
+      11,
+    ],
+    "toRange": Array [
+      6,
+      8,
+    ],
+  },
+]
+`;
+
+exports[`getRelations frontmatter only in to content 1`] = `
+Array [
+  Object {
+    "fromRange": Array [
+      1,
+      3,
+    ],
+    "toRange": Array [
+      5,
+      8,
+    ],
+  },
+  Object {
+    "fromRange": Array [
+      5,
+      7,
+    ],
+    "toRange": Array [
+      10,
+      12,
+    ],
+  },
+]
+`;

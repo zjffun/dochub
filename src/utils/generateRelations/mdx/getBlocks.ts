@@ -5,6 +5,7 @@ const blockType = ["heading", "yaml"];
 export interface IBlock {
   start?: number;
   end?: number;
+  type?: string;
 }
 
 export default function getBlocks(ast: Root) {
@@ -12,6 +13,7 @@ export default function getBlocks(ast: Root) {
   const blocks: {
     start: number;
     end: number;
+    type?: string;
   }[] = [];
 
   if (!children.length) {
@@ -38,6 +40,7 @@ export default function getBlocks(ast: Root) {
     blocks.push({
       start: startLine,
       end: child.position.end.line,
+      type: child.type,
     });
     startLine = undefined;
   }
@@ -52,6 +55,7 @@ export default function getBlocks(ast: Root) {
     blocks.push({
       start: startLine,
       end: lastChild.position.end.line,
+      type: lastChild.type,
     });
   }
 
